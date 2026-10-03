@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tech&Dev — TD03 — ÉTAL (campagne éditoriale)</title>
+<style>
+@font-face{font-family:'Archivo';src:url('node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2') format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:'Inter';src:url('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');font-weight:100 900}
+@font-face{font-family:'JetBrains Mono';src:url('node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');font-weight:100 800}
+:root{
+  --cream:#F2EDE4; --cream2:#E9E2D5; --sand:#DCD1BD; --sand2:#CFC2AA;
+  --ink:#15171C; --muted:#6F6A61; --accent:#5B52E8; --warm:#C4663C;
+}
+html,body{margin:0;padding:0;background:#F2EDE4;width:1080px;height:1920px;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden}
+#bg{position:absolute;left:0;top:0}
+#vig{position:absolute;inset:0;z-index:47;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 42%,rgba(0,0,0,0) 52%,rgba(92,72,44,.17) 100%)}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;opacity:0;will-change:transform,opacity}
+
+/* ---------- typographie éditoriale ---------- */
+.lab{position:absolute;font:700 23px 'JetBrains Mono';letter-spacing:.24em;color:var(--muted);opacity:0}
+.lab::before{content:'';position:absolute;left:-74px;top:11px;width:56px;height:2px;background:var(--sand2)}
+.dsp{position:absolute;font:800 82px Archivo;font-stretch:112%;line-height:1.04;
+  letter-spacing:-.032em;color:var(--ink);opacity:0}
+.dsp em{font-style:normal;color:var(--accent)}
+.dsp.w em{color:var(--warm)}
+.sub{position:absolute;font:400 31px Inter;line-height:1.46;color:var(--muted);opacity:0}
+
+/* ---------- objets ---------- */
+.shadow-soft{filter:drop-shadow(0 26px 34px rgba(104,80,48,.17)) drop-shadow(0 6px 10px rgba(104,80,48,.10))}
+.phone{position:absolute;width:430px;height:880px;border-radius:62px;background:#13151A;
+  box-shadow:0 48px 90px rgba(104,80,48,.30),0 10px 24px rgba(104,80,48,.16),
+             inset 0 0 0 2px rgba(255,255,255,.10);transform-origin:50% 50%}
+.phone .scr{position:absolute;left:13px;top:13px;width:404px;height:854px;border-radius:50px;
+  overflow:hidden;background:#07090E}
+.phone .notch{position:absolute;left:50%;margin-left:-58px;top:26px;width:116px;height:12px;
+  border-radius:6px;background:#2A2E36;z-index:5}
+.lap{position:absolute;transform-origin:50% 100%}
+.lap .lid{position:absolute;left:0;top:0;width:1160px;height:726px;border-radius:22px;background:#15171C;
+  box-shadow:0 44px 80px rgba(104,80,48,.26),0 8px 18px rgba(104,80,48,.14);box-sizing:border-box;padding:18px}
+.lap .scr{position:absolute;left:18px;top:18px;width:1124px;height:690px;border-radius:10px;overflow:hidden;background:#07090E}
+.lap .base{position:absolute;left:-74px;top:726px;width:1308px;height:30px;border-radius:0 0 18px 18px;
+  background:linear-gradient(180deg,#C9C3B8,#A9A396)}
+.lap .notchb{position:absolute;left:50%;margin-left:-70px;top:726px;width:140px;height:11px;
+  border-radius:0 0 9px 9px;background:#8E887C}
+
+/* le site, rendu à sa taille réelle puis réduit dans l'écran */
+.site{position:absolute;left:0;top:0;transform-origin:0 0;background:#07090E}
+.s-nav{position:absolute;left:0;top:0;width:100%;height:96px;box-sizing:border-box;display:flex;
+  align-items:center;padding:0 54px;border-bottom:1px solid rgba(255,255,255,.07)}
+.s-nav img{width:46px;height:38px;object-fit:contain;margin-right:15px}
+.s-nav b{font:800 23px Archivo;font-stretch:112%;color:#fff;line-height:1}
+.s-nav b i{font-style:normal;color:#3FA9FF}
+.s-nav s{display:block;text-decoration:none;font:600 12px Inter;letter-spacing:.30em;color:#8FA2BA;margin-top:5px}
+.s-nav .lk{display:flex;gap:46px;margin-left:auto;font:500 21px Inter;color:#C9D6E6}
+.s-nav .cta{margin-left:40px;height:52px;border-radius:26px;background:#6C63FF;color:#fff;
+  font:700 18px Inter;display:flex;align-items:center;padding:0 28px}
+.s-h1{position:absolute;left:0;width:100%;text-align:center;font:800 88px Archivo;font-stretch:118%;
+  line-height:1.06;color:#F3F7FC;letter-spacing:-.012em}
+.s-h1 em{font-style:normal;color:#6C63FF}
+.s-sub{position:absolute;left:0;width:100%;text-align:center;font:400 27px Inter;line-height:1.5;color:#93A4B8}
+.s-btn{position:absolute;height:76px;border-radius:38px;display:flex;align-items:center;
+  justify-content:center;font:700 24px Inter}
+
+/* recherche anonyme : aucune imitation d'un moteur existant */
+.srch{position:absolute;left:0;top:0;width:404px;height:854px;background:#F7F4EE}
+.srch .bar{position:absolute;left:24px;top:46px;width:356px;height:62px;border-radius:31px;
+  background:#fff;box-shadow:0 3px 10px rgba(80,60,30,.12);display:flex;align-items:center;padding:0 22px;
+  font:500 21px Inter;color:#3A3A3A;box-sizing:border-box;gap:12px}
+.srch .res{position:absolute;left:24px;width:356px;border-radius:16px;background:#fff;
+  box-shadow:0 3px 10px rgba(80,60,30,.09);box-sizing:border-box;padding:20px}
+.srch .res .r1{height:15px;border-radius:8px;background:#D9D4CA;width:62%}
+.srch .res .r2{height:11px;border-radius:6px;background:#E6E2DA;width:88%;margin-top:14px}
+.srch .res .r3{height:11px;border-radius:6px;background:#E6E2DA;width:44%;margin-top:10px}
+.srch .gap{position:absolute;left:24px;width:356px;border-radius:16px;box-sizing:border-box;
+  border:2.5px dashed #C8BFAE;display:flex;align-items:center;justify-content:center;
+  font:700 20px Inter;letter-spacing:.06em;color:#A89C86}
+
+/* fiche d'établissement remplie (scène 5) */
+.fiche{position:absolute;left:24px;width:356px;border-radius:16px;background:#fff;
+  box-shadow:0 6px 18px rgba(80,60,30,.14);box-sizing:border-box;padding:20px;opacity:0}
+.fiche .nm{font:800 25px Archivo;font-stretch:112%;color:#1A1A1A}
+.fiche .mt{margin-top:9px;font:500 17px Inter;color:#6B6B6B}
+.fiche .st{margin-top:12px;display:flex;gap:5px}
+.fiche .st i{width:19px;height:19px;display:block;background:#E8A33D;
+  clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+.fiche .bt{margin-top:16px;height:46px;border-radius:23px;background:#5B52E8;color:#fff;
+  display:flex;align-items:center;justify-content:center;font:700 19px Inter}
+
+/* carte de prix, traitée comme un encart imprimé */
+#pcard{position:absolute;left:96px;top:702px;width:888px;height:496px;border-radius:30px;
+  background:#FBF8F2;box-shadow:0 44px 90px rgba(104,80,48,.22),0 8px 20px rgba(104,80,48,.12),
+  inset 0 0 0 1px rgba(120,96,60,.12);opacity:0;transform-origin:50% 50%}
+#pcard .tag{position:absolute;left:52px;top:48px;height:42px;border-radius:21px;background:rgba(91,82,232,.10);
+  border:1px solid rgba(91,82,232,.30);display:flex;align-items:center;padding:0 22px;
+  font:700 18px Inter;letter-spacing:.16em;color:var(--accent)}
+#pcard .ttl{position:absolute;left:52px;top:122px;font:800 48px Archivo;font-stretch:112%;color:var(--ink)}
+#pcard .prc{position:absolute;left:52px;top:196px;font:800 128px Archivo;font-stretch:120%;
+  line-height:1;letter-spacing:-.04em;color:var(--ink)}
+#pcard .old{position:absolute;left:424px;top:252px;font:700 40px Archivo;color:#A89C86}
+#pcard .old span{position:relative;display:inline-block}
+#pcard .old .k{position:absolute;left:0;top:52%;height:3px;width:0;background:var(--warm)}
+#pcard .li{position:absolute;left:52px;display:flex;align-items:center;gap:16px;
+  font:500 26px Inter;color:#45413B;opacity:0}
+#pcard .li svg{flex:0 0 26px}
+
+/* logo final */
+#logo{position:absolute;left:0;top:0;width:1080px;height:1920px;opacity:0;z-index:30}
+#lmark{position:absolute;left:390px;top:700px;width:300px;height:248px;display:block}
+#lword{position:absolute;left:0;top:992px;width:1080px;text-align:center;
+  font:800 78px Archivo;font-stretch:118%;color:var(--ink);letter-spacing:.004em;line-height:1;opacity:0}
+#lword i{font-style:normal;color:var(--accent)}
+#lsub{position:absolute;left:0;top:1090px;width:1080px;text-align:center;
+  font:600 25px Inter;letter-spacing:.32em;color:var(--muted);opacity:0}
+#lmeta{position:absolute;left:0;top:1192px;width:1080px;text-align:center;opacity:0}
+#lmeta .a{font:500 31px 'JetBrains Mono';letter-spacing:.05em;color:#4A463F}
+#lmeta .b{margin-top:18px;font:600 24px Inter;letter-spacing:.18em;color:var(--muted)}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <div id="world"></div>
+  <div id="vig"></div>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="lib.js"></script>
+<script>
+initEases();
+const DUR = 28.0, FPS = 30;
+const MK = '../assets/td/mark.png';
+const world = document.getElementById('world');
+const $ = (id) => document.getElementById(id);
+const mk = (html, cls, css) => { const d = document.createElement('div'); if (cls) d.className = cls; if (css) d.style.cssText = css; d.innerHTML = html; return d; };
+
+/* ===================== FOND : papier crème, lumière chaude ===================== */
+function makeBG(canvas) {
+  const g = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+  // grain papier
+  const tile = document.createElement('canvas'); tile.width = tile.height = 340;
+  const tc = tile.getContext('2d'), im = tc.createImageData(340, 340);
+  let s = 17; const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < im.data.length; i += 4) {
+    const v = 128 + (rnd() - 0.5) * 92;
+    im.data[i] = im.data[i+1] = im.data[i+2] = v; im.data[i+3] = 255;
+  }
+  tc.putImageData(im, 0, 0);
+  return function draw(t, warm) {
+    g.fillStyle = '#F2EDE4'; g.fillRect(0, 0, W, H);
+    // lumière du matin qui dérive lentement
+    const lx = 300 + Math.sin(t * 0.14) * 130, ly = 420 + Math.cos(t * 0.11) * 110;
+    let rg = g.createRadialGradient(lx, ly, 40, lx, ly, 1250);
+    rg.addColorStop(0, `rgba(255,248,232,${(0.95).toFixed(2)})`);
+    rg.addColorStop(0.55, 'rgba(246,238,224,.45)');
+    rg.addColorStop(1, 'rgba(238,230,215,0)');
+    g.fillStyle = rg; g.fillRect(0, 0, W, H);
+    // ombre chaude en bas, pour poser les objets
+    rg = g.createLinearGradient(0, H * 0.52, 0, H);
+    rg.addColorStop(0, 'rgba(206,192,168,0)');
+    rg.addColorStop(1, `rgba(198,180,152,${(0.52 + 0.12 * warm).toFixed(2)})`);
+    g.fillStyle = rg; g.fillRect(0, 0, W, H);
+    // halo plus chaud quand la scène se réchauffe
+    if (warm > 0.01) {
+      const wx = 760 + Math.sin(t * 0.2) * 60;
+      rg = g.createRadialGradient(wx, 760, 30, wx, 760, 900);
+      rg.addColorStop(0, `rgba(255,206,150,${(0.34 * warm).toFixed(3)})`);
+      rg.addColorStop(1, 'rgba(255,206,150,0)');
+      g.fillStyle = rg; g.fillRect(0, 0, W, H);
+    }
+    // grain papier
+    const f = Math.round(t * FPS);
+    const ox = ((f * 83) % 340) - 340, oy = ((f * 149) % 340) - 340;
+    g.save(); g.globalCompositeOperation = 'multiply'; g.globalAlpha = 0.085;
+    for (let x = ox; x < W; x += 340) for (let y = oy; y < H; y += 340) g.drawImage(tile, x, y);
+    g.restore();
+  };
+}
+const drawBG = makeBG($('bg'));
+
+/* ===================== LE SITE, RENDU PUIS RÉDUIT ===================== */
+function siteHTML(w) {
+  return `
+  <div class="s-nav"><img src="${MK}"><div><b>TECH<i>&amp;</i>DEV</b><s>SOLUTIONS NUMÉRIQUES</s></div>
+    <div class="lk"><span>Services</span><span>Tarifs</span><span>Projets</span><span>Contact</span></div>
+    <div class="cta">Parlons de votre projet</div></div>
+  <div class="s-h1" style="top:${w > 1000 ? 232 : 300}px">Votre partenaire<br><em>tech de confiance</em><br>en Île-de-France</div>
+  <div class="s-sub" style="top:${w > 1000 ? 560 : 628}px">Informatique, création web et design graphique<br>pour les commerces et les indépendants.</div>
+  <div class="s-btn" style="left:${w / 2 - 400}px;top:${w > 1000 ? 700 : 768}px;width:400px;background:#6C63FF;color:#fff">Demander un devis gratuit</div>
+  <div class="s-btn" style="left:${w / 2 + 26}px;top:${w > 1000 ? 700 : 768}px;width:374px;box-sizing:border-box;border:1.6px solid rgba(255,255,255,.17);color:#D5E0EE">Découvrir nos services</div>`;
+}
+function siteIn(screenW, screenH, siteW, siteH) {
+  const k = screenW / siteW;
+  return `<div class="site" style="width:${siteW}px;height:${siteH}px;transform:scale(${k})">${siteHTML(siteW)}</div>`;
+}
+
+/* ===================== DÉCOR : vitrine et comptoir ===================== */
+const STORE = `
+<svg width="1080" height="1250" viewBox="0 0 1080 1250" fill="none" style="position:absolute;left:0;top:0">
+  <!-- mur -->
+  <rect x="86" y="150" width="908" height="900" rx="16" fill="#E7DFD0"/>
+  <!-- vitrine -->
+  <rect x="146" y="286" width="788" height="560" rx="10" fill="#EFEAE0"/>
+  <rect x="146" y="286" width="788" height="560" rx="10" stroke="#CFC2AA" stroke-width="5"/>
+  <line x1="540" y1="286" x2="540" y2="846" stroke="#CFC2AA" stroke-width="5"/>
+  <line x1="146" y1="566" x2="934" y2="566" stroke="#CFC2AA" stroke-width="5"/>
+  <!-- reflets obliques -->
+  <path d="M210 846 L470 286 L560 286 L300 846 Z" fill="#F7F3EA" opacity=".72"/>
+  <path d="M600 846 L860 286 L900 286 L640 846 Z" fill="#F7F3EA" opacity=".46"/>
+  <!-- store rayé -->
+  <path d="M96 150 h888 a0 0 0 0 1 0 0 v18 a86 86 0 0 1 -86 86 h-716 a86 86 0 0 1 -86 -86 z" fill="#D8CDB8"/>
+  <g>
+    <rect x="96" y="150" width="111" height="104" fill="#CBBEA4"/>
+    <rect x="318" y="150" width="111" height="104" fill="#CBBEA4"/>
+    <rect x="540" y="150" width="111" height="104" fill="#CBBEA4"/>
+    <rect x="762" y="150" width="111" height="104" fill="#CBBEA4"/>
+  </g>
+  <path d="M96 150 h888 v18 h-888 z" fill="#BCAE92"/>
+  <!-- enseigne vierge -->
+  <rect x="356" y="76" width="368" height="56" rx="12" fill="#DDD3C0"/>
+  <!-- plante -->
+  <rect x="902" y="906" width="78" height="96" rx="10" fill="#C9A98A"/>
+  <path d="M941 906 C941 846 906 826 898 788 C938 796 948 846 941 906Z" fill="#A9B892"/>
+  <path d="M941 906 C941 852 976 830 986 794 C948 802 934 850 941 906Z" fill="#97A87F"/>
+</svg>`;
+const COUNTER = `
+<svg width="1080" height="420" viewBox="0 0 1080 420" fill="none" style="position:absolute;left:0;top:0">
+  <rect x="-40" y="56" width="1160" height="364" rx="22" fill="#D5C9B2"/>
+  <rect x="-40" y="56" width="1160" height="26" rx="13" fill="#E2D8C5"/>
+  <rect x="-40" y="128" width="1160" height="5" fill="#C7B99E" opacity=".55"/>
+</svg>`;
+const CUP = `
+<svg width="150" height="150" viewBox="0 0 150 150" fill="none" style="position:absolute">
+  <ellipse cx="66" cy="128" rx="54" ry="11" fill="#BCAD92" opacity=".5"/>
+  <path d="M26 62h80v44a22 22 0 0 1-22 22H48a22 22 0 0 1-22-22z" fill="#FBF7EF"/>
+  <path d="M106 72h10a17 17 0 0 1 0 34h-10" stroke="#E6DCC9" stroke-width="9" fill="none"/>
+  <ellipse cx="66" cy="62" rx="40" ry="10" fill="#E8DFCC"/>
+</svg>`;
+
+/* ===================== SCÈNES ===================== */
+const SC = [
+  { id: 'S1', t0: 0.0,  t1: 5.0  },   // la boutique ouvre, le téléphone est muet
+  { id: 'S2', t0: 5.0,  t1: 10.1 },   // on te cherche, tu n'es pas dans la liste
+  { id: 'S3', t0: 10.1, t1: 15.4 },   // le site
+  { id: 'S4', t0: 15.4, t1: 19.6 },   // devis 24h, maquette offerte
+  { id: 'S5', t0: 19.6, t1: 23.5 },   // la fiche est remplie, le téléphone s'allume
+  { id: 'S6', t0: 23.5, t1: 28.0 },   // le pack, puis le logo
+];
+
+/* --- S1 : vitrine + comptoir + téléphone éteint --- */
+const S1 = mk(`
+  <div class="lab" id="s1lab" style="left:170px;top:258px">LUNDI · 08:12</div>
+  <div class="dsp" id="s1d" style="left:96px;top:330px;width:900px">Ta boutique<br>est ouverte.</div>
+  <div class="sub" id="s1s" style="left:96px;top:566px;width:820px">Ton téléphone, lui, ne sonne pas.</div>
+  <div id="s1store" style="position:absolute;left:0;top:660px;width:1080px;height:1250px;
+    transform-origin:50% 0;transform:scale(.72)">${STORE}</div>
+  <div id="s1cnt" style="position:absolute;left:0;top:1330px;width:1080px;height:420px">${COUNTER}</div>
+  <div class="phone" id="s1ph" style="left:412px;top:970px;width:256px;height:460px;border-radius:36px;
+    transform:rotate(-5deg)">
+    <div class="scr" style="left:10px;top:10px;width:236px;height:440px;border-radius:28px;background:#0B0D12"></div>
+  </div>
+  <div id="s1cup" style="position:absolute;left:706px;top:1300px">${CUP}</div>
+`, 'sc');
+S1.id = 'S1'; world.appendChild(S1);
+
+/* --- S2 : le téléphone d'un passant, la liste sans toi --- */
+const S2 = mk(`
+  <div class="phone" id="s2ph" style="left:325px;top:700px">
+    <div class="notch"></div>
+    <div class="scr">
+      <div class="srch">
+        <div class="bar" id="s2bar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg><span id="s2q"></span><span id="s2car" style="display:inline-block;width:2px;height:24px;background:#5B52E8"></span></div>
+        <div class="res" id="s2r0" style="top:146px;opacity:0"><div class="r1"></div><div class="r2"></div><div class="r3"></div></div>
+        <div class="res" id="s2r1" style="top:290px;opacity:0"><div class="r1"></div><div class="r2"></div><div class="r3"></div></div>
+        <div class="res" id="s2r2" style="top:434px;opacity:0"><div class="r1"></div><div class="r2"></div><div class="r3"></div></div>
+        <div class="gap" id="s2gap" style="top:578px;height:124px;opacity:0">TOI, NULLE PART</div>
+      </div>
+    </div>
+  </div>
+  <div class="lab" id="s2lab" style="left:170px;top:258px">À 300 MÈTRES DE CHEZ TOI</div>
+  <div class="dsp w" id="s2d" style="left:96px;top:330px;width:920px">Quelqu'un cherche<br><em>ce que tu vends.</em></div>
+`, 'sc');
+S2.id = 'S2'; world.appendChild(S2);
+
+/* --- S3 : le site sur un portable --- */
+const S3 = mk(`
+  <div class="lab" id="s3lab" style="left:170px;top:258px">ON RÈGLE ÇA</div>
+  <div class="dsp" id="s3d" style="left:96px;top:330px;width:920px">Un site qui te<br><em>met en vitrine.</em></div>
+  <div class="lap" id="s3lap" style="left:-40px;top:812px;width:1160px;height:756px">
+    <div class="lid"><div class="scr">${siteIn(1124, 690, 1920, 1180)}</div></div>
+    <div class="base"></div><div class="notchb"></div>
+  </div>
+  <div class="sub" id="s3s" style="left:96px;top:1672px;width:900px">Lisible sur mobile, rapide, et fait pour qu'on te contacte.</div>
+`, 'sc');
+S3.id = 'S3'; world.appendChild(S3);
+
+/* --- S4 : le devis --- */
+const S4 = mk(`
+  <div class="lab" id="s4lab" style="left:170px;top:258px">ET ENSUITE</div>
+  <div class="dsp" id="s4d" style="left:96px;top:330px;width:920px">Devis sous 24h.<br><em>Maquette offerte.</em></div>
+  <div class="phone" id="s4ph" style="left:325px;top:640px;transform:rotate(3deg)">
+    <div class="notch"></div>
+    <div class="scr">
+      <div style="position:absolute;left:0;top:0;width:404px;height:854px;background:#07090E">
+        <div style="position:absolute;left:34px;top:92px;font:700 17px 'JetBrains Mono';letter-spacing:.2em;color:#6C8CFF">CONTACT</div>
+        <div style="position:absolute;left:34px;top:128px;width:336px;font:800 42px Archivo;font-stretch:112%;color:#EDF3FA;line-height:1.08">Demandez votre devis</div>
+        ${[['Nom', 262], ['Email', 376], ['Prestation', 490]].map(([l, y], i) => `
+          <div style="position:absolute;left:34px;top:${y}px;font:500 16px Inter;color:#7E8EA4">${l}</div>
+          <div class="f4" id="f4${i}" style="position:absolute;left:34px;top:${y + 26}px;width:336px;height:58px;
+            box-sizing:border-box;border-radius:12px;background:#0B1019;border:1.5px solid rgba(255,255,255,.10);
+            display:flex;align-items:center;padding:0 18px;font:500 19px Inter;color:#E6EEF7">
+            <span class="tx"></span>
+            <svg class="ck" width="22" height="22" viewBox="0 0 26 26" style="position:absolute;right:16px;opacity:0"><circle cx="13" cy="13" r="13" fill="#5B52E8"/><path d="M7 13.4l4 4 8-8.6" fill="none" stroke="#fff" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>`).join('')}
+        <div id="f4btn" style="position:absolute;left:34px;top:620px;width:336px;height:64px;border-radius:32px;
+          background:#6C63FF;display:flex;align-items:center;justify-content:center;font:700 22px Inter;color:#fff;
+          transform-origin:50% 50%">Envoyer ma demande</div>
+        <div id="f4ok" style="position:absolute;left:34px;top:712px;width:336px;height:56px;border-radius:28px;
+          background:rgba(91,82,232,.16);border:1.5px solid rgba(91,82,232,.6);display:flex;align-items:center;
+          justify-content:center;font:700 19px Inter;letter-spacing:.06em;color:#A9B6FF;opacity:0;transform-origin:50% 50%">RÉPONSE SOUS 24H</div>
+      </div>
+    </div>
+  </div>
+`, 'sc');
+S4.id = 'S4'; world.appendChild(S4);
+
+/* --- S5 : la fiche remplie, le téléphone s'allume sur le comptoir --- */
+const S5 = mk(`
+  <div class="lab" id="s5lab" style="left:170px;top:252px">MAINTENANT</div>
+  <div class="dsp" id="s5d" style="left:96px;top:322px;width:920px">On te trouve.<br><em>Et on t'appelle.</em></div>
+  <div class="phone" id="s5ph" style="left:325px;top:618px">
+    <div class="notch"></div>
+    <div class="scr">
+      <div class="srch">
+        <div class="bar"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8A8A8A" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>un commerce près d'ici</div>
+        <div class="fiche" id="s5f" style="top:146px">
+          <div class="nm">Votre commerce</div>
+          <div class="mt">Ouvert · Pontault-Combault</div>
+          <div class="st"><i></i><i></i><i></i><i></i><i></i></div>
+          <div class="bt">Appeler</div>
+        </div>
+        <div class="res" id="s5r0" style="top:420px"><div class="r1"></div><div class="r2"></div><div class="r3"></div></div>
+        <div class="res" id="s5r1" style="top:564px"><div class="r1"></div><div class="r2"></div><div class="r3"></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="sub" id="s5s" style="left:96px;top:1656px;width:900px">Un site, une fiche d'établissement, une identité qui tient.</div>
+`, 'sc');
+S5.id = 'S5'; world.appendChild(S5);
+
+/* --- S6 : l'encart tarif puis le logo --- */
+const S6 = mk(`
+  <div class="lab" id="s6lab" style="left:170px;top:304px">POUR DÉMARRER</div>
+  <div id="pcard">
+    <div class="tag">PACK LANCEMENT COMMERCE</div>
+    <div class="ttl">Tout pour exister en ligne</div>
+    <div class="prc" id="s6prc">350€</div>
+    <div class="old" id="s6old"><span>650€<span class="k" id="s6k"></span></span></div>
+    ${['Logo professionnel', 'Carte de visite', 'Fiche d\'établissement', '5 visuels réseaux sociaux'].map((p, i) => `
+      <div class="li" id="s6l${i}" style="top:${352 + (i % 2) * 58}px;left:${i < 2 ? 52 : 468}px">
+        <svg width="26" height="26" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="#5B52E8" opacity=".14"/><path d="M7.5 13.4l4 4 7.5-8.2" fill="none" stroke="#5B52E8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>${p}</div>`).join('')}
+  </div>
+`, 'sc');
+S6.id = 'S6'; world.appendChild(S6);
+
+/* --- logo --- */
+const logo = mk(`
+  <img id="lmark" src="${MK}">
+  <div id="lword">TECH<i>&amp;</i>DEV</div>
+  <div id="lsub">SOLUTIONS NUMÉRIQUES</div>
+  <div id="lmeta"><div class="a">tech-dev-gules.vercel.app</div><div class="b">@TD.AGENCE &nbsp;·&nbsp; ÎLE-DE-FRANCE</div></div>
+`, '');
+logo.id = 'logo'; world.appendChild(logo);
+
+const scEls = SC.map((s) => $(s.id));
+
+/* ===================== OUTILS ===================== */
+/* entrée calme : glissement court + montée d'opacité, courbe longue */
+function soft(el, t, t0, dy = 38, dur = 0.72) {
+  const p = E.enter(clamp((t - t0) / dur));
+  el.style.opacity = clamp((t - t0) / (dur * 0.5));
+  el.style.transform = `translateY(${(1 - p) * dy}px)`;
+}
+const Q = 'cubic';
+
+/* ===================== RENDU ===================== */
+function renderAt(t) {
+  const warm = clamp(prog(t, 18.6, 21.0));
+  drawBG(t, warm);
+
+  /* enchaînement des scènes : fondu lent + très léger glissement vertical */
+  SC.forEach((s, i) => {
+    const el = scEls[i];
+    const on = t >= s.t0 - 0.9 && t < s.t1 + 0.9;
+    if (!on) { el.style.opacity = 0; return; }
+    const inn = E.enter(prog(t, s.t0 - 0.55, s.t0 + 0.25));
+    const out = E.exit(prog(t, s.t1 - 0.55, s.t1 + 0.1));
+    const push = 1 + 0.035 * prog(t, s.t0 - 0.5, s.t1 + 0.4);   // poussée continue
+    el.style.opacity = inn * (1 - out);
+    el.style.transform = `translateY(${(1 - inn) * 46 - out * 40}px) scale(${push})`;
+  });
+
+  /* --- S1 --- */
+  soft($('s1lab'), t, 0.45, 20);
+  soft($('s1store'), t, 0.1, 54, 1.3);
+  soft($('s1cnt'), t, 0.35, 64, 1.2);
+  soft($('s1cup'), t, 0.75, 34, 0.9);
+  soft($('s1ph'), t, 0.95, 40, 0.9);
+  $('s1ph').style.transform += ' rotate(-7deg)';
+  soft($('s1d'), t, 1.55, 34);
+  soft($('s1s'), t, 2.65, 26);
+
+  /* --- S2 : la requête se tape, les résultats tombent, le vide reste --- */
+  soft($('s2lab'), t, 5.35, 20);
+  soft($('s2ph'), t, 5.95, 46, 0.95);
+  const q = 'un commerce près d\'ici';
+  const n = Math.floor(q.length * clamp((t - 6.45) / 0.95) + 0.0001);
+  $('s2q').textContent = q.slice(0, n);
+  $('s2car').style.display = (t < 7.5 && Math.floor(t * 7) % 2 === 0) ? 'inline-block' : 'none';
+  [0, 1, 2].forEach((i) => {
+    const t0 = 7.6 + i * 0.22;
+    const e = $('s2r' + i);
+    const p = E.enter(clamp((t - t0) / 0.5));
+    e.style.opacity = clamp((t - t0) / 0.26);
+    e.style.transform = `translateY(${(1 - p) * 26}px)`;
+  });
+  const gp = $('s2gap');
+  gp.style.opacity = prog(t, 8.5, 9.0);
+  gp.style.transform = `scale(${0.96 + 0.04 * E.enter(clamp((t - 8.5) / 0.6))})`;
+  soft($('s2d'), t, 5.55, 34);
+
+  /* --- S3 : l'écran s'allume, le portable se redresse --- */
+  soft($('s3lab'), t, 10.45, 20);
+  soft($('s3d'), t, 10.6, 34);
+  const lp = E.enter(clamp((t - 10.9) / 1.25));
+  const lap = $('s3lap');
+  lap.style.opacity = clamp((t - 10.9) / 0.5);
+  lap.style.transform = `perspective(2200px) rotateX(${(1 - lp) * 62}deg) translateY(${(1 - lp) * 26}px)`;
+  lap.querySelector('.scr').style.opacity = prog(t, 11.75, 12.35);
+  soft($('s3s'), t, 13.1, 26);
+
+  /* --- S4 : le formulaire se remplit --- */
+  soft($('s4lab'), t, 15.75, 20);
+  soft($('s4d'), t, 15.85, 34);
+  soft($('s4ph'), t, 16.0, 46, 0.9);
+  $('s4ph').style.transform += ' rotate(3deg)';
+  [['Marie L.', 16.55, 16.95], ['contact@…', 17.05, 17.45], ['Site vitrine', 17.55, 17.9]].forEach(([txt, ts, tv], i) => {
+    const f = $('f4' + i);
+    const nn = Math.floor(txt.length * clamp((t - ts) / (tv - ts)) + 0.0001);
+    f.querySelector('.tx').textContent = txt.slice(0, nn);
+    const vp = clamp(spring('snap', t - tv));
+    f.style.borderColor = t >= tv ? mixHex('#1E2836', '#5B52E8', vp) : 'rgba(255,255,255,.10)';
+    f.querySelector('.ck').style.opacity = vp;
+  });
+  const bp2 = t >= 18.15 && t < 18.4 ? 1 - 0.06 * Math.sin(prog(t, 18.15, 18.4) * Math.PI) : 1;
+  $('f4btn').style.transform = `scale(${bp2})`;
+  const okp = clamp(spring('snap', t - 18.45));
+  $('f4ok').style.opacity = prog(t, 18.45, 18.6);
+  $('f4ok').style.transform = `scale(${0.8 + 0.2 * okp})`;
+
+  /* --- S5 : la fiche se remplit --- */
+  soft($('s5lab'), t, 19.95, 20);
+  soft($('s5d'), t, 20.05, 34);
+  soft($('s5ph'), t, 20.2, 46, 0.9);
+  const fp = clamp(spring('soft', t - 20.85));
+  const fi = $('s5f');
+  fi.style.opacity = prog(t, 20.85, 21.15);
+  fi.style.transform = `translateY(${(1 - fp) * 30}px) scale(${0.97 + 0.03 * fp})`;
+  [...fi.querySelectorAll('.st i')].forEach((st, i) => {
+    const s2 = clamp(spring('snap', t - (21.35 + i * 0.09)));
+    st.style.opacity = s2; st.style.transform = `scale(${0.4 + 0.6 * s2})`;
+  });
+  soft($('s5s'), t, 22.2, 26);
+
+  /* --- S6 : l'encart tarif, puis le logo --- */
+  soft($('s6lab'), t, 23.9, 20);
+  const pc = $('pcard');
+  const pp = E.enter(clamp((t - 24.0) / 0.95));
+  pc.style.opacity = clamp((t - 24.0) / 0.45) * (1 - prog(t, 25.5, 26.0));
+  pc.style.transform = `translateY(${(1 - pp) * 44}px) scale(${0.955 + 0.045 * pp})`;
+  $('s6old').style.opacity = prog(t, 24.7, 24.95);
+  $('s6k').style.width = `${E.enter(prog(t, 24.85, 25.2)) * 104}px`;
+  [0, 1, 2, 3].forEach((i) => {
+    const t0 = 24.5 + i * 0.13;
+    const p = E.enter(clamp((t - t0) / 0.55));
+    const e = $('s6l' + i);
+    e.style.opacity = clamp((t - t0) / 0.3);
+    e.style.transform = `translateY(${(1 - p) * 18}px)`;
+  });
+  $('s6lab').style.opacity = prog(t, 23.9, 24.4) * (1 - prog(t, 25.5, 25.9));
+
+  /* --- logo --- */
+  const L0 = 25.75;
+  logo.style.opacity = t >= L0 - 0.2 ? 1 : 0;
+  if (t >= L0 - 0.2) {
+    const dt = t - L0;
+    const p = E.enter(clamp(dt / 0.9));
+    $('lmark').style.opacity = clamp(dt / 0.45);
+    $('lmark').style.transform = `translateY(${(1 - p) * 26}px) scale(${0.93 + 0.07 * p})`;
+    $('lword').style.opacity = prog(t, L0 + 0.3, L0 + 0.75);
+    $('lword').style.transform = `translateY(${(1 - E.enter(clamp((dt - 0.3) / 0.8))) * 22}px)`;
+    $('lsub').style.opacity = prog(t, L0 + 0.55, L0 + 1.0);
+    $('lmeta').style.opacity = prog(t, L0 + 0.8, L0 + 1.3);
+  }
+}
+window.renderAt = renderAt;
+window.__dur = DUR; window.__fps = FPS;
+Promise.all([
+  document.fonts.load('800 82px Archivo'), document.fonts.load('400 31px Inter'),
+  document.fonts.load("700 23px 'JetBrains Mono'"),
+  ...[...document.images].map((im) => (im.decode ? im.decode().catch(() => {}) : Promise.resolve())),
+]).then(() => { renderAt(0); window.__ready = true; });
+</script>
+</body>
+</html>
