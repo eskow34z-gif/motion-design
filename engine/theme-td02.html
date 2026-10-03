@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tech&Dev — TD02 — KINÉTIQUE</title>
+<style>
+@font-face{font-family:'Archivo';src:url('node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2') format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:'Inter';src:url('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');font-weight:100 900}
+@font-face{font-family:'JetBrains Mono';src:url('node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');font-weight:100 800}
+html,body{margin:0;padding:0;background:#07070B;width:1080px;height:1920px;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden}
+#bg{position:absolute;left:0;top:0}
+#scene{position:absolute;left:0;top:0;width:1080px;height:1920px;perspective:1500px;perspective-origin:540px 960px}
+#leak{position:absolute;left:0;top:0;width:1080px;height:1920px;z-index:44;pointer-events:none;opacity:0}
+#vig{position:absolute;inset:0;z-index:47;pointer-events:none;
+  background:radial-gradient(ellipse at 50% 46%,rgba(0,0,0,0) 38%,rgba(0,0,0,.72) 100%)}
+
+.shot{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;opacity:0}
+.ln{position:absolute;left:40px;width:1000px;text-align:center;transform-origin:50% 50%;will-change:transform,filter;opacity:0}
+.ln .t{display:inline-block;font:800 80px Archivo;font-stretch:125%;line-height:.94;
+  letter-spacing:-.035em;color:#F7F9FC;text-transform:uppercase;white-space:nowrap}
+.ln.sm .t{font-size:64px}
+.ln.xs .t{font:700 36px 'JetBrains Mono';letter-spacing:.20em;text-transform:uppercase;color:#A6B2C6;white-space:nowrap}
+.ln.xl .t{font-size:150px}
+.ln.ac .t{color:#8B7CFF}
+.ln.cy .t{color:#4FD4FF}
+.ln.wm .t{color:#FF7A4D}
+.ln.mu .t{color:#78839A}
+
+.glass{position:absolute;border-radius:34px;background:rgba(255,255,255,.055);
+  -webkit-backdrop-filter:blur(30px) saturate(1.5);backdrop-filter:blur(30px) saturate(1.5);
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.26),inset 0 -1px 0 rgba(255,255,255,.07),0 50px 140px rgba(0,0,0,.6);
+  transform-origin:50% 50%;opacity:0}
+.chip{position:absolute;box-sizing:border-box;height:104px;border-radius:52px;
+  background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(26px) saturate(1.4);backdrop-filter:blur(26px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.26),0 26px 70px rgba(0,0,0,.5);
+  display:flex;align-items:center;justify-content:center;gap:18px;padding:0 44px;
+  font:700 42px Inter;color:#EEF3F9;white-space:nowrap;transform-origin:50% 50%;opacity:0}
+.pch{position:absolute;box-sizing:border-box;height:100px;border-radius:50px;
+  background:rgba(255,255,255,.055);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);
+  border:1px solid rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;
+  padding:0 38px;font:800 54px Archivo;font-stretch:112%;color:#DCE4F0;white-space:nowrap;
+  transform-origin:50% 50%;opacity:0}
+.ic{width:46px;height:46px;flex:0 0 46px}
+
+#heroWrap{position:absolute;left:0;top:0;width:1080px;height:1920px;opacity:0}
+#heroGlass{position:absolute;left:84px;top:690px;width:912px;height:540px}
+#heroNum{position:absolute;left:84px;top:756px;width:912px;text-align:center;
+  font:800 268px Archivo;font-stretch:125%;line-height:1;letter-spacing:-.05em;color:#fff}
+#heroSub{position:absolute;left:84px;top:1056px;width:912px;text-align:center;
+  font:700 40px Inter;letter-spacing:.06em;color:#C7D2E2;opacity:0}
+#heroOld{position:absolute;left:84px;top:1122px;width:912px;text-align:center;
+  font:700 40px Archivo;color:#6E7A90;opacity:0}
+#heroOld span{position:relative;display:inline-block}
+#heroStrike{position:absolute;left:0;top:52%;height:4px;width:0;background:#FF7A4D}
+#ring{position:absolute;left:84px;top:690px;width:912px;height:540px;border-radius:40px;
+  border:4px solid #8B7CFF;opacity:0}
+
+#logo{position:absolute;left:0;top:0;width:1080px;height:1920px;opacity:0;z-index:30}
+#lmark{position:absolute;left:344px;top:614px;width:392px;height:324px;display:block}
+#sheenwrap{position:absolute;left:344px;top:614px;width:392px;height:324px;overflow:hidden;
+  -webkit-mask-image:url('../assets/td/mark.png');-webkit-mask-size:100% 100%;-webkit-mask-repeat:no-repeat}
+#sheenbar{position:absolute;left:0;top:-40px;width:150px;height:420px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.9) 50%,rgba(255,255,255,0));transform:skewX(-18deg)}
+#lword{position:absolute;left:0;top:988px;width:1080px;text-align:center;
+  font:800 94px Archivo;font-stretch:118%;color:#fff;letter-spacing:.004em;line-height:1;opacity:0}
+#lword i{font-style:normal;color:#6FC2FF}
+#lsub{position:absolute;left:0;top:1104px;width:1080px;text-align:center;
+  font:600 30px Inter;letter-spacing:.32em;color:#93A4BC;opacity:0}
+#lmeta{position:absolute;left:0;top:1216px;width:1080px;text-align:center;opacity:0}
+#lmeta .a{font:500 34px 'JetBrains Mono';letter-spacing:.06em;color:#AFC0D4}
+#lmeta .b{margin-top:20px;font:600 27px Inter;letter-spacing:.17em;color:#6E7E96}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <div id="scene"></div>
+  <div id="leak"></div>
+  <div id="vig"></div>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="lib.js"></script>
+<script>
+initEases();
+const DUR = 25.5, FPS = 30;
+const B = 0.5;                       // 120 BPM : une noire = 0,5 s
+const bt = (n) => n * B;             // position sur la grille rythmique
+const VIO = '#8B7CFF', CYA = '#4FD4FF', WRM = '#FF7A4D';
+const scene = document.getElementById('scene');
+const $ = (id) => document.getElementById(id);
+const mk = (html, cls, css) => { const d = document.createElement('div'); if (cls) d.className = cls; if (css) d.style.cssText = css; d.innerHTML = html; return d; };
+
+/* ===================== FOND : lumière volumétrique ===================== */
+function makeBG(canvas) {
+  const g = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+  // nappes de lumière qui dérivent, chacune avec sa couleur et son orbite
+  const blobs = [
+    { c: [139,124,255], x: 300, y: 620,  r: 760, sx: 0.07, sy: 0.05, ax: 210, ay: 150, a: 0.55 },
+    { c: [79,212,255],  x: 820, y: 1180, r: 700, sx: 0.055, sy: 0.08, ax: 190, ay: 210, a: 0.42 },
+    { c: [255,122,77],  x: 540, y: 1620, r: 620, sx: 0.09, sy: 0.045, ax: 240, ay: 130, a: 0.30 },
+    { c: [60,90,220],   x: 180, y: 1500, r: 580, sx: 0.04, sy: 0.07, ax: 160, ay: 180, a: 0.34 },
+  ];
+  return function draw(t, pulse, warm, flash) {
+    g.fillStyle = '#07070B'; g.fillRect(0, 0, W, H);
+    g.globalCompositeOperation = 'lighter';
+    blobs.forEach((b, i) => {
+      const x = b.x + Math.sin(t * b.sx * 6.283 + i) * b.ax;
+      const y = b.y + Math.cos(t * b.sy * 6.283 + i * 1.7) * b.ay;
+      const r = b.r * (1 + 0.07 * Math.sin(t * 0.9 + i * 2)) * (1 + 0.16 * pulse);
+      const warmth = i === 2 ? 1 + 1.6 * warm : 1;
+      const rg = g.createRadialGradient(x, y, 10, x, y, r);
+      rg.addColorStop(0, `rgba(${b.c[0]},${b.c[1]},${b.c[2]},${(b.a * (0.55 + 0.45 * pulse) * warmth).toFixed(3)})`);
+      rg.addColorStop(0.45, `rgba(${b.c[0]},${b.c[1]},${b.c[2]},${(b.a * 0.26 * warmth).toFixed(3)})`);
+      rg.addColorStop(1, `rgba(${b.c[0]},${b.c[1]},${b.c[2]},0)`);
+      g.fillStyle = rg;
+      g.beginPath(); g.arc(x, y, r, 0, 6.2832); g.fill();
+    });
+    // éclat court sur les impacts : une lumière, pas un voile blanc
+    if (flash > 0.001) {
+      const fg = g.createRadialGradient(W / 2, 880, 20, W / 2, 880, 1250);
+      fg.addColorStop(0, `rgba(226,232,255,${(0.95 * flash).toFixed(3)})`);
+      fg.addColorStop(0.5, `rgba(160,180,255,${(0.42 * flash).toFixed(3)})`);
+      fg.addColorStop(1, 'rgba(120,140,255,0)');
+      g.fillStyle = fg; g.fillRect(0, 0, W, H);
+    }
+    g.globalCompositeOperation = 'source-over';
+    // voile sombre pour garder le texte lisible
+    g.fillStyle = 'rgba(7,7,11,.30)'; g.fillRect(0, 0, W, H);
+  };
+}
+const drawBG = makeBG($('bg'));
+
+/* ===================== GRAIN ARGENTIQUE ===================== */
+/* Composé directement dans le canvas du fond : pas de mix-blend-mode CSS,
+   dont la fusion peut rater sur une capture isolée et blanchir toute l'image. */
+const bgCtx = $('bg').getContext('2d');
+const tile = document.createElement('canvas'); tile.width = tile.height = 360;
+(function () {
+  const tc = tile.getContext('2d'), im = tc.createImageData(360, 360);
+  let s = 23; const rnd = () => ((s = (s * 16807) % 2147483647) / 2147483647);
+  for (let i = 0; i < im.data.length; i += 4) {
+    const v = 110 + (rnd() - 0.5) * 230;
+    im.data[i] = im.data[i+1] = im.data[i+2] = v; im.data[i+3] = 255;
+  }
+  tc.putImageData(im, 0, 0);
+})();
+function drawGrain(t) {
+  const f = Math.round(t * FPS);
+  const ox = ((f * 97) % 360) - 360, oy = ((f * 181) % 360) - 360;
+  bgCtx.save();
+  bgCtx.globalCompositeOperation = 'overlay';
+  bgCtx.globalAlpha = 0.17;
+  for (let x = ox; x < 1080; x += 360)
+    for (let y = oy; y < 1920; y += 360)
+      bgCtx.drawImage(tile, x, y);
+  bgCtx.restore();
+}
+
+/* ===================== SCRIPT ===================== */
+/* Chaque plan : t0, t1, et des lignes qui arrivent sur la grille rythmique.
+   anim : slam (impact), rise (montée masquée), swipe (balayage), pop (ressort) */
+const SHOTS = [
+  { t0: 0.20,  t1: 1.90,  y: 830, gap: 128, lines: [
+      { tx: 'ON TE CHERCHE', t: 0.20,     anim: 'slam' },
+      { tx: 'SUR GOOGLE.',   t: bt(1.9),  anim: 'slam', cls: 'cy' } ] },
+  { t0: 2.10,  t1: 3.35,  y: 830, gap: 128, lines: [
+      { tx: 'ON NE TE',      t: 2.10,     anim: 'rise' },
+      { tx: 'TROUVE PAS.',   t: bt(5.1),  anim: 'slam', cls: 'wm', shake: 1 } ] },
+  { t0: 3.55,  t1: 4.35,  y: 900, gap: 128, lines: [
+      { tx: 'ON RÈGLE ÇA.',  t: 3.55,     anim: 'swipe' } ] },
+  /* services : chips de 4,55 s à 8,10 s */
+  { t0: 8.65,  t1: 10.05, y: 820, gap: 134, lines: [
+      { tx: 'UN SEUL',        t: 8.65,    anim: 'rise' },
+      { tx: 'INTERLOCUTEUR.', t: bt(18.2), anim: 'slam', cls: 'ac' } ] },
+  { t0: 10.25, t1: 11.55, y: 860, gap: 150, lines: [
+      { tx: '« TROP CHER »',  t: 10.25,   anim: 'rise', cls: 'mu sm' },
+      { tx: 'NON.',           t: bt(22.0), anim: 'slam', cls: 'wm xl', shake: 1 } ] },
+  /* pluie de prix de 11,75 s à 13,2 s, puis bloc héros */
+  { t0: 16.70, t1: 17.50, y: 910, gap: 128, lines: [
+      { tx: 'DEVIS EN 24H',   t: 16.70,   anim: 'slam', cls: 'cy' } ] },
+  { t0: 17.70, t1: 18.50, y: 860, gap: 128, lines: [
+      { tx: 'MAQUETTE',       t: 17.70,   anim: 'rise' },
+      { tx: 'OFFERTE',        t: 17.95,   anim: 'slam', cls: 'ac' } ] },
+  { t0: 18.70, t1: 19.50, y: 860, gap: 128, lines: [
+      { tx: 'SANS',           t: 18.70,   anim: 'rise' },
+      { tx: 'ENGAGEMENT',     t: 18.95,   anim: 'swipe' } ] },
+  { t0: 19.70, t1: 21.00, y: 870, gap: 142, lines: [
+      { tx: 'ÎLE-DE-FRANCE',  t: 19.70,   anim: 'slam' },
+      { tx: 'SUR PLACE OU À DISTANCE', t: 20.20, anim: 'rise', cls: 'xs' } ] },
+  { t0: 21.20, t1: 22.60, y: 900, gap: 128, lines: [
+      { tx: 'ÉCRIS-NOUS.',    t: 21.20,   anim: 'slam', cls: 'ac' } ] },
+];
+
+/* services : chips qui s'empilent de plus en plus vite */
+const SVC = [
+  ['Site vitrine', 'glb'], ['Boutique en ligne', 'cart'], ['Fiche Google', 'pin'],
+  ['Création de logo', 'pal'], ['Cartes de visite', 'idc'], ['Réseau & Wi-Fi', 'wif'],
+  ['Dépannage PC', 'wre'], ['Maintenance', 'hdp'],
+];
+const SVC_T = [9.1, 10.0, 10.8, 11.5, 12.1, 12.6, 13.0, 13.3].map(bt);
+const SVC_OUT = bt(16.2);
+const PRICES = ['40€', '25€', '50€', '70€', '60€/an', '80€', '150€'];
+const PR_T = [11.70, 11.90, 12.10, 12.30, 12.50, 12.70, 12.90];
+const PR_OUT = 13.25;
+const HERO = bt(27.2);           // le chiffre tombe
+const HERO_END = bt(32.6);
+const PACK = ['LOGO', 'CARTE DE VISITE', 'FICHE GOOGLE', '5 VISUELS'];
+
+const IC = {
+  glb:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/>',
+  cart:'<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12h11l2.4-8H6"/>',
+  pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>',
+  pal:'<path d="M12 21a9 9 0 1 1 9-9c0 2-1.5 3-3 3h-2a2 2 0 0 0-1 3.7A2 2 0 0 1 12 21z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',
+  idc:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8.5" cy="11.5" r="2.2"/><path d="M14 10h5M14 14h5"/>',
+  wif:'<path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5.5 5.5 0 0 1 7 0"/><path d="M12 19.5v.01"/>',
+  wre:'<path d="M14.7 6.3a4 4 0 0 0 5 5l-9.4 9.4a2.8 2.8 0 1 1-4-4z"/>',
+  hdp:'<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="2.5" y="14" width="4" height="7" rx="2"/><rect x="17.5" y="14" width="4" height="7" rx="2"/>',
+};
+const svg = (p) => `<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="${VIO}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+
+/* ===================== CONSTRUCTION DOM ===================== */
+const shotEls = SHOTS.map((s) => {
+  const d = mk('', 'shot');
+  s.lines.forEach((L, i) => {
+    const e = mk(`<span class="t">${L.tx}</span>`, 'ln ' + (L.cls || ''),
+      `top:${s.y + i * s.gap}px`);
+    d.appendChild(e); L.el = e;
+  });
+  scene.appendChild(d);
+  return d;
+});
+
+/* chips services : deux colonnes alternées */
+const svcEls = SVC.map(([txt, ic], i) => {
+  const row = Math.floor(i / 1);
+  const e = mk(`${svg(IC[ic])}${txt}`, 'chip',
+    `left:${i % 2 ? 'auto' : '96px'};${i % 2 ? 'right:96px;' : ''}top:${520 + row * 124}px`);
+  scene.appendChild(e);
+  return e;
+});
+/* chips prix : positions dispersées */
+const PR_POS = [[132, 700], [640, 640], [250, 900], [690, 980], [120, 1160], [560, 1240], [330, 1420]];
+const prEls = PRICES.map((p, i) => {
+  const e = mk(p, 'pch', `left:${PR_POS[i][0]}px;top:${PR_POS[i][1]}px`);
+  scene.appendChild(e);
+  return e;
+});
+
+/* bloc héros */
+const hero = mk(`
+  <div class="glass" id="heroGlass"></div>
+  <div id="ring"></div>
+  <div id="heroNum">350€</div>
+  <div id="heroSub">PACK LANCEMENT COMMERCE</div>
+  <div id="heroOld"><span>650€<span id="heroStrike"></span></span></div>
+`, '', 'position:absolute;left:0;top:0;width:1080px;height:1920px;opacity:0');
+hero.id = 'heroWrap';
+scene.appendChild(hero);
+const packEls = PACK.map((p, i) => {
+  const e = mk(p, 'pch', `left:${[112, 592, 112, 592][i]}px;top:${[1300, 1300, 1412, 1412][i]}px;` +
+    `width:376px;font-size:34px;height:78px;border-radius:39px`);
+  hero.appendChild(e);
+  return e;
+});
+
+/* logo de fin */
+const logo = mk(`
+  <img id="lmark" src="../assets/td/mark.png">
+  <div id="sheenwrap"><div id="sheenbar"></div></div>
+  <div id="lword">TECH<i>&amp;</i>DEV</div>
+  <div id="lsub">SOLUTIONS NUMÉRIQUES</div>
+  <div id="lmeta"><div class="a">tech-dev-gules.vercel.app</div><div class="b">@TD.AGENCE &nbsp;·&nbsp; ÎLE-DE-FRANCE</div></div>
+`, '', '');
+logo.id = 'logo';
+scene.appendChild(logo);
+
+/* ===================== ANIMATIONS DE TEXTE ===================== */
+/* Chaque animation renvoie {op, tr, blur, ab} — ab = force de l'aberration chromatique */
+function animate(kind, t, t0, shake) {
+  const dt = t - t0;
+  if (dt < -0.001) return { op: 0, tr: '', blur: 0, ab: 0 };
+  let op = 1, tr = '', blur = 0, ab = 0;
+  if (kind === 'slam') {
+    const s = spring('reward', dt);
+    const sc = 1 + 0.32 * (1 - clamp(s));
+    const z = -520 * (1 - E.enter(clamp(dt / 0.22)));
+    blur = 26 * (1 - E.enter(clamp(dt / 0.17)));
+    ab = 26 * Math.exp(-dt / 0.13);
+    op = clamp(dt / 0.05);
+    const sk = shake ? Math.sin(dt * 64) * 9 * Math.exp(-dt / 0.1) : 0;
+    tr = `translateX(${sk}px) translateZ(${z}px) scale(${sc})`;
+  } else if (kind === 'rise') {
+    const s = spring('soft', dt);
+    op = clamp(dt / 0.12);
+    blur = 14 * (1 - E.enter(clamp(dt / 0.2)));
+    ab = 8 * Math.exp(-dt / 0.16);
+    tr = `translateY(${(1 - s) * 130}px) rotateX(${(1 - s) * 34}deg)`;
+  } else if (kind === 'swipe') {
+    const p = E.whip(clamp(dt / 0.30));
+    op = clamp(dt / 0.04);
+    ab = 20 * Math.exp(-dt / 0.2);
+    blur = 14 * (1 - p);
+    tr = `translateX(${(1 - p) * -520}px) skewX(${(1 - p) * -11}deg)`;
+  } else {
+    const s = spring('snap', dt);
+    op = clamp(dt / 0.06);
+    tr = `scale(${0.6 + 0.4 * s})`;
+  }
+  return { op, tr, blur, ab };
+}
+function applyLine(el, a, outP) {
+  const op = a.op * (1 - outP);
+  el.style.opacity = op;
+  const extra = outP > 0 ? ` translateY(${-outP * 70}px) scale(${1 - outP * 0.10})` : '';
+  el.style.transform = a.tr + extra;
+  const bl = a.blur + outP * 22;
+  el.style.filter = bl > 0.3 ? `blur(${bl.toFixed(2)}px)` : 'none';
+  const t = el.querySelector('.t');
+  const ab = a.ab + outP * 14;
+  t.style.textShadow = ab > 0.4
+    ? `${ab.toFixed(1)}px 0 rgba(255,40,90,.55), ${(-ab).toFixed(1)}px 0 rgba(0,210,255,.55), 0 0 ${(44 + ab * 2).toFixed(0)}px rgba(139,124,255,.34)`
+    : '0 0 42px rgba(139,124,255,.30)';
+}
+
+/* ===================== RENDU ===================== */
+function renderAt(t) {
+  /* pulsation du fond sur chaque temps + chauffe pendant le bloc prix */
+  const ph = (t % B) / B;
+  const pulse = Math.exp(-ph * 4.2) * (t > bt(9) && t < bt(45) ? 1 : 0.35);
+  const warm = clamp(prog(t, HERO - 0.6, HERO + 0.4)) * (1 - prog(t, HERO_END - 0.5, HERO_END + 0.3));
+  const IMPACTS = [bt(5.1), bt(22.0), HERO];
+  let fl = 0;
+  IMPACTS.forEach((it) => { if (t >= it && t < it + 0.16) fl = Math.max(fl, 1 - (t - it) / 0.16); });
+  drawBG(t, pulse, warm, fl * fl);
+  drawGrain(t);
+
+  /* fuite de lumière chaude qui traverse pendant le bloc prix */
+  const lk = $('leak');
+  const lkp = prog(t, HERO - 0.1, HERO + 1.5);
+  lk.style.opacity = lkp > 0 && lkp < 1 ? 0.5 * Math.sin(lkp * Math.PI) : 0;
+  lk.style.background = `linear-gradient(${118}deg,rgba(255,122,77,0) ${(lkp * 130 - 40).toFixed(1)}%,rgba(255,170,100,.65) ${(lkp * 130 - 16).toFixed(1)}%,rgba(255,122,77,0) ${(lkp * 130 + 6).toFixed(1)}%)`;
+
+  /* ---- plans de texte ---- */
+  SHOTS.forEach((s, i) => {
+    const on = t >= s.t0 - 0.05 && t < s.t1 + 0.22;
+    shotEls[i].style.opacity = on ? 1 : 0;
+    if (!on) return;
+    const outP = E.exit(prog(t, s.t1, s.t1 + 0.2));
+    s.lines.forEach((L) => applyLine(L.el, animate(L.anim, t, L.t, L.shake), outP));
+  });
+
+  /* ---- chips services : empilement puis envol vers le spectateur ---- */
+  SVC_T.forEach((ts, i) => {
+    const e = svcEls[i];
+    const dt = t - ts;
+    const tOut = SVC_OUT + (SVC.length - 1 - i) * 0.025;
+    if (dt < -0.05 || t > tOut + 0.42) { e.style.opacity = 0; return; }
+    const s = spring('snap', dt);
+    const outP = E.enter(prog(t, tOut, tOut + 0.4));
+    e.style.opacity = clamp(dt / 0.07) * (1 - outP);
+    e.style.transform = `scale(${(0.62 + 0.38 * clamp(s)) * (1 + 0.42 * outP)}) translateY(${outP * -40}px)`;
+    const bl = (dt < 0.18 ? 10 * (1 - clamp(dt / 0.18)) : 0) + outP * 20;
+    e.style.filter = bl > 0.3 ? `blur(${bl.toFixed(1)}px)` : 'none';
+  });
+
+  /* ---- pluie de prix ---- */
+  PR_T.forEach((ts, i) => {
+    const e = prEls[i];
+    const dt = t - ts;
+    if (dt < -0.05 || t > PR_OUT + 0.8) { e.style.opacity = 0; return; }
+    const s = spring('snap', dt);
+    const outP = E.exit(prog(t, PR_OUT, PR_OUT + 0.45));
+    const suck = E.enter(prog(t, PR_OUT - 0.12, PR_OUT + 0.3));   // aspirés vers le centre
+    const dx = (540 - (PR_POS[i][0] + 90)) * suck;
+    const dy = (960 - (PR_POS[i][1] + 43)) * suck;
+    e.style.opacity = clamp(dt / 0.05) * (1 - outP);
+    e.style.transform = `translate(${dx}px,${dy}px) scale(${(0.5 + 0.5 * clamp(s)) * (1 - 0.55 * suck)}) rotate(${(i % 2 ? 1 : -1) * (1 - clamp(s)) * 7}deg)`;
+  });
+
+  /* ---- bloc héros 350 € ---- */
+  const hw = $('heroWrap');
+  const hon = t >= HERO - 0.5 && t < HERO_END + 0.6;
+  hw.style.opacity = hon ? 1 : 0;
+  if (hon) {
+    const outP = E.exit(prog(t, HERO_END, HERO_END + 0.45));
+    const gs = spring('soft', t - (HERO - 0.42));
+    const hg = $('heroGlass');
+    hg.style.opacity = prog(t, HERO - 0.42, HERO - 0.2) * (1 - outP);
+    hg.style.transform = `scale(${0.82 + 0.18 * clamp(gs)}) translateY(${(1 - clamp(gs)) * 40 - outP * 60}px)`;
+
+    const hs = spring('reward', t - HERO);
+    const num = $('heroNum');
+    const sc = 1 + 0.75 * (1 - clamp(hs));
+    const nb = 34 * (1 - E.enter(clamp((t - HERO) / 0.2)));
+    num.style.opacity = clamp((t - HERO) / 0.04) * (1 - outP);
+    num.style.transform = `scale(${sc * (1 - outP * 0.1)}) translateY(${-outP * 60}px)`;
+    num.style.filter = nb > 0.3 ? `blur(${nb.toFixed(1)}px)` : 'none';
+    const ab = 26 * Math.exp(-(t - HERO) / 0.14);
+    num.style.textShadow = `${ab.toFixed(1)}px 0 rgba(255,40,90,.6), ${(-ab).toFixed(1)}px 0 rgba(0,210,255,.6), 0 0 ${(70 + 140 * Math.exp(-(t - HERO) / 0.5)).toFixed(0)}px rgba(139,124,255,.75)`;
+
+    const r = $('ring');
+    const rp = prog(t, HERO, HERO + 0.8);
+    r.style.opacity = rp > 0 && rp < 1 ? 0.8 * (1 - rp) : 0;
+    r.style.transform = `scale(${1 + 0.16 * E.enter(rp)})`;
+
+    $('heroSub').style.opacity = prog(t, HERO + 0.22, HERO + 0.42) * (1 - outP);
+    $('heroOld').style.opacity = prog(t, HERO + 0.5, HERO + 0.68) * (1 - outP);
+    $('heroStrike').style.width = `${E.enter(prog(t, HERO + 0.62, HERO + 0.92)) * 108}px`;
+    PACK.forEach((_, i) => {
+      const t0 = HERO + 1.05 + i * 0.17;
+      const s = spring('snap', t - t0);
+      packEls[i].style.opacity = t < t0 ? 0 : prog(t, t0, t0 + 0.08) * (1 - outP);
+      packEls[i].style.transform = `scale(${0.6 + 0.4 * clamp(s)}) translateY(${(1 - clamp(s)) * 26}px)`;
+    });
+  }
+
+  /* ---- logo de fin ---- */
+  const L0 = 22.80;
+  const lon = t >= L0 - 0.1;
+  logo.style.opacity = lon ? 1 : 0;
+  if (lon) {
+    const dt = t - L0;
+    const s = spring('soft', dt);
+    const bl = 32 * (1 - E.enter(clamp(dt / 0.55)));
+    $('lmark').style.filter = bl > 0.3 ? `blur(${bl.toFixed(1)}px)` : 'none';
+    $('lmark').style.opacity = clamp(dt / 0.2);
+    $('lmark').style.transform = `scale(${0.86 + 0.14 * clamp(s)})`;
+    $('sheenwrap').style.opacity = clamp(dt / 0.2);
+    $('sheenbar').style.transform = `translateX(${lerp(-260, 600, E.cam(clamp((dt - 0.45) / 0.75)))}px) skewX(-18deg)`;
+    $('lword').style.opacity = prog(t, L0 + 0.42, L0 + 0.72);
+    $('lword').style.transform = `translateY(${(1 - clamp(spring('soft', dt - 0.42))) * 34}px)`;
+    $('lsub').style.opacity = prog(t, L0 + 0.62, L0 + 0.9);
+    $('lmeta').style.opacity = prog(t, L0 + 0.85, L0 + 1.15);
+  }
+}
+window.renderAt = renderAt;
+window.__dur = DUR; window.__fps = FPS;
+Promise.all([
+  document.fonts.load('800 118px Archivo'), document.fonts.load('700 42px Inter'),
+  document.fonts.load("700 38px 'JetBrains Mono'"),
+  ...[...document.images].map((im) => (im.decode ? im.decode().catch(() => {}) : Promise.resolve())),
+]).then(() => { renderAt(0); window.__ready = true; });
+</script>
+</body>
+</html>
