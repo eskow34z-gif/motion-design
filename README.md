@@ -31,4 +31,5 @@ Toute vidéo doit être une évolution du template **Flux Master Motion System V
 
 - Thème 1 (score IA) : rendu de test livré, voir `outputs/LOG.md`.
 - Le moteur actuel est une réécriture : les sources de la vidéo V1 d'origine n'ont pas été conservées. Il applique le même Motion System (tokens, caméra, transitions, structure en 7 temps).
-- Thèmes 2 à 5 : briefs prêts dans `themes/`, scènes à produire à partir de `engine/theme01.html`.
+- Thème 2 (Sniper) : livré, `engine/theme02.html`.
+- Thèmes 3 à 5 : briefs prêts dans `themes/`, scènes à produire à partir de `engine/theme01.html` ou `theme02.html`.

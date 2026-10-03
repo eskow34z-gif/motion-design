@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Flux Master — Thème 01 — Le score IA</title>
+<style>
+@font-face{font-family:'Archivo';src:url('node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2') format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:'Inter';src:url('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');font-weight:100 900}
+@font-face{font-family:'JetBrains Mono';src:url('node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');font-weight:100 800}
+html,body{margin:0;padding:0;background:#04070c;width:1080px;height:1920px;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;perspective:1700px;perspective-origin:540px 960px}
+#bg{position:absolute;left:0;top:0}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 48%,rgba(0,0,0,0) 45%,rgba(0,0,0,.62) 100%);pointer-events:none;z-index:50}
+#W{position:absolute;left:540px;top:960px;width:0;height:0;transform-origin:0 0;will-change:transform}
+.plane{position:absolute}
+.clip{position:absolute;left:0;top:0;overflow:hidden;border-radius:22px}
+.frame{position:absolute;left:0;top:0;border-radius:22px;box-shadow:0 50px 140px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.10)}
+.layer,.reg{position:absolute;left:0;top:0;width:100%;height:100%}
+.layer img,.reg img{position:absolute;left:0;top:0;display:block}
+#dim1{position:absolute;left:0;top:0;width:1912px;height:916px;background:rgba(3,6,10,.70);backdrop-filter:blur(3px);clip-path:path(evenodd,'M0 0H1912V916H0ZM99 343H1878V476H99Z');opacity:0}
+#beam1{position:absolute;left:0;top:0;width:1912px;height:8px;background:linear-gradient(90deg,rgba(0,201,107,0),#00C96B 12%,#aaffd2 50%,#00C96B 88%,rgba(0,201,107,0));box-shadow:0 0 40px 12px rgba(0,201,107,.65);border-radius:4px}
+#scan{position:absolute;left:0;top:0;width:1912px;height:6px;background:linear-gradient(90deg,rgba(255,59,78,0),#ff3b4e 10%,#ffb3bb 50%,#ff3b4e 90%,rgba(255,59,78,0));box-shadow:0 0 36px 10px rgba(255,59,78,.6);opacity:0}
+.rowhl{position:absolute;left:99px;width:1779px;box-sizing:border-box;border:2px solid #ff3b4e;border-radius:12px;box-shadow:0 0 26px rgba(255,59,78,.45);opacity:0}
+#hs{position:absolute;left:252px;top:64px;width:190px;height:46px;box-sizing:border-box;border:2px solid #ff3b4e;border-radius:10px;box-shadow:0 0 30px rgba(255,59,78,.6);opacity:0}
+.ping{position:absolute;width:60px;height:60px;border-radius:50%;border:3px solid #ff3b4e;left:122px;top:148px;opacity:0}
+#ret{position:absolute;opacity:0}
+#ret i{position:absolute;width:34px;height:34px;border:0 solid currentColor}
+#cov{position:absolute;left:0;top:343px;width:1912px;height:573px;background:#0a121a}
+#call{position:absolute;left:130px;top:135px;width:560px;height:200px;box-sizing:border-box;border-radius:20px;background:#0b141b;border:2px solid #00C96B;box-shadow:0 0 70px rgba(0,201,107,.45);opacity:0;padding:24px 32px;transform-origin:50% 100%}
+#call .eb{font:800 15px Inter;letter-spacing:.16em;color:#35e393}
+#call .nm{font:800 70px Archivo;font-stretch:125%;line-height:1.05;white-space:nowrap;color:#00C96B;margin-top:6px}
+#call .sb{white-space:nowrap;font:500 14px 'JetBrains Mono';color:#9fb3be;letter-spacing:.03em;margin-top:8px}
+#bhl{position:absolute;left:219px;top:431px;width:162px;height:30px;box-sizing:border-box;border:2px solid #00C96B;border-radius:9px;box-shadow:0 0 30px rgba(0,201,107,.7);background:rgba(0,201,107,.18);opacity:0;transform-origin:50% 50%}
+#ripple{position:absolute;width:20px;height:20px;border-radius:50%;border:3px solid #00C96B;left:0;top:0;opacity:0}
+#cur{position:absolute;left:0;top:0;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));opacity:0}
+#cap{position:absolute;left:60px;top:250px;width:960px;z-index:40}
+.capi{position:absolute;left:0;top:0;width:960px;opacity:0}
+.eyebrow{font:700 22px 'JetBrains Mono';letter-spacing:.22em;color:#00C96B;margin-bottom:22px}
+.big{font:800 70px Archivo;font-stretch:125%;line-height:1.04;color:#f4f8fb;text-transform:uppercase}
+.big em{font-style:normal;color:#00C96B}
+#logo{position:absolute;left:0;top:0;width:424px;height:560px;transform-origin:0 0;z-index:30;opacity:0}
+#logo img{position:absolute;display:block}
+#sheenwrap{position:absolute;left:0;top:0;width:424px;height:460px;overflow:hidden;-webkit-mask-image:url('../assets/logo/mark.png');-webkit-mask-size:100% 100%}
+#sheenbar{position:absolute;left:0;top:-40px;width:150px;height:560px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.85) 50%,rgba(255,255,255,0));transform:skewX(-18deg)}
+#url{position:absolute;left:0;width:1080px;top:1280px;text-align:center;font:500 27px 'JetBrains Mono';letter-spacing:.08em;color:#8ea6b3;opacity:0;z-index:30}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <div id="W"></div>
+  <div id="cap"></div>
+  <div id="logo">
+    <img id="lmark" src="../assets/logo/mark.png" style="left:0;top:0;width:424px;height:460px">
+    <div id="sheenwrap"><div id="sheenbar"></div></div>
+    <img id="lword" src="../assets/logo/wordmark.png" style="left:0;top:460px;width:424px;height:56px">
+    <img id="larc" src="../assets/logo/arc.png" style="left:0;top:510px;width:424px;height:50px;filter:brightness(2.2) saturate(1.5)">
+  </div>
+  <div id="url">sk-flux-master-v-16.vercel.app</div>
+  <div id="vig"></div>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="lib.js"></script>
+<script>
+initEases();
+const DUR = 16.8, FPS = 30;
+const IMG = '../assets/screens/';
+const RED = '#ff3b4e';
+const KF = [
+  { t: 0,    cx: 956, cy: 458, z: 0.50, rx: 0, ry: 0 },
+  { t: 3.3,  cx: 956, cy: 458, z: 0.52, rx: 0, ry: 0, e: 'cam' },
+  { t: 4.5,  cx: 956, cy: 458, z: 0.54, rx: 2, ry: -6, e: 'cam' },
+  { t: 5.4,  cx: 520, cy: 150, z: 1.0, rx: 0, ry: 3, e: 'cam' },
+  { t: 6.3,  cx: 700, cy: 610, z: 0.86, rx: 0, ry: -2, e: 'cam' },
+  { t: 8.2,  cx: 780, cy: 630, z: 0.90, rx: 0, ry: -2, e: 'lin' },
+  { t: 9.3,  cx: 420, cy: 410, z: 1.70, rx: 0, ry: 0, e: 'cam' },
+  { t: 12.4, cx: 420, cy: 410, z: 1.80, rx: 0, ry: 0, e: 'lin' },
+  { t: 13.6, cx: 420, cy: 410, z: 1.80, rx: 0, ry: 0, e: 'lin' },
+  { t: 14.8, cx: 700, cy: 440, z: 0.60, rx: 3, ry: 9, e: 'cam' },
+  { t: 16.8, cx: 700, cy: 440, z: 0.52, rx: 3, ry: 12, e: 'lin' },
+];
+const W = document.getElementById('W');
+const REG = [
+  [0, 0, 77, 916, 2.55], [77, 0, 1912, 62, 2.62], [77, 62, 1912, 115, 2.70],
+  [77, 115, 1912, 236, 2.78], [77, 236, 1912, 343, 2.88],
+  [77, 343, 1912, 483, 3.02], [77, 483, 1912, 627, 3.10], [77, 627, 1912, 772, 3.18], [77, 772, 1912, 916, 3.26],
+];
+let holes = '';
+REG.forEach(([a, b, c, d]) => { holes += `M${a} ${b}H${c}V${d}H${a}Z`; });
+const ROWS = [[343, 476, 6.6], [489, 621, 6.95], [634, 766, 7.3], [779, 911, 7.65]];
+const p1 = document.createElement('div');
+p1.className = 'plane'; p1.id = 'p1';
+p1.style.cssText = 'left:0;top:0;width:1912px;height:916px';
+p1.innerHTML = `
+  <div class="frame" style="width:1912px;height:916px"></div>
+  <div class="clip" id="p1clip" style="width:1912px;height:916px">
+    <div class="layer"><img src="${IMG}sniper.png" style="clip-path:path(evenodd,'M0 0H1912V916H0Z${holes}')"></div>
+    <div id="cov"></div>
+    <div id="p1regs"></div>
+    <div id="hs"></div>
+    <div class="ping"></div><div class="ping"></div><div class="ping"></div>
+    ${ROWS.map(([a, b]) => `<div class="rowhl" style="top:${a}px;height:${b - a}px"></div>`).join('')}
+    <div id="scan"></div>
+    <div id="dim1"></div>
+    <div id="ret"><i style="left:0;top:0;border-width:4px 0 0 4px"></i><i style="right:0;top:0;border-width:4px 4px 0 0"></i><i style="left:0;bottom:0;border-width:0 0 4px 4px"></i><i style="right:0;bottom:0;border-width:0 4px 4px 0"></i></div>
+    <div id="call"><div class="eb">MARGE ESTIMÉE</div><div class="nm" id="callv">+0 €</div><div class="sb">SCORE 93/100 · MARCHÉ ~32 771 € · PRIX 21 498 €</div></div>
+    <div id="bhl"></div><div id="ripple"></div>
+    <svg id="cur" width="40" height="48" viewBox="0 0 24 28"><path d="M2 2 L2 22 L7.5 17.5 L11 26 L14.5 24.5 L11 16.5 L18 16.5 Z" fill="#fff" stroke="#0b1119" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  </div>
+  <div id="beam1"></div>`;
+W.appendChild(p1);
+const regEls = REG.map(([x1, y1, x2, y2, ts]) => {
+  const d = document.createElement('div');
+  d.className = 'reg';
+  d.style.transformOrigin = `${(x1 + x2) / 2}px ${(y1 + y2) / 2}px`;
+  d.innerHTML = `<img src="${IMG}sniper.png" style="clip-path:inset(${y1}px ${1912 - x2}px ${916 - y2}px ${x1}px)">`;
+  document.getElementById('p1regs').appendChild(d);
+  return { d, ts };
+});
+const $ = (id) => document.getElementById(id);
+const rowEls = [...document.querySelectorAll('.rowhl')];
+const pingEls = [...document.querySelectorAll('.ping')];
+const CAPS = [
+  { t0: 3.3, t1: 4.6, html: `<div class="eyebrow">FLUX MASTER · SNIPER</div><div class="big">LES BONNES AFFAIRES<br><em>PARTENT VITE.</em></div>` },
+  { t0: 4.6, t1: 8.4, html: `<div class="eyebrow">FLUX MASTER · SNIPER</div><div class="big">LE SNIPER LES REPÈRE<br><em>POUR TOI.</em></div>` },
+  { t0: 12.0, t1: 13.6, html: `<div class="eyebrow">FLUX MASTER · SNIPER</div><div class="big">PRÉPARE<br><em>LA NÉGO.</em></div>` },
+];
+const capEls = CAPS.map((c) => { const d = document.createElement('div'); d.className = 'capi'; d.innerHTML = c.html; $('cap').appendChild(d); return d; });
+const drawBG = makeBG($('bg'));
+const logo = $('logo');
+const glowAt = (t) => clamp(0.28 + 0.8 * Math.exp(-Math.pow((t - 2.9) / 0.7, 2)) + 0.9 * Math.exp(-Math.pow((t - 10.05) / 0.4, 2)) + 0.8 * Math.exp(-Math.pow((t - 15.2) / 0.9, 2)));
+const worldToScreen = (t, wx, wy) => { const c = camAt(KF, t); return [540 + c.z * (wx - c.cx), 960 + c.z * (wy - c.cy)]; };
+const fmt = (n) => String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+
+function renderAt(t) {
+  drawBG(t, glowAt(t));
+  const c = camAt(KF, t), c0 = camAt(KF, Math.max(0, t - 1 / 60));
+  const speed = Math.hypot((c.cx - c0.cx) * c.z, (c.cy - c0.cy) * c.z) * 60;
+  const blur = clamp((speed - 2500) / 700, 0, 14);
+  W.style.transform = `rotateX(${c.rx}deg) rotateY(${c.ry}deg) scale(${c.z}) translate(${-c.cx}px,${-c.cy}px)`;
+  W.style.opacity = 1 - E.cam(prog(t, 13.3, 14.2));
+  W.style.filter = blur > 0.3 ? `blur(${blur.toFixed(2)}px)` : 'none';
+
+  // réveil
+  const rv = E.cam(prog(t, 2.4, 3.5));
+  $('p1clip').style.clipPath = `inset(0px 0px ${(1 - rv) * 916}px 0px round 22px)`;
+  const bm = $('beam1');
+  bm.style.top = `${rv * 916 - 4}px`;
+  bm.style.opacity = t < 2.4 ? 0 : 1 - prog(t, 3.3, 3.7);
+  document.querySelector('#p1 .frame').style.opacity = clamp(rv * 3);
+  regEls.forEach(({ d, ts }) => {
+    const s = spring('soft', t - ts);
+    d.style.opacity = prog(t, ts, ts + 0.18);
+    d.style.transform = `translateY(${(1 - s) * 30}px) scale(${0.96 + 0.04 * s})`;
+  });
+  $('cov').style.opacity = 1 - prog(t, 3.25, 3.55);
+
+  // seuil + pings radar
+  const pulse = 0.5 + 0.5 * Math.sin(t * 9);
+  $('hs').style.opacity = prog(t, 5.0, 5.3) * (1 - prog(t, 6.6, 7.2)) * (0.7 + 0.3 * pulse);
+  pingEls.forEach((el, i) => {
+    const p = prog(t, [5.2, 5.7, 6.2][i], [5.2, 5.7, 6.2][i] + 1.0);
+    el.style.opacity = p > 0 && p < 1 ? 0.8 * (1 - p) : 0;
+    el.style.transform = `scale(${1 + 9 * E.enter(p)})`;
+  });
+  // scan
+  const sp = E.cam(prog(t, 6.5, 8.1));
+  const sc = $('scan');
+  sc.style.top = `${lerp(343, 905, sp)}px`;
+  sc.style.opacity = prog(t, 6.5, 6.7) * (1 - prog(t, 7.9, 8.15));
+  rowEls.forEach((r, i) => {
+    const ts = ROWS[i][2];
+    const on = spring('snap', t - ts);
+    const hold = t < 8.6 ? 1 : 1 - prog(t, 8.6, 9.0);
+    r.style.opacity = t < ts ? 0 : clamp(on) * hold * (0.55 + 0.45 * Math.exp(-(t - ts) * 2.5));
+  });
+  // dim + verrouillage
+  $('dim1').style.opacity = prog(t, 8.6, 9.3);
+  const rp = E.cam(prog(t, 9.2, 10.0));
+  const pad = lerp(220, 4, rp);
+  const rt = $('ret');
+  const R = [99 - pad, 343 - pad, 729 + pad, 476 + pad];
+  rt.style.left = `${R[0]}px`; rt.style.top = `${R[1]}px`; rt.style.width = `${R[2] - R[0]}px`; rt.style.height = `${R[3] - R[1]}px`;
+  const lock = t >= 10.0;
+  const rc = lock ? '#00C96B' : RED;
+  rt.style.color = rc;
+  rt.style.opacity = prog(t, 9.1, 9.3) * (1 - prog(t, 11.6, 12.0));
+  rt.style.filter = `drop-shadow(0 0 ${lock ? 14 : 8}px ${rc})`;
+  rt.style.transform = lock ? `scale(${1 + 0.05 * (1 - spring('snap', t - 10.0))})` : 'none';
+  // impact + carte
+  const s = spring('reward', t - 10.05);
+  const co = $('call');
+  co.style.opacity = prog(t, 10.05, 10.15);
+  co.style.transform = `scale(${0.6 + 0.4 * s})`;
+  co.style.boxShadow = `0 0 ${60 + 25 * Math.exp(-(t - 10.05) * 3)}px rgba(0,201,107,.45)`;
+  $('callv').textContent = `+${fmt(11273 * E.enter(prog(t, 10.05, 10.9)))} €`;
+  // clic final
+  const cp = E.cam(prog(t, 11.9, 12.5));
+  const cur = $('cur');
+  cur.style.transform = `translate(${lerp(520, 300, cp) - 3}px,${lerp(540, 446, cp) - 3}px)`;
+  cur.style.opacity = prog(t, 11.8, 12.0) * (1 - prog(t, 13.1, 13.3));
+  const bh = $('bhl');
+  const pr = t < 12.5 ? 1 : (t < 12.6 ? lerp(1, 0.92, prog(t, 12.5, 12.6)) : 0.92 + 0.08 * spring('snap', t - 12.6));
+  bh.style.opacity = prog(t, 12.3, 12.5);
+  bh.style.transform = `scale(${pr})`;
+  const rpp = prog(t, 12.5, 13.0);
+  const rip = $('ripple');
+  rip.style.opacity = rpp > 0 && rpp < 1 ? 0.6 * (1 - rpp) : 0;
+  rip.style.transform = `translate(${300 - 10}px,${446 - 10}px) scale(${1 + 8 * E.enter(rpp)})`;
+
+  CAPS.forEach((cp2, i) => {
+    const inn = E.enter(prog(t, cp2.t0, cp2.t0 + 0.55));
+    const out = E.exit(prog(t, cp2.t1 - 0.3, cp2.t1));
+    capEls[i].style.opacity = inn * (1 - out);
+    capEls[i].style.transform = `translateY(${(1 - inn) * 36 - out * 14}px)`;
+  });
+
+  // logo
+  const S0 = 1.35;
+  let lx, ly, ls, lop = 0, lb = 0, wop = 0, aop = 0, sheen = -300;
+  if (t < 3.2) {
+    const rvl = E.enter(prog(t, 0.2, 1.5));
+    lb = (1 - rvl) * 28;
+    const fly = E.enter(prog(t, 2.3, 3.1));
+    const tile = worldToScreen(Math.min(t, 3.2), 41, 43);
+    const sEnd = 40 * camAt(KF, t).z / 460;
+    ls = lerp(S0, sEnd, fly);
+    lx = lerp(540, tile[0], fly) - 212 * ls; ly = lerp(812.5, tile[1], fly) - 230 * ls;
+    lop = prog(t, 0.2, 0.9) * (1 - prog(t, 3.05, 3.2));
+    wop = prog(t, 1.2, 1.9) * (1 - prog(t, 2.3, 2.55));
+    aop = prog(t, 1.6, 2.1) * (1 - prog(t, 2.3, 2.55));
+    sheen = lerp(-250, 560, E.cam(prog(t, 0.95, 1.8)));
+  } else {
+    ls = 1.2; lx = 540 - 212 * ls; ly = 800 - 230 * ls;
+    lb = (1 - E.enter(prog(t, 14.4, 15.3))) * 26;
+    lop = prog(t, 14.4, 14.9);
+    wop = prog(t, 14.9, 15.5);
+    aop = prog(t, 15.3, 15.8);
+    sheen = lerp(-250, 560, E.cam(prog(t, 15.7, 16.4)));
+  }
+  logo.style.transform = `translate(${lx}px,${ly}px) scale(${ls})`;
+  logo.style.opacity = lop;
+  logo.style.filter = lb > 0.2 ? `blur(${lb}px)` : 'none';
+  $('lword').style.opacity = wop;
+  $('larc').style.opacity = aop;
+  $('sheenbar').style.transform = `translateX(${sheen}px) skewX(-18deg)`;
+  const url = $('url');
+  url.style.opacity = prog(t, 15.8, 16.3);
+  url.style.top = `${800 + 230 * 1.2 + 70 * 1.2 + 60}px`;
+}
+window.renderAt = renderAt;
+window.__dur = DUR; window.__fps = FPS;
+Promise.all([
+  document.fonts.load("800 70px Archivo"), document.fonts.load("500 17px Inter"),
+  document.fonts.load("500 17px 'JetBrains Mono'"),
+  ...[...document.images].map((im) => (im.decode ? im.decode().catch(() => {}) : Promise.resolve())),
+]).then(() => { renderAt(0); window.__ready = true; });
+</script>
+</body>
+</html>
