@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Flux Master — Thème 03 — Anti-arnaque</title>
+<style>
+@font-face{font-family:'Archivo';src:url('node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2') format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:'Inter';src:url('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');font-weight:100 900}
+@font-face{font-family:'JetBrains Mono';src:url('node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');font-weight:100 800}
+html,body{margin:0;padding:0;background:#04070c;width:1080px;height:1920px;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;perspective:1700px;perspective-origin:540px 960px}
+#bg{position:absolute;left:0;top:0}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 48%,rgba(0,0,0,0) 45%,rgba(0,0,0,.62) 100%);pointer-events:none;z-index:50}
+#W{position:absolute;left:540px;top:960px;width:0;height:0;transform-origin:0 0;will-change:transform}
+.plane{position:absolute}
+.clip{position:absolute;left:0;top:0;overflow:hidden;border-radius:22px}
+.frame{position:absolute;left:0;top:0;border-radius:22px;box-shadow:0 50px 140px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.10)}
+.layer,.reg{position:absolute;left:0;top:0;width:100%;height:100%}
+.layer img,.reg img{position:absolute;left:0;top:0;display:block}
+#dim1{position:absolute;left:0;top:0;width:1912px;height:916px;background:rgba(3,6,10,.62);backdrop-filter:blur(3px);clip-path:path(evenodd,'M0 0H1912V916H0ZM97 425H526V916H97Z')}
+#hl1{position:absolute;left:96px;top:424px;width:430px;height:500px;border:2px solid #00C96B;border-radius:14px;box-shadow:0 0 44px rgba(0,201,107,.55)}
+#btn{position:absolute;left:116px;top:874px;width:190px;height:42px;border-radius:9px;background:#111b2b;color:#fff;font:800 14.5px Inter;letter-spacing:.07em;display:flex;align-items:center;justify-content:center;transform-origin:50% 50%}
+#ripple{position:absolute;width:20px;height:20px;border-radius:50%;border:3px solid #00C96B;left:0;top:0}
+#cur{position:absolute;left:0;top:0;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+#beam1{position:absolute;left:0;top:0;width:1912px;height:8px;background:linear-gradient(90deg,rgba(0,201,107,0),#00C96B 12%,#aaffd2 50%,#00C96B 88%,rgba(0,201,107,0));box-shadow:0 0 40px 12px rgba(0,201,107,.65);border-radius:4px}
+.fld{position:absolute;box-sizing:border-box;border-radius:10px;background:#fbfdff;border:1.5px solid #d3dbe4;font:500 17px Inter;color:#13202c;display:flex;align-items:center;padding:0 18px;opacity:0}
+.fld .ck{position:absolute;right:14px;top:50%;margin-top:-10px;width:20px;height:20px;opacity:0}
+.fld .caret{display:inline-block;width:2px;height:20px;background:#00A85A;margin-left:1px;vertical-align:middle}
+#beam2{position:absolute;left:96px;width:1002px;height:3px;background:linear-gradient(90deg,rgba(0,201,107,0),#00C96B 10%,#aaffd2 50%,#00C96B 90%,rgba(0,201,107,0));box-shadow:0 0 26px 8px rgba(0,201,107,.55);opacity:0}
+#pend{position:absolute;left:1127px;top:122px;width:763px;height:121px;box-sizing:border-box;border:2px solid #00C96B;border-radius:14px;box-shadow:0 0 30px rgba(0,201,107,.45);opacity:0}
+#sc{position:absolute;left:1127px;top:122px;width:763px;height:121px;border-radius:16px;overflow:hidden;background:#fff;opacity:0;box-shadow:0 0 0 1px rgba(0,201,107,.0)}
+#sc .in{position:absolute;left:0;top:0;width:763px;height:430px;opacity:0}
+.lbl{position:absolute;font:800 14px Inter;letter-spacing:.14em;color:#9fb3be}
+.veh{position:absolute;right:30px;top:26px;font:500 14px 'JetBrains Mono';color:#7f97a4;letter-spacing:.04em}
+#gaugeWrap{position:absolute;left:34px;top:64px;width:270px;height:270px}
+#num{position:absolute;left:0;top:0;width:270px;height:270px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#num b{font:800 96px Archivo;font-stretch:125%;line-height:1}
+#num i{font:600 15px Inter;font-style:normal;color:#7f97a4;letter-spacing:.12em;margin-top:6px}
+.frow{position:absolute;left:340px;width:390px;height:40px}
+.frow span{position:absolute;left:0;top:0;font:600 17px Inter;color:#d3e2ea}
+.frow .tr{position:absolute;left:0;top:28px;width:390px;height:7px;border-radius:4px;background:rgba(255,255,255,.12)}
+.frow .fl{position:absolute;left:0;top:28px;height:7px;border-radius:4px;background:linear-gradient(90deg,#00A85A,#00C96B)}
+.chip{position:absolute;top:366px;height:40px;border-radius:20px;display:flex;align-items:center;gap:8px;padding:0 20px;font:800 15px Inter;letter-spacing:.09em;transform-origin:50% 50%}
+#c1{left:34px;background:#00C96B;color:#04140b;box-shadow:0 0 34px rgba(0,201,107,.7)}
+#c2{left:196px;background:rgba(0,201,107,.14);color:#35e393;border:1.5px solid rgba(0,201,107,.65)}
+#burst{position:absolute;left:0;top:0;width:270px;height:270px;border-radius:50%;border:4px solid #aaffd2;opacity:0}
+#cap{position:absolute;left:60px;top:250px;width:960px;z-index:40}
+.capi{position:absolute;left:0;top:0;width:960px;opacity:0}
+.eyebrow{font:700 22px 'JetBrains Mono';letter-spacing:.22em;color:#00C96B;margin-bottom:22px}
+.big{font:800 70px Archivo;font-stretch:125%;line-height:1.04;color:#f4f8fb;text-transform:uppercase}
+.big em{font-style:normal;color:#00C96B}
+#logo{position:absolute;left:0;top:0;width:424px;height:560px;transform-origin:0 0;z-index:30;opacity:0}
+#logo img{position:absolute;display:block}
+#sheenwrap{position:absolute;left:0;top:0;width:424px;height:460px;overflow:hidden;-webkit-mask-image:url('../assets/logo/mark.png');-webkit-mask-size:100% 100%}
+#sheenbar{position:absolute;left:0;top:-40px;width:150px;height:560px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.85) 50%,rgba(255,255,255,0));transform:skewX(-18deg)}
+#url{position:absolute;left:0;width:1080px;top:1280px;text-align:center;font:500 27px 'JetBrains Mono';letter-spacing:.08em;color:#8ea6b3;opacity:0;z-index:30}
+#cov3{position:absolute;left:70px;top:111px;width:1840px;height:804px;background:#0a121a}
+#banner{position:absolute;left:0;top:0;width:763px;height:121px;opacity:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#banner b{font:800 54px Archivo;font-stretch:125%;color:#ff3b4e;letter-spacing:.01em;line-height:1}
+#banner i{font:600 16px Inter;font-style:normal;color:#9fb3be;letter-spacing:.14em;margin-top:8px}
+#c1{left:34px;background:#ff3b4e;color:#fff;box-shadow:0 0 34px rgba(255,59,78,.7);font-size:15px}
+.rk{position:absolute;left:1127px;width:763px;box-sizing:border-box;border:2px solid #ff3b4e;border-radius:10px;box-shadow:0 0 26px rgba(255,59,78,.5);opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <div id="W"></div>
+  <div id="cap"></div>
+  <div id="logo">
+    <img id="lmark" src="../assets/logo/mark.png" style="left:0;top:0;width:424px;height:460px">
+    <div id="sheenwrap"><div id="sheenbar"></div></div>
+    <img id="lword" src="../assets/logo/wordmark.png" style="left:0;top:460px;width:424px;height:56px">
+    <img id="larc" src="../assets/logo/arc.png" style="left:0;top:510px;width:424px;height:50px;filter:brightness(2.2) saturate(1.5)">
+  </div>
+  <div id="url">sk-flux-master-v-16.vercel.app</div>
+  <div id="vig"></div>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="lib.js"></script>
+<script>
+initEases();
+const DUR = 17.8, FPS = 30;
+const IMG = '../assets/screens/';
+const RED = '#ff3b4e';
+const KF = [
+  { t: 0,   cx: 955, cy: 458, z: 0.50, rx: 0, ry: 0 },
+  { t: 3.3, cx: 955, cy: 458, z: 0.52, rx: 0, ry: 0, e: 'cam' },
+  { t: 4.6, cx: 600, cy: 330, z: 1.0, rx: 0, ry: 4, e: 'cam' },
+  { t: 6.2, cx: 600, cy: 380, z: 1.0, rx: 0, ry: 4, e: 'lin' },
+  { t: 7.3, cx: 600, cy: 450, z: 1.05, rx: 0, ry: 3, e: 'lin' },
+  { t: 8.4, cx: 1508, cy: 300, z: 1.12, rx: 0, ry: -4, e: 'whip' },
+  { t: 12.4, cx: 1508, cy: 300, z: 1.2, rx: 0, ry: -2, e: 'lin' },
+  { t: 13.2, cx: 1508, cy: 330, z: 1.45, rx: 0, ry: -2, e: 'cam' },
+  { t: 14.9, cx: 1508, cy: 330, z: 1.5, rx: 0, ry: -2, e: 'lin' },
+  { t: 16.2, cx: 1508, cy: 330, z: 0.55, rx: 3, ry: 10, e: 'cam' },
+  { t: 17.8, cx: 1508, cy: 330, z: 0.50, rx: 3, ry: 12, e: 'lin' },
+];
+const W = document.getElementById('W');
+const REG = [
+  [0, 0, 70, 915, 2.55], [70, 0, 1910, 62, 2.62], [70, 62, 1910, 111, 2.70],
+  [70, 111, 1112, 915, 2.82], [1112, 111, 1910, 248, 2.95], [1112, 248, 1910, 505, 3.08], [1112, 505, 1910, 915, 3.20],
+];
+let holes = '';
+REG.forEach(([a, b, c, d]) => { holes += `M${a} ${b}H${c}V${d}H${a}Z`; });
+const FIELDS = [
+  ['lien', 96, 158, 1002, 45, 'https://www.leboncoin.fr/voitures/audi-a8', 5.0, 5.5, 5.55],
+  ['prix', 602, 321, 496, 45, '1 200', 5.55, 5.8, 5.9],
+  ['mod', 96, 398, 497, 45, 'Audi A8', 5.85, 6.1, 6.2],
+  ['an', 602, 398, 496, 45, '2001', 6.15, 6.4, 6.5],
+  ['km', 96, 476, 497, 45, '249 000', 6.45, 6.7, 6.8],
+  ['pm', 602, 476, 496, 45, '4 200', 6.8, 7.05, 7.15],
+];
+const FACTORS = [['Prix vs marché', 8], ['Kilométrage', 40], ['Année', 55], ['Énergie', 50], ['Source', 30], ['Fiabilité vendeur', 12], ['Fraîcheur', 60]];
+const RKS = [[285, 50, 13.4], [336, 51, 13.6], [388, 51, 13.8], [439, 50, 14.0]];
+const p1 = document.createElement('div');
+p1.className = 'plane'; p1.id = 'p1';
+p1.style.cssText = 'left:0;top:0;width:1910px;height:915px';
+p1.innerHTML = `
+  <div class="frame" style="width:1910px;height:915px"></div>
+  <div class="clip" id="p1clip" style="width:1910px;height:915px">
+    <div class="layer"><img src="${IMG}analyse-lien.png" style="clip-path:path(evenodd,'M0 0H1910V915H0Z${holes}')"></div>
+    <div id="cov3"></div>
+    <div id="p1regs"></div>
+    <div id="flds"></div>
+    <div id="beam2"></div>
+    <div id="dim2" style="position:absolute;left:0;top:0;width:1112px;height:915px;opacity:0;background:linear-gradient(90deg,rgba(3,6,10,.80) 0,rgba(3,6,10,.80) calc(100% - 50px),rgba(3,6,10,0) 100%)"></div>
+    <div id="pend"></div>
+    ${RKS.map(([a, h]) => `<div class="rk" style="top:${a}px;height:${h}px"></div>`).join('')}
+    <div id="sc"><div class="in">
+      <div class="lbl" style="left:34px;top:28px">FLUX SCORE</div>
+      <div class="veh">AUDI A8 · 2001 · 249 000 KM</div>
+      <div id="gaugeWrap">
+        <div id="burst" style="border-color:#ff9aa5"></div>
+        <svg width="270" height="270" viewBox="0 0 270 270" style="transform:rotate(-90deg)">
+          <circle cx="135" cy="135" r="112" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="18"/>
+          <circle id="ring" cx="135" cy="135" r="112" fill="none" stroke="#00C96B" stroke-width="18" stroke-linecap="round" stroke-dasharray="703.7" stroke-dashoffset="703.7"/>
+        </svg>
+        <div id="num"><b id="numv">0</b><i>/ 100</i></div>
+      </div>
+      <div id="frows"></div>
+      <div class="chip" id="c1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round"><path d="M12 3 2 21h20z"/><path d="M12 10v5M12 18v.5"/></svg>RISQUE ÉLEVÉ</div>
+    </div>
+    <div id="banner"><b>RISQUE ÉLEVÉ</b><i>SCORE 8 / 100</i></div></div>
+  </div>
+  <div id="beam1"></div>`;
+W.appendChild(p1);
+const $ = (id) => document.getElementById(id);
+const regEls = REG.map(([x1, y1, x2, y2, ts]) => {
+  const d = document.createElement('div');
+  d.className = 'reg';
+  d.style.transformOrigin = `${(x1 + x2) / 2}px ${(y1 + y2) / 2}px`;
+  d.innerHTML = `<img src="${IMG}analyse-lien.png" style="clip-path:inset(${y1}px ${1910 - x2}px ${915 - y2}px ${x1}px)">`;
+  $('p1regs').appendChild(d);
+  return { d, ts };
+});
+const fldEls = FIELDS.map((f) => {
+  const d = document.createElement('div');
+  d.className = 'fld';
+  d.style.cssText = `left:${f[1]}px;top:${f[2]}px;width:${f[3]}px;height:${f[4]}px`;
+  d.innerHTML = `<span class="tx"></span><span class="caret"></span><svg class="ck" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#00C96B"/><path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  $('flds').appendChild(d);
+  return d;
+});
+FACTORS.forEach(([n], i) => {
+  const r = document.createElement('div');
+  r.className = 'frow'; r.style.top = `${70 + i * 40}px`;
+  r.innerHTML = `<span>${n}</span><div class="tr"></div><div class="fl" style="width:0px"></div>`;
+  $('frows').appendChild(r);
+});
+const frowEls = [...document.querySelectorAll('.frow')];
+const rkEls = [...document.querySelectorAll('.rk')];
+const comet = [];
+for (let i = 0; i < 12; i++) {
+  const c = document.createElement('div');
+  c.style.cssText = 'position:absolute;border-radius:50%;background:#aaffd2;opacity:0';
+  W.appendChild(c); comet.push(c);
+}
+const CAPS = [
+  { t0: 3.3, t1: 5.0, html: `<div class="eyebrow">FLUX MASTER · ANTI-ARNAQUE</div><div class="big" style="font-size:52px">CE PRIX EST TROP BEAU<br><em>POUR ÊTRE VRAI.</em></div>` },
+  { t0: 5.1, t1: 8.2, html: `<div class="eyebrow">FLUX MASTER · ANTI-ARNAQUE</div><div class="big" style="font-size:54px">COLLE L'ANNONCE.<br><em>COMPARE AU MARCHÉ.</em></div>` },
+  { t0: 12.9, t1: 15.0, html: `<div class="eyebrow">FLUX MASTER · ANTI-ARNAQUE</div><div class="big" style="font-size:54px">REPÈRE LES ANNONCES<br><em style="color:#ff3b4e">À RISQUE.</em></div>` },
+];
+const capEls = CAPS.map((c) => { const d = document.createElement('div'); d.className = 'capi'; d.innerHTML = c.html; $('cap').appendChild(d); return d; });
+const drawBG = makeBG($('bg'));
+const logo = $('logo');
+const glowAt = (t) => clamp(0.28 + 0.8 * Math.exp(-Math.pow((t - 2.9) / 0.7, 2)) + 0.5 * Math.exp(-Math.pow((t - 11.0) / 0.4, 2)) + 0.8 * Math.exp(-Math.pow((t - 16.6) / 0.9, 2)));
+const worldToScreen = (t, wx, wy) => { const c = camAt(KF, t); return [540 + c.z * (wx - c.cx), 960 + c.z * (wy - c.cy)]; };
+const ramp = (t, K) => {
+  if (t <= K[0][0]) return K[0][1];
+  for (let i = 0; i < K.length - 1; i++) if (t < K[i + 1][0]) return lerp(K[i][1], K[i + 1][1], E.enter(prog(t, K[i][0], K[i + 1][0])));
+  return K[K.length - 1][1];
+};
+const scoreAt = (t) => t < 9.4 ? 0 : ramp(t, [[9.4, 0], [10.0, 62], [10.45, 62], [11.0, 8]]);
+const ringColor = (v) => v < 50 ? mixHex('#ff3b4e', '#ffb020', v / 50) : mixHex('#ffb020', '#00C96B', clamp((v - 50) / 25));
+const BEAM2 = [[5.0, 180], [5.55, 180], [5.9, 343], [6.2, 420], [6.5, 420], [6.8, 498], [7.15, 498]];
+const beamY = (t) => ramp(t, BEAM2);
+
+function renderAt(t) {
+  drawBG(t, glowAt(t));
+  const c = camAt(KF, t), c0 = camAt(KF, Math.max(0, t - 1 / 60));
+  const speed = Math.hypot((c.cx - c0.cx) * c.z, (c.cy - c0.cy) * c.z) * 60;
+  const blur = clamp((speed - 2500) / 700, 0, 14);
+  W.style.transform = `rotateX(${c.rx}deg) rotateY(${c.ry}deg) scale(${c.z}) translate(${-c.cx}px,${-c.cy}px)`;
+  W.style.opacity = 1 - E.cam(prog(t, 14.9, 15.7));
+  W.style.filter = blur > 0.3 ? `blur(${blur.toFixed(2)}px)` : 'none';
+
+  const rv = E.cam(prog(t, 2.4, 3.5));
+  $('p1clip').style.clipPath = `inset(0px 0px ${(1 - rv) * 915}px 0px round 22px)`;
+  const bm = $('beam1');
+  bm.style.top = `${rv * 915 - 4}px`;
+  bm.style.opacity = t < 2.4 ? 0 : 1 - prog(t, 3.3, 3.7);
+  document.querySelector('#p1 .frame').style.opacity = clamp(rv * 3);
+  regEls.forEach(({ d, ts }) => {
+    const s = spring('soft', t - ts);
+    d.style.opacity = prog(t, ts, ts + 0.18);
+    d.style.transform = `translateY(${(1 - s) * 30}px) scale(${0.96 + 0.04 * s})`;
+  });
+  $('cov3').style.opacity = 1 - prog(t, 3.25, 3.55);
+  $('dim2').style.opacity = prog(t, 8.2, 8.7);
+
+  FIELDS.forEach((f, i) => {
+    const [, , , , , txt, ts, te, tv] = f;
+    const d = fldEls[i];
+    const on = t >= ts;
+    d.style.opacity = on ? 1 : 0;
+    if (!on) return;
+    const n = Math.floor(txt.length * E.lin(prog(t, ts, te)) + 0.0001);
+    d.querySelector('.tx').textContent = txt.slice(0, n);
+    d.querySelector('.caret').style.display = t < tv && Math.floor(t * 8) % 2 === 0 ? 'inline-block' : 'none';
+    const vp = spring('snap', t - tv);
+    const v = t >= tv ? 1 : 0;
+    d.style.borderColor = v ? mixHex('#d3dbe4', '#00C96B', clamp(vp)) : '#d3dbe4';
+    d.style.boxShadow = v ? `0 0 0 ${4 * clamp(vp)}px rgba(0,201,107,${0.16 * clamp(vp)})` : 'none';
+    d.querySelector('.ck').style.opacity = clamp(vp * 1.5);
+    d.querySelector('.ck').style.transform = `scale(${0.4 + 0.6 * vp})`;
+  });
+  const b2 = $('beam2');
+  b2.style.opacity = prog(t, 5.0, 5.2) * (1 - prog(t, 7.2, 7.45));
+  b2.style.top = `${beamY(t)}px`;
+
+  const cs = 7.5, ce = 8.3;
+  comet.forEach((el, i) => {
+    const tt = t - i * 0.022;
+    const p = E.cam(prog(tt, cs, ce));
+    const a = [850, 498], ctrl = [1150, 640], b = [1508, 170];
+    const x = (1 - p) * (1 - p) * a[0] + 2 * (1 - p) * p * ctrl[0] + p * p * b[0];
+    const y = (1 - p) * (1 - p) * a[1] + 2 * (1 - p) * p * ctrl[1] + p * p * b[1];
+    const vis = tt > cs && tt < ce + 0.05 ? 1 : 0;
+    const sz = 20 * (1 - i / 14);
+    el.style.width = el.style.height = `${sz}px`;
+    el.style.left = `${x - sz / 2}px`; el.style.top = `${y - sz / 2}px`;
+    el.style.opacity = vis * (1 - i / 13) * (1 - prog(t, ce - 0.05, ce + 0.1));
+    el.style.boxShadow = `0 0 ${24 - i}px ${8 - i / 2}px rgba(0,201,107,.8)`;
+  });
+
+  // carte score : montée, chute, verrouillage rouge
+  const pend = $('pend');
+  pend.style.opacity = prog(t, 8.3, 8.55) * (1 - prog(t, 8.8, 9.05));
+  const sc = $('sc');
+  const collapse = E.cam(prog(t, 12.6, 13.2));
+  sc.style.opacity = prog(t, 8.7, 8.85);
+  const g = E.enter(prog(t, 8.8, 9.45));
+  sc.style.height = `${lerp(121, 430, g) - (430 - 121) * collapse * (g > 0.99 ? 1 : 0)}px`;
+  sc.style.background = mixHex('#ffffff', '#0b141b', E.cam(prog(t, 8.8, 9.25)));
+  const dt = t - 11.0;
+  const shake = dt > 0 && dt < 0.55 ? Math.sin(dt * 70) * 14 * Math.exp(-dt * 7) : 0;
+  sc.style.transform = `translateX(${shake}px)`;
+  const redA = prog(t, 11.0, 11.2);
+  const glowC = mixHex('#00C96B', RED, redA);
+  sc.style.boxShadow = `0 0 ${50 + 30 * Math.exp(-dt * 4) * (dt > 0 ? 1 : 0)}px ${glowC === RED ? 'rgba(255,59,78,.45)' : 'rgba(0,201,107,' + (0.3 * prog(t, 9.0, 9.6)) + ')'}`;
+  sc.style.border = `2px solid rgba(255,59,78,${redA})`;
+  sc.querySelector('.in').style.opacity = prog(t, 9.3, 9.6) * (1 - prog(t, 12.5, 12.8));
+  const bn = $('banner');
+  bn.style.opacity = prog(t, 12.9, 13.2);
+  bn.style.transform = `scale(${0.9 + 0.1 * spring('reward', t - 12.9)})`;
+
+  const v = scoreAt(t);
+  const col = ringColor(v);
+  const ring = $('ring');
+  ring.style.strokeDashoffset = 703.7 * (1 - v / 100);
+  ring.style.stroke = col;
+  const nv = $('numv');
+  nv.textContent = Math.round(v); nv.style.color = col;
+  const imp = t >= 11.0 ? 1 - 0.06 * (1 - spring('snap', t - 11.0)) : 1;
+  $('gaugeWrap').style.transform = `scale(${imp})`;
+  const bp = prog(t, 11.0, 11.7);
+  const bu = $('burst');
+  bu.style.opacity = bp > 0 && bp < 1 ? 0.6 * (1 - bp) : 0;
+  bu.style.transform = `scale(${0.85 + 1.1 * E.enter(bp)})`;
+  frowEls.forEach((r, i) => {
+    const q = E.enter(prog(t, 9.5 + i * 0.1, 10.1 + i * 0.1));
+    const val = FACTORS[i][1];
+    const f = r.querySelector('.fl');
+    f.style.width = `${val / 100 * 390 * q}px`;
+    f.style.background = val < 35 ? 'linear-gradient(90deg,#c4182b,#ff3b4e)' : 'linear-gradient(90deg,#00A85A,#00C96B)';
+    r.style.opacity = prog(t, 9.5 + i * 0.1, 9.75 + i * 0.1);
+  });
+  const s1 = spring('reward', t - 11.15);
+  const c1 = $('c1');
+  c1.style.opacity = prog(t, 11.15, 11.22); c1.style.transform = `scale(${0.3 + 0.7 * s1})`;
+
+  // liste : contours rouges
+  rkEls.forEach((el, i) => {
+    const ts = RKS[i][2];
+    const on = spring('snap', t - ts);
+    el.style.opacity = t < ts ? 0 : clamp(on) * (0.6 + 0.4 * Math.exp(-(t - ts) * 2.5));
+  });
+
+  CAPS.forEach((cp2, i) => {
+    const inn = E.enter(prog(t, cp2.t0, cp2.t0 + 0.55));
+    const out = E.exit(prog(t, cp2.t1 - 0.3, cp2.t1));
+    capEls[i].style.opacity = inn * (1 - out);
+    capEls[i].style.transform = `translateY(${(1 - inn) * 36 - out * 14}px)`;
+  });
+
+  const S0 = 1.35;
+  let lx, ly, ls, lop = 0, lb = 0, wop = 0, aop = 0, sheen = -300;
+  if (t < 3.2) {
+    const rvl = E.enter(prog(t, 0.2, 1.5));
+    lb = (1 - rvl) * 28;
+    const fly = E.enter(prog(t, 2.3, 3.1));
+    const tile = worldToScreen(Math.min(t, 3.2), 37, 42);
+    const sEnd = 40 * camAt(KF, t).z / 460;
+    ls = lerp(S0, sEnd, fly);
+    lx = lerp(540, tile[0], fly) - 212 * ls; ly = lerp(812.5, tile[1], fly) - 230 * ls;
+    lop = prog(t, 0.2, 0.9) * (1 - prog(t, 3.05, 3.2));
+    wop = prog(t, 1.2, 1.9) * (1 - prog(t, 2.3, 2.55));
+    aop = prog(t, 1.6, 2.1) * (1 - prog(t, 2.3, 2.55));
+    sheen = lerp(-250, 560, E.cam(prog(t, 0.95, 1.8)));
+  } else {
+    ls = 1.2; lx = 540 - 212 * ls; ly = 800 - 230 * ls;
+    lb = (1 - E.enter(prog(t, 15.5, 16.4))) * 26;
+    lop = prog(t, 15.5, 16.0);
+    wop = prog(t, 16.0, 16.6);
+    aop = prog(t, 16.4, 16.9);
+    sheen = lerp(-250, 560, E.cam(prog(t, 16.8, 17.5)));
+  }
+  logo.style.transform = `translate(${lx}px,${ly}px) scale(${ls})`;
+  logo.style.opacity = lop;
+  logo.style.filter = lb > 0.2 ? `blur(${lb}px)` : 'none';
+  $('lword').style.opacity = wop;
+  $('larc').style.opacity = aop;
+  $('sheenbar').style.transform = `translateX(${sheen}px) skewX(-18deg)`;
+  const url = $('url');
+  url.style.opacity = prog(t, 16.9, 17.4);
+  url.style.top = `${800 + 230 * 1.2 + 70 * 1.2 + 60}px`;
+}
+window.renderAt = renderAt;
+window.__dur = DUR; window.__fps = FPS;
+Promise.all([
+  document.fonts.load("800 70px Archivo"), document.fonts.load("500 17px Inter"),
+  document.fonts.load("500 17px 'JetBrains Mono'"),
+  ...[...document.images].map((im) => (im.decode ? im.decode().catch(() => {}) : Promise.resolve())),
+]).then(() => { renderAt(0); window.__ready = true; });
+</script>
+</body>
+</html>
