@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tech&Dev — TD01 — L'agence complète</title>
+<style>
+@font-face{font-family:'Archivo';src:url('node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2') format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:'Inter';src:url('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');font-weight:100 900}
+@font-face{font-family:'JetBrains Mono';src:url('node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');font-weight:100 800}
+html,body{margin:0;padding:0;background:#04070c;width:1080px;height:1920px;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;perspective:1700px;perspective-origin:540px 960px}
+#bg{position:absolute;left:0;top:0}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 48%,rgba(0,0,0,0) 44%,rgba(0,0,0,.66) 100%);pointer-events:none;z-index:50}
+#W{position:absolute;left:540px;top:960px;width:0;height:0;transform-origin:0 0;will-change:transform;transform-style:preserve-3d}
+.pan{position:absolute;border-radius:26px;overflow:hidden;background:#06090f;
+  box-shadow:0 60px 160px rgba(0,0,0,.72),0 0 0 1px rgba(255,255,255,.09)}
+.pan .sheet{position:absolute;left:0;top:0;width:100%;height:100%;
+  background:radial-gradient(1100px 620px at 50% 8%,rgba(40,60,120,.26),rgba(5,8,14,0) 70%),#070a11}
+.beam{position:absolute;left:0;height:7px;border-radius:4px;
+  background:linear-gradient(90deg,rgba(56,189,248,0),#38BDF8 12%,#d8f4ff 50%,#38BDF8 88%,rgba(56,189,248,0));
+  box-shadow:0 0 44px 13px rgba(56,189,248,.6)}
+/* ---- nav ---- */
+.nav{position:absolute;left:0;top:0;width:100%;height:96px;box-sizing:border-box;
+  border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;padding:0 54px;
+  background:rgba(6,9,15,.72)}
+.nav .mk{position:relative;width:46px;height:38px;margin-right:15px}
+.nav .mk img{position:absolute;left:0;top:0;width:46px;height:38px;object-fit:contain}
+.nav .wd b{display:block;font:800 23px Archivo;font-stretch:112%;color:#fff;letter-spacing:.012em;line-height:1}
+.nav .wd b i{font-style:normal;color:#3FA9FF}
+.nav .wd s{display:block;text-decoration:none;font:600 12px Inter;letter-spacing:.30em;color:#8FA2BA;margin-top:5px}
+.nav .lk{display:flex;gap:46px;margin-left:auto;font:500 21px Inter;color:#C9D6E6}
+.nav .so{display:flex;gap:22px;margin-left:50px;opacity:.78}
+.nav .cta{margin-left:40px;height:52px;border-radius:26px;background:#6C63FF;color:#fff;
+  font:700 18px Inter;display:flex;align-items:center;padding:0 28px;box-shadow:0 10px 30px rgba(108,99,255,.38)}
+.ic{width:24px;height:24px;display:block}
+/* ---- generic ---- */
+.eyeb{font:700 17px 'JetBrains Mono';letter-spacing:.30em;color:#6C8CFF}
+.h1{font:800 88px Archivo;font-stretch:118%;line-height:1.06;color:#F3F7FC;letter-spacing:-.012em}
+.h1 em{font-style:normal;color:#6C63FF}
+.h2{font:800 62px Archivo;font-stretch:115%;line-height:1.1;color:#EDF3FA}
+.h2 em{font-style:normal;color:#64748B}
+.sub{font:400 27px Inter;line-height:1.5;color:#93A4B8}
+.card{position:absolute;box-sizing:border-box;border-radius:20px;background:#0C111A;
+  border:1px solid rgba(255,255,255,.075);overflow:hidden}
+.iconbox{position:absolute;left:34px;top:32px;width:58px;height:58px;border-radius:15px;
+  background:rgba(108,99,255,.14);display:flex;align-items:center;justify-content:center}
+.ctitle{position:absolute;left:34px;top:112px;font:700 29px Inter;color:#F0F5FA}
+.ctext{position:absolute;left:34px;top:158px;width:360px;font:400 21px Inter;line-height:1.45;color:#8696AC}
+.tabs{position:absolute;box-sizing:border-box;height:84px;border-radius:42px;background:#0C111A;
+  border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;padding:0 10px}
+.tab{position:relative;height:64px;border-radius:32px;display:flex;align-items:center;gap:13px;
+  padding:0 34px;font:600 25px Inter;color:#8C9CB2;z-index:2}
+#pill{position:absolute;top:10px;height:64px;border-radius:32px;background:#1A2234;
+  box-shadow:inset 0 0 0 1px rgba(108,99,255,.42),0 0 34px rgba(108,99,255,.26);z-index:1}
+.row{position:absolute;left:0;width:100%;box-sizing:border-box;height:62px;
+  border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;
+  padding:0 30px;font:400 22px Inter;color:#9FB0C4}
+.row b{margin-left:auto;font:700 22px Inter;color:#F0F5FA}
+.fld{position:absolute;box-sizing:border-box;border-radius:13px;background:#0B1019;
+  border:1.6px solid rgba(255,255,255,.10);font:500 23px Inter;color:#E6EEF7;
+  display:flex;align-items:center;padding:0 22px;opacity:0}
+.fld .caret{display:inline-block;width:2px;height:26px;background:#38BDF8;margin-left:2px}
+.fld .ck{position:absolute;right:18px;top:50%;margin-top:-13px;width:26px;height:26px;opacity:0}
+.flab{position:absolute;font:500 20px Inter;color:#7E8EA4}
+#capscrim{position:absolute;left:0;top:0;width:1080px;height:760px;z-index:39;opacity:0;
+  background:linear-gradient(180deg,rgba(4,7,12,.96) 0%,rgba(4,7,12,.93) 52%,rgba(4,7,12,0) 100%)}
+#cap{position:absolute;left:62px;top:214px;width:956px;z-index:40}
+.capi{position:absolute;left:0;top:0;width:956px;opacity:0}
+.capi .ey{font:700 23px 'JetBrains Mono';letter-spacing:.24em;color:#38BDF8;margin-bottom:24px}
+.capi .bg{font:800 68px Archivo;font-stretch:122%;line-height:1.05;color:#F5F9FD;text-transform:uppercase}
+.capi .bg em{font-style:normal;color:#38BDF8}
+#logo{position:absolute;left:0;top:0;width:430px;height:560px;transform-origin:0 0;z-index:30;opacity:0}
+#lmark{position:absolute;left:19px;top:0;width:392px;height:324px;display:block}
+#sheenwrap{position:absolute;left:19px;top:0;width:392px;height:324px;overflow:hidden;
+  -webkit-mask-image:url('../assets/td/mark.png');-webkit-mask-size:100% 100%;-webkit-mask-repeat:no-repeat}
+#sheenbar{position:absolute;left:0;top:-40px;width:140px;height:420px;
+  background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.88) 50%,rgba(255,255,255,0));transform:skewX(-18deg)}
+#lword{position:absolute;left:0;top:356px;width:430px;text-align:center;
+  font:800 62px Archivo;font-stretch:118%;color:#fff;letter-spacing:.008em;line-height:1;opacity:0}
+#lword i{font-style:normal;color:#3FA9FF}
+#lsub{position:absolute;left:0;top:432px;width:430px;text-align:center;
+  font:600 21px Inter;letter-spacing:.30em;color:#8FA2BA;opacity:0}
+#out{position:absolute;left:0;width:1080px;text-align:center;z-index:30;opacity:0}
+#out .u{font:500 29px 'JetBrains Mono';letter-spacing:.07em;color:#9FB4C6}
+#out .s{margin-top:22px;font:600 24px Inter;letter-spacing:.16em;color:#6F8398}
+.pdim{position:absolute;left:0;top:0;width:100%;height:100%;background:rgba(4,7,12,.86);opacity:0;z-index:20}
+.chipx{position:absolute;height:60px;border-radius:30px;display:flex;align-items:center;gap:13px;
+  padding:0 30px;font:800 23px Inter;letter-spacing:.07em;transform-origin:50% 50%;opacity:0}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <div id="W"></div>
+  <div id="capscrim"></div>
+  <div id="cap"></div>
+  <div id="logo">
+    <img id="lmark" src="../assets/td/mark.png">
+    <div id="sheenwrap"><div id="sheenbar"></div></div>
+    <div id="lword">TECH<i>&amp;</i>DEV</div>
+    <div id="lsub">SOLUTIONS NUMÉRIQUES</div>
+  </div>
+  <div id="out">
+    <div class="u">tech-dev-gules.vercel.app</div>
+    <div class="s">@td.agence &nbsp;·&nbsp; ÎLE-DE-FRANCE</div>
+  </div>
+  <div id="vig"></div>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="lib.js"></script>
+<script>
+initEases();
+const DUR = 27.0, FPS = 30;
+const AC = '#38BDF8', IN = '#6C63FF';
+const MK = '../assets/td/mark.png';
+
+/* ---------- fond : grille en perspective + traînées (motif Tech&Dev) ---------- */
+function makeGridBG(canvas){
+  const g = canvas.getContext('2d'), W = canvas.width, H = canvas.height;
+  let s = 11; const rnd = () => ((s = (s*16807)%2147483647)/2147483647);
+  const streaks = Array.from({length:26},()=>({lane:lerp(-2.3,2.3,rnd()),speed:0.16+rnd()*0.52,
+    phase:rnd(),alt:rnd()<0.32,len:0.09+rnd()*0.17}));
+  const nodes = Array.from({length:16},()=>({lane:lerp(-2.1,2.1,rnd()),q:rnd(),sp:0.05+rnd()*0.12}));
+  const vx = W/2, vy = 735;
+  const pos = (lane,q)=>{const y = vy+(H-vy)*Math.pow(q,2.2); return [vx+lane*(y-vy)*0.78,y];};
+  return function draw(t, glow){
+    g.fillStyle = '#04070c'; g.fillRect(0,0,W,H);
+    let rg = g.createRadialGradient(vx,900,40,vx,900,1220);
+    rg.addColorStop(0,'rgba(16,30,64,.95)'); rg.addColorStop(1,'rgba(4,7,12,0)');
+    g.fillStyle = rg; g.fillRect(0,0,W,H);
+    rg = g.createRadialGradient(vx,vy,10,vx,vy,580);
+    rg.addColorStop(0,`rgba(56,189,248,${0.07+0.24*glow})`); rg.addColorStop(1,'rgba(56,189,248,0)');
+    g.fillStyle = rg; g.fillRect(0,0,W,H);
+    g.lineWidth = 1.3;
+    for(let i=-5;i<=5;i++){
+      const lane = i*0.46, a = pos(lane,0.001), b = pos(lane,1);
+      const gr = g.createLinearGradient(0,vy,0,H);
+      gr.addColorStop(0,'rgba(92,152,222,0)');
+      gr.addColorStop(1,`rgba(92,152,222,${i===0?0.05:0.105})`);
+      g.strokeStyle = gr; g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(b[0],b[1]); g.stroke();
+    }
+    for(let k=0;k<18;k++){
+      const q = ((t*0.21+k/18)%1), y = pos(0,q)[1];
+      const l = pos(-2.7,q)[0], r = pos(2.7,q)[0];
+      g.strokeStyle = `rgba(108,168,232,${0.03+0.15*q})`;
+      g.lineWidth = 0.8+2.0*q;
+      g.beginPath(); g.moveTo(l,y); g.lineTo(r,y); g.stroke();
+    }
+    for(const n of nodes){
+      const q = ((t*n.sp+n.q)%1), p = pos(n.lane,q), sz = 1.2+4.2*q;
+      g.fillStyle = `rgba(160,210,255,${(0.10+0.42*glow)*(0.15+0.85*q)})`;
+      g.beginPath(); g.arc(p[0],p[1],sz,0,6.2832); g.fill();
+    }
+    for(const st of streaks){
+      const q = (t*st.speed*(0.6+0.85*glow)+st.phase)%1;
+      const q0 = Math.max(0.001,q-st.len);
+      const a = pos(st.lane,q0), b = pos(st.lane,q);
+      const col = st.alt ? '108,99,255' : '56,189,248';
+      const al = (0.07+0.78*glow)*(0.2+0.8*q);
+      const gr = g.createLinearGradient(a[0],a[1],b[0],b[1]);
+      gr.addColorStop(0,`rgba(${col},0)`); gr.addColorStop(1,`rgba(${col},${al})`);
+      g.strokeStyle = gr; g.lineWidth = 1+6*q; g.lineCap = 'round';
+      g.beginPath(); g.moveTo(a[0],a[1]); g.lineTo(b[0],b[1]); g.stroke();
+    }
+  };
+}
+
+/* ---------- caméra ---------- */
+const KF = [
+  { t:0,    cx:960,  cy:430,  z:0.50, rx:0, ry:0 },
+  { t:3.3,  cx:960,  cy:430,  z:0.54, rx:0, ry:0,  e:'cam' },
+  { t:4.4,  cx:960,  cy:400,  z:0.74, rx:0, ry:3,  e:'cam' },
+  { t:6.6,  cx:960,  cy:445,  z:0.80, rx:0, ry:3,  e:'lin' },
+  { t:7.4,  cx:3080, cy:300,  z:0.76, rx:0, ry:-4, e:'whip' },
+  { t:9.6,  cx:3080, cy:360,  z:0.80, rx:0, ry:-4, e:'lin' },
+  { t:10.6, cx:3080, cy:640,  z:0.88, rx:3, ry:-3, e:'cam' },
+  { t:11.9, cx:3080, cy:655,  z:0.90, rx:3, ry:-3, e:'lin' },
+  { t:12.6, cx:900,  cy:1480, z:0.80, rx:0, ry:4,  e:'whip' },
+  { t:14.3, cx:900,  cy:1500, z:0.86, rx:0, ry:3,  e:'lin' },
+  { t:14.9, cx:600,  cy:1545, z:1.12, rx:0, ry:2,  e:'cam' },
+  { t:16.9, cx:640,  cy:1550, z:1.10, rx:0, ry:2,  e:'lin' },
+  { t:17.6, cx:960,  cy:1945, z:0.66, rx:3, ry:0,  e:'cam' },
+  { t:19.1, cx:960,  cy:1965, z:0.68, rx:3, ry:0,  e:'lin' },
+  { t:19.8, cx:2870, cy:1600, z:0.78, rx:0, ry:-4, e:'whip' },
+  { t:23.3, cx:2890, cy:1680, z:0.84, rx:0, ry:-4, e:'lin' },
+  { t:24.7, cx:1990, cy:1130, z:0.34, rx:4, ry:-8, e:'cam' },
+  { t:27.0, cx:1990, cy:1130, z:0.32, rx:4, ry:-8, e:'lin' },
+];
+
+/* ---------- icônes (style Lucide) ---------- */
+const sv = (p,c='#A9B6FF',w=2.3)=>`<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round" stroke-linejoin="round">${p}</svg>`;
+const I = {
+  mon:'<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  glb:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/>',
+  pal:'<path d="M12 21a9 9 0 1 1 9-9c0 2-1.5 3-3 3h-2a2 2 0 0 0-1 3.7A2 2 0 0 1 12 21z"/><circle cx="8" cy="10" r="1.2"/><circle cx="12" cy="7" r="1.2"/><circle cx="16" cy="10" r="1.2"/>',
+  wre:'<path d="M14.7 6.3a4 4 0 0 0 5 5l-9.4 9.4a2.8 2.8 0 1 1-4-4z"/>',
+  wif:'<path d="M5 12.5a10 10 0 0 1 14 0M8.5 16a5.5 5.5 0 0 1 7 0"/><path d="M12 19.5v.01"/>',
+  hdp:'<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="2.5" y="14" width="4" height="7" rx="2"/><rect x="17.5" y="14" width="4" height="7" rx="2"/>',
+  crt:'<rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/>',
+  cart:'<circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2 3h3l2.6 12h11l2.4-8H6"/>',
+  ref:'<path d="M3 12a9 9 0 0 1 15.5-6.2L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 21v-5h5"/>',
+  idc:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8.5" cy="11.5" r="2.2"/><path d="M14 10h5M14 14h5M5 16.5c.7-1.6 5.6-1.6 6.3 0"/>',
+  shr:'<circle cx="18" cy="5" r="2.6"/><circle cx="6" cy="12" r="2.6"/><circle cx="18" cy="19" r="2.6"/><path d="M8.3 10.8 15.7 6.4M8.3 13.2l7.4 4.4"/>',
+  rkt:'<path d="M5 14c-1.5 2-1.5 5-1.5 5s3 0 5-1.5"/><path d="M9 15l-3-3c1-5 5-9 11-9 0 6-4 10-9 11z"/><circle cx="14.5" cy="9.5" r="1.4"/>',
+  ig:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r=".9" fill="#A9B6FF" stroke="none"/>',
+  tk:'<path d="M15 4c.6 2.6 2.3 4 4.6 4.2v3.2c-1.7.1-3.3-.4-4.6-1.3v5.6a5.9 5.9 0 1 1-5.1-5.9v3.3a2.6 2.6 0 1 0 1.9 2.5V4z"/>',
+  mail:'<rect x="2" y="4" width="20" height="16" rx="2.4"/><path d="m3 6.5 9 6 9-6"/>',
+  pin:'<path d="M12 21s7-6 7-11a7 7 0 1 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/>',
+  clk:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5.3l3.4 2"/>',
+  sht:'<path d="M12 3v18M3 12h18"/>',
+  arr:'<path d="M5 12h13M12.5 6l6 6-6 6"/>',
+  snd:'<path d="M21 3 10.5 13.5M21 3l-7 18-3.5-7.5L3 10z"/>',
+};
+const check = (c=AC)=>`<svg class="ck" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="${c}"/><path d="M7 13.4l4 4 8-8.6" fill="none" stroke="#04131d" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+/* ---------- construction du monde ---------- */
+const W = document.getElementById('W');
+const $ = (id) => document.getElementById(id);
+const mk = (html, cls, css) => { const d = document.createElement('div'); if(cls) d.className = cls; if(css) d.style.cssText = css; d.innerHTML = html; return d; };
+
+function navHTML(){
+  return `<div class="nav">
+    <div class="mk"><img src="${MK}"></div>
+    <div class="wd"><b>TECH<i>&amp;</i>DEV</b><s>SOLUTIONS NUMÉRIQUES</s></div>
+    <div class="lk"><span>Services</span><span>Tarifs</span><span>Projets</span><span>Contact</span></div>
+    <div class="so">${sv(I.ig,'#9FB0C4',2)}${sv(I.tk,'#9FB0C4',2)}</div>
+    <div class="cta">Parlons de votre projet</div>
+  </div>`;
+}
+function panel(id, x, y, w, h, inner){
+  const p = mk(`<div class="sheet"></div>${navHTML()}${inner}<div class="pdim" id="${id}dim"></div>`, 'pan',
+    `left:${x}px;top:${y}px;width:${w}px;height:${h}px`);
+  p.id = id;
+  const bm = mk('', 'beam', `width:${w}px;top:-10px;opacity:0`); bm.id = id+'beam';
+  const wrap = mk('', '', `position:absolute;left:${x}px;top:${y}px;width:${w}px;height:${h}px`);
+  p.style.left = '0px'; p.style.top = '0px';
+  wrap.appendChild(p); wrap.appendChild(bm); W.appendChild(wrap);
+  return p;
+}
+
+/* --- P1 : héro --- */
+panel('P1', 0, 0, 1920, 1000, `
+  <div id="h1a" style="position:absolute;left:0;top:252px;width:1920px;text-align:center;opacity:0">
+    <div class="h1">Votre partenaire</div></div>
+  <div id="h1b" style="position:absolute;left:0;top:356px;width:1920px;text-align:center;opacity:0">
+    <div class="h1"><em>tech de confiance</em></div></div>
+  <div id="h1c" style="position:absolute;left:0;top:460px;width:1920px;text-align:center;opacity:0">
+    <div class="h1">en Île-de-France</div></div>
+  <div id="h1s" style="position:absolute;left:400px;top:606px;width:1120px;text-align:center;opacity:0">
+    <div class="sub">Informatique, création web et design graphique pour les commerces,<br>artisans et indépendants qui veulent se démarquer.</div></div>
+  <div id="h1btn1" style="position:absolute;left:560px;top:740px;width:400px;height:76px;border-radius:38px;background:${IN};display:flex;align-items:center;justify-content:center;gap:14px;font:700 24px Inter;color:#fff;box-shadow:0 16px 46px rgba(108,99,255,.42);opacity:0;transform-origin:50% 50%">Demander un devis gratuit ${sv(I.arr,'#fff',2.4)}</div>
+  <div id="h1btn2" style="position:absolute;left:986px;top:740px;width:362px;height:76px;border-radius:38px;box-sizing:border-box;border:1.6px solid rgba(255,255,255,.17);display:flex;align-items:center;justify-content:center;font:600 24px Inter;color:#D5E0EE;opacity:0;transform-origin:50% 50%">Découvrir nos services</div>
+`);
+
+/* --- P2 : services --- */
+const TABS = [['Informatique', I.mon], ['Création Web', I.glb], ['Design Graphique', I.pal]];
+const TABW = [292, 292, 346], TABX = [];
+let tx = 10; TABS.forEach((_, i) => { TABX.push(tx); tx += TABW[i] + 6; });
+const TABSW = tx + 10;
+const ROLL = [
+  [['Dépannage & réparation','Diagnostic, nettoyage, pièces — votre poste repart comme au premier jour.',I.wre],
+   ['Site vitrine','Une page ou cinq, pensée mobile, rapide, qui convertit vos visiteurs.',I.crt],
+   ['Création de logo','Une identité qui vous ressemble, déclinée sur tous vos supports.',I.pal]],
+  [['Installation réseau','Wi-Fi dans tout votre local, câblage, box partagée — tout branché, tout propre.',I.wif],
+   ['Boutique en ligne','Vendez 24h/24 : catalogue, paiement, livraison, suivi des commandes.',I.cart],
+   ['Carte de visite','Recto-verso, impression prête à envoyer, finitions au choix.',I.idc]],
+  [['Maintenance & assistance','Un forfait mensuel pour être tranquille — interventions illimitées.',I.hdp],
+   ['Refonte de site','Votre site existant remis à neuf, plus rapide et mieux référencé.',I.ref],
+   ['Habillage réseaux sociaux','Bannières, photos de profil, templates — un feed qui se tient.',I.shr]],
+];
+panel('P2', 2120, 0, 1920, 1000, `
+  <div id="h2t" style="position:absolute;left:0;top:188px;width:1920px;text-align:center;opacity:0">
+    <div class="h2">Tout ce qu'il faut pour<br><em>développer votre activité</em></div></div>
+  <div class="tabs" id="tabs" style="left:${(1920-TABSW)/2}px;top:432px;width:${TABSW}px;opacity:0">
+    <div id="pill" style="left:${TABX[0]}px;width:${TABW[0]}px"></div>
+    ${TABS.map((tb,i)=>`<div class="tab" id="tab${i}" style="position:absolute;left:${TABX[i]}px;width:${TABW[i]}px;box-sizing:border-box;justify-content:center">${sv(tb[1],'#8C9CB2',2.2)}${tb[0]}</div>`).join('')}
+  </div>
+  <div id="cards">${[0,1,2].map(c=>`
+    <div class="card" id="card${c}" style="left:${124+c*562}px;top:588px;width:510px;height:300px;opacity:0">
+      <div class="rollw" id="roll${c}" style="position:absolute;left:0;top:0;width:510px;height:900px">
+        ${ROLL[c].map(r=>`<div style="position:absolute;left:0;top:${ROLL[c].indexOf(r)*300}px;width:510px;height:300px">
+          <div class="iconbox">${sv(r[2],'#A9B6FF',2.3)}</div>
+          <div class="ctitle">${r[0]}</div>
+          <div class="ctext">${r[1]}</div></div>`).join('')}
+      </div>
+    </div>`).join('')}
+  </div>
+`);
+
+/* --- P3 : tarifs --- */
+const PACK = ['Logo professionnel','Carte de visite','Fiche Google My Business','5 visuels réseaux sociaux'];
+const COLS = [
+  ['Design Graphique', I.pal, [['Flyer / Affiche','40€'],['Visuel réseaux sociaux','25€'],['Carte de visite','50€'],['Création de logo','150€'],['Menu / Carte restaurant','70€'],['Habillage réseaux sociaux','80€'],['Forfait mensuel (8 visuels)','150€/mois']]],
+  ['Informatique', I.mon, [['Installation & config PC','dès 45€'],['E-mail professionnel','60€/an'],['Dépannage & réparation','dès 45€'],['Sauvegarde données','50€'],['Installation réseau','dès 80€'],['Mise en place caisse / TPE','Sur devis'],['Maintenance & assistance','dès 35€/mois']]],
+  ['Création Web', I.glb, [['Site vitrine (1 page)','dès 350€'],['Site vitrine (3-5 pages)','dès 500€'],['Boutique en ligne','dès 800€'],['Refonte de site','dès 250€'],['Fiche Google My Business','60€']]],
+];
+let colHTML = '';
+COLS.forEach((c, i) => {
+  colHTML += `<div class="card" id="col${i}" style="left:${124+i*562}px;top:810px;width:510px;height:560px;opacity:0">
+    <div class="iconbox" style="top:28px">${sv(c[1],'#A9B6FF',2.3)}</div>
+    <div style="position:absolute;left:112px;top:40px;font:700 32px Inter;color:#F0F5FA">${c[0]}</div>
+    <div id="colrows${i}">${c[2].map((r,j)=>`<div class="row" id="r${i}_${j}" style="top:${124+j*62}px;opacity:0">${r[0]}<b>${r[1]}</b></div>`).join('')}</div>
+  </div>`;
+});
+panel('P3', 0, 1160, 1920, 1430, `
+  <div id="h3e" style="position:absolute;left:0;top:176px;width:1920px;text-align:center;opacity:0"><div class="eyeb">TARIFS</div></div>
+  <div id="h3t" style="position:absolute;left:0;top:216px;width:1920px;text-align:center;opacity:0">
+    <div class="h2">Des prix clairs,<br><em>sans surprise</em></div></div>
+  <div class="card" id="pack" style="left:124px;top:396px;width:1672px;height:350px;opacity:0;border-color:rgba(108,99,255,.34);background:linear-gradient(126deg,#121728,#0B1019 62%)">
+    <div class="iconbox" style="left:44px;top:42px;background:rgba(108,99,255,.2)">${sv(I.rkt,'#B9C2FF',2.3)}</div>
+    <div id="pbadge" style="position:absolute;left:122px;top:52px;height:40px;border-radius:20px;background:rgba(108,99,255,.17);border:1px solid rgba(108,99,255,.45);display:flex;align-items:center;padding:0 20px;font:700 17px Inter;letter-spacing:.14em;color:#A9B6FF;opacity:0;transform-origin:50% 50%">POPULAIRE</div>
+    <div id="ptitle" style="position:absolute;left:44px;top:126px;font:800 50px Archivo;font-stretch:112%;color:#F4F8FC;opacity:0">Pack Lancement Commerce</div>
+    <div id="pprice" style="position:absolute;left:44px;top:198px;font:800 96px Archivo;font-stretch:122%;line-height:1;color:#fff;opacity:0">650€</div>
+    <div id="pold" style="position:absolute;left:344px;top:238px;font:700 38px Archivo;color:#64748B;opacity:0">
+      <span style="position:relative">650€<span id="pstrike" style="position:absolute;left:0;top:50%;height:3px;width:0;background:#64748B"></span></span></div>
+    <div id="pcut" style="position:absolute;left:492px;top:232px;height:52px;border-radius:26px;background:${AC};display:flex;align-items:center;padding:0 22px;font:800 25px Inter;color:#04131d;opacity:0;transform-origin:50% 50%;box-shadow:0 0 40px rgba(56,189,248,.55)">−46%</div>
+    <div id="pdesc" style="position:absolute;left:44px;top:300px;width:620px;font:400 21px Inter;color:#8696AC;opacity:0">Tout ce qu'il faut pour démarrer votre présence en ligne.</div>
+    <div id="pburst" style="position:absolute;left:44px;top:190px;width:230px;height:116px;border-radius:18px;border:3px solid ${AC};opacity:0"></div>
+    <div id="plist">${PACK.map((p,i)=>`<div id="pl${i}" style="position:absolute;left:1046px;top:${64+i*62}px;display:flex;align-items:center;gap:16px;font:500 26px Inter;color:#DCE6F2;opacity:0">
+      <svg width="28" height="28" viewBox="0 0 26 26"><circle cx="13" cy="13" r="13" fill="${IN}"/><path d="M7 13.4l4 4 8-8.6" fill="none" stroke="#fff" stroke-width="2.9" stroke-linecap="round" stroke-linejoin="round"/></svg>${p}</div>`).join('')}</div>
+    <div id="pbtn" style="position:absolute;left:1046px;top:316px;width:330px;height:0px;overflow:hidden"></div>
+  </div>
+  ${colHTML}
+`);
+
+/* --- P4 : contact --- */
+const FIELDS = [
+  ['fNom', 124, 280, 620, 76, 'Marie Lefèvre',            19.95, 20.45, 20.55],
+  ['fMail',788, 280, 620, 76, 'contact@salon-marie.fr',   20.60, 21.15, 21.25],
+  ['fSel', 124, 436, 1284, 76, 'Création de site vitrine', 21.30, 21.33, 21.42],
+  ['fMsg', 124, 592, 1284, 160,'Je veux un site + ma fiche Google.', 21.55, 22.05, 22.12],
+];
+const INFO = [['Email','contact-td.agence@proton.me',I.mail],['Instagram','@td.agence',I.ig],['TikTok','@techdev.agence',I.tk],['Zone','Île-de-France · sur place ou à distance',I.pin],['Disponibilité','Réponse rapide sous 24h',I.clk]];
+panel('P4', 2120, 1160, 1920, 1100, `
+  <div id="h4e" style="position:absolute;left:124px;top:152px;width:1284px;text-align:center;opacity:0"><div class="eyeb">CONTACT</div></div>
+  <div id="h4t" style="position:absolute;left:124px;top:190px;width:1284px;text-align:center;opacity:0">
+    <div class="h2">Demandez votre <em style="color:#6C63FF">devis gratuit</em></div></div>
+  <div class="flab" id="lbNom"  style="left:124px;top:248px;opacity:0">Nom</div>
+  <div class="flab" id="lbMail" style="left:788px;top:248px;opacity:0">Email</div>
+  <div class="flab" id="lbSel"  style="left:124px;top:404px;opacity:0">Type de prestation</div>
+  <div class="flab" id="lbMsg"  style="left:124px;top:560px;opacity:0">Votre besoin</div>
+  <div id="flds"></div>
+  <div id="sbtn" style="position:absolute;left:124px;top:800px;width:386px;height:80px;border-radius:40px;background:${IN};display:flex;align-items:center;justify-content:center;gap:14px;font:700 26px Inter;color:#fff;opacity:0;transform-origin:50% 50%;box-shadow:0 16px 46px rgba(108,99,255,.42)">Envoyer ma demande ${sv(I.snd,'#fff',2.4)}</div>
+  <div id="ripple" style="position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;border:3px solid ${AC};opacity:0"></div>
+  <div class="chipx" id="chip1" style="left:560px;top:810px;background:${AC};color:#04131d;box-shadow:0 0 40px rgba(56,189,248,.6)">RÉPONSE SOUS 24H</div>
+  <div class="chipx" id="chip2" style="left:898px;top:810px;background:rgba(56,189,248,.13);color:#7FD6FA;border:1.6px solid rgba(56,189,248,.6)">MAQUETTE OFFERTE</div>
+  <div id="info" style="position:absolute;left:1506px;top:250px;width:360px">
+    ${INFO.map((n,i)=>`<div id="inf${i}" style="position:absolute;left:0;top:${i*104}px;display:flex;gap:20px;opacity:0">
+      <div style="width:56px;height:56px;border-radius:14px;background:rgba(108,99,255,.14);display:flex;align-items:center;justify-content:center;flex:0 0 56px">${sv(n[2],'#A9B6FF',2.2)}</div>
+      <div><div style="font:700 21px Inter;color:#E8EFF7">${n[0]}</div><div style="font:400 19px Inter;color:#8696AC;margin-top:5px;max-width:280px">${n[1]}</div></div></div>`).join('')}
+  </div>
+`);
+
+/* liens entre panneaux (assemblage final) */
+const LINKS = [[1920,460,2120,460],[960,1000,960,1160],[3080,1000,3080,1160],[1920,1620,2120,1620]];
+LINKS.forEach((L,i)=>{
+  const horiz = L[1]===L[3];
+  const d = mk('', '', `position:absolute;left:${Math.min(L[0],L[2])}px;top:${Math.min(L[1],L[3])}px;` +
+    (horiz ? `width:${Math.abs(L[2]-L[0])}px;height:3px;background:linear-gradient(90deg,rgba(56,189,248,0),${AC},rgba(56,189,248,0))`
+           : `width:3px;height:${Math.abs(L[3]-L[1])}px;background:linear-gradient(180deg,rgba(56,189,248,0),${AC},rgba(56,189,248,0))`) +
+    `;opacity:0;box-shadow:0 0 26px 6px rgba(56,189,248,.45)`);
+  d.id = 'lk'+i; W.appendChild(d);
+});
+
+/* champs du formulaire */
+const fldEls = FIELDS.map((f) => {
+  const d = mk(`<span class="tx"></span><span class="caret"></span>${check()}`, 'fld',
+    `left:${f[1]}px;top:${f[2]}px;width:${f[3]}px;height:${f[4]}px` + (f[0]==='fMsg' ? ';align-items:flex-start;padding-top:22px' : ''));
+  d.id = f[0];
+  $('flds').appendChild(d);
+  return d;
+});
+
+/* comètes du sillage */
+const comet = [];
+for (let i = 0; i < 14; i++) {
+  const c = mk('', '', 'position:absolute;border-radius:50%;background:#dff4ff;opacity:0');
+  W.appendChild(c); comet.push(c);
+}
+
+/* légendes */
+const CAPS = [
+  { t0:3.5,  t1:6.9,  html:`<div class="ey">TECH&amp;DEV · ÎLE-DE-FRANCE</div><div class="bg">Votre commerce mérite<br><em>mieux qu'une page Facebook.</em></div>` },
+  { t0:7.7,  t1:11.5, html:`<div class="ey">SERVICES</div><div class="bg">Informatique. Web. Design.<br><em>Un seul interlocuteur.</em></div>` },
+  { t0:12.8, t1:14.5, html:`<div class="ey">TARIFS</div><div class="bg">Des prix affichés.<br><em>Zéro surprise.</em></div>` },
+  { t0:20.0, t1:23.0, html:`<div class="ey">DEVIS GRATUIT</div><div class="bg">Réponse sous 24h.<br><em>Maquette offerte.</em></div>` },
+];
+const capEls = CAPS.map((c) => { const d = mk(c.html, 'capi'); $('cap').appendChild(d); return d; });
+
+/* ---------- utilitaires temps ---------- */
+const drawBG = makeGridBG($('bg'));
+const logo = $('logo');
+const glowAt = (t) => clamp(0.26
+  + 0.85*Math.exp(-Math.pow((t-2.9)/0.70,2))
+  + 0.55*Math.exp(-Math.pow((t-15.0)/0.45,2))
+  + 0.45*Math.exp(-Math.pow((t-22.4)/0.40,2))
+  + 0.85*Math.exp(-Math.pow((t-25.4)/0.95,2)));
+const worldToScreen = (t, wx, wy) => { const c = camAt(KF, t); return [540 + c.z*(wx-c.cx), 960 + c.z*(wy-c.cy)]; };
+const ramp = (t, K) => {
+  if (t <= K[0][0]) return K[0][1];
+  for (let i = 0; i < K.length-1; i++) if (t < K[i+1][0]) return lerp(K[i][1], K[i+1][1], E.enter(prog(t, K[i][0], K[i+1][0])));
+  return K[K.length-1][1];
+};
+/* entrée générique : opacité + léger glissement vertical, ressort soft */
+function enter(el, t, t0, dy = 34, sp = 'soft') {
+  const s = spring(sp, t - t0);
+  el.style.opacity = prog(t, t0, t0 + 0.2);
+  el.style.transform = `translateY(${(1-s)*dy}px)`;
+}
+function pop(el, t, t0, sp = 'snap', base = 0.55) {
+  const s = spring(sp, t - t0);
+  el.style.opacity = t < t0 ? 0 : prog(t, t0, t0+0.08);
+  el.style.transform = `scale(${base + (1-base)*s})`;
+}
+/* révélation d'un panneau par le faisceau */
+function reveal(id, t, t0, t1, h) {
+  const rv = E.cam(prog(t, t0, t1));
+  $(id).style.clipPath = `inset(0px 0px ${(1-rv)*h}px 0px round 26px)`;
+  const bm = $(id+'beam');
+  bm.style.top = `${rv*h - 3}px`;
+  bm.style.opacity = t < t0 ? 0 : (1 - prog(t, t1-0.35, t1+0.08));
+  $(id).style.opacity = clamp(prog(t, t0, t0+0.12));
+}
+
+/* ---------- rendu ---------- */
+function renderAt(t) {
+  drawBG(t, glowAt(t));
+  const c = camAt(KF, t), c0 = camAt(KF, Math.max(0, t - 1/60));
+  const speed = Math.hypot((c.cx-c0.cx)*c.z, (c.cy-c0.cy)*c.z) * 60;
+  const blur = clamp((speed - 2500)/700, 0, 14);
+  W.style.transform = `rotateX(${c.rx}deg) rotateY(${c.ry}deg) scale(${c.z}) translate(${-c.cx}px,${-c.cy}px)`;
+  W.style.opacity = 1 - E.cam(prog(t, 24.9, 25.7));
+  W.style.filter = blur > 0.3 ? `blur(${blur.toFixed(2)}px)` : 'none';
+
+  /* --- 1. panneaux --- */
+  reveal('P1', t, 2.4, 3.5, 1000);
+  reveal('P2', t, 7.0, 7.9, 1000);
+  reveal('P3', t, 12.3, 13.1, 1430);
+  reveal('P4', t, 19.5, 20.2, 1100);
+
+  /* --- 2. héro --- */
+  enter($('h1a'), t, 3.55, 30); enter($('h1b'), t, 3.72, 30); enter($('h1c'), t, 3.89, 30);
+  enter($('h1s'), t, 4.25, 24);
+  pop($('h1btn1'), t, 4.62); pop($('h1btn2'), t, 4.74);
+
+  /* --- 3. services : onglets + rouleaux --- */
+  enter($('h2t'), t, 7.95, 30);
+  enter($('tabs'), t, 8.25, 22);
+  const ti = ramp(t, [[8.75,0],[9.25,1],[9.95,1],[10.45,2]]);
+  const seg = (arr) => { const i = Math.min(1, Math.floor(ti)); return lerp(arr[i], arr[Math.min(2, i+1)], ti - Math.floor(ti)); };
+  $('pill').style.left = `${seg(TABX)}px`;
+  $('pill').style.width = `${seg(TABW)}px`;
+  [0,1,2].forEach((i) => {
+    const on = clamp(1 - Math.abs(ti - i));
+    const tb = $('tab'+i);
+    tb.style.color = mixHex('#8C9CB2', '#FFFFFF', on);
+    tb.querySelector('svg').style.stroke = mixHex('#8C9CB2', '#A9B6FF', on);
+  });
+  [0,1,2].forEach((i) => {
+    const cd = $('card'+i);
+    const s = spring('soft', t - (8.55 + i*0.1));
+    cd.style.opacity = prog(t, 8.55 + i*0.1, 8.78 + i*0.1);
+    cd.style.transform = `translateY(${(1-s)*42}px) scale(${0.965 + 0.035*s})`;
+    $('roll'+i).style.transform = `translateY(${-ti*300}px)`;
+  });
+
+  /* --- 4. comète services -> tarifs (transition par immersion) --- */
+  const cs = 11.95, ce = 12.75;
+  comet.forEach((el, i) => {
+    const tt = t - i*0.02;
+    const p = E.cam(prog(tt, cs, ce));
+    const a = [3080, 760], ctrl = [2000, 1420], b = [860, 1500];
+    const x = (1-p)*(1-p)*a[0] + 2*(1-p)*p*ctrl[0] + p*p*b[0];
+    const y = (1-p)*(1-p)*a[1] + 2*(1-p)*p*ctrl[1] + p*p*b[1];
+    const vis = tt > cs && tt < ce + 0.05 ? 1 : 0;
+    const sz = 22*(1 - i/16);
+    el.style.width = el.style.height = `${sz}px`;
+    el.style.left = `${x - sz/2}px`; el.style.top = `${y - sz/2}px`;
+    el.style.opacity = vis*(1 - i/15)*(1 - prog(t, ce-0.05, ce+0.12));
+    el.style.boxShadow = `0 0 ${28-i}px ${9-i/2}px rgba(56,189,248,.85)`;
+  });
+
+  /* --- 5. tarifs + moment héroïque --- */
+  enter($('h3e'), t, 13.15, 18); enter($('h3t'), t, 13.3, 28);
+  const pk = $('pack');
+  const pks = spring('soft', t - 13.55);
+  pk.style.opacity = prog(t, 13.55, 13.8);
+  pk.style.transform = `translateY(${(1-pks)*46}px)`;
+  pop($('pbadge'), t, 13.85);
+  enter($('ptitle'), t, 14.0, 20);
+  enter($('pdesc'), t, 14.12, 16);
+  PACK.forEach((_, i) => pop($('pl'+i), t, 14.0 + i*0.14, 'snap', 0.72));
+
+  // 650 affiché, court silence, puis bascule à 350
+  const HERO = 14.95;
+  $('pprice').style.opacity = prog(t, 14.3, 14.45);
+  const hs = spring('reward', t - HERO);
+  const val = t < HERO ? 650 : 650 + (350-650)*hs;
+  $('pprice').textContent = `${Math.round(val)}€`;
+  $('pprice').style.color = t < HERO ? '#FFFFFF' : mixHex('#FFFFFF', AC, clamp(prog(t, HERO, HERO+0.3)));
+  $('pprice').style.textShadow = t < HERO ? 'none' : `0 0 ${46*Math.exp(-(t-HERO)*1.6)}px rgba(56,189,248,.85)`;
+  const hsc = t < HERO ? 1 : 1 + 0.085*(1 - clamp(spring('snap', t - HERO)));
+  $('pprice').style.transform = `scale(${hsc})`;
+  $('pprice').style.transformOrigin = '0% 50%';
+  $('pold').style.opacity = prog(t, HERO+0.18, HERO+0.34);
+  $('pstrike').style.width = `${E.enter(prog(t, HERO+0.26, HERO+0.52))*86}px`;
+  pop($('pcut'), t, HERO+0.42, 'reward', 0.3);
+  const bp = prog(t, HERO, HERO+0.75);
+  const bu = $('pburst');
+  bu.style.opacity = bp > 0 && bp < 1 ? 0.75*(1-bp) : 0;
+  bu.style.transform = `scale(${1 + 0.55*E.enter(bp)})`;
+  pk.style.boxShadow = `0 0 ${34 + 76*Math.exp(-Math.max(0,t-HERO)*2.2)*(t>HERO?1:0)}px rgba(56,189,248,${t>HERO?0.42:0})`;
+
+  /* --- 6. cascade des colonnes --- */
+  COLS.forEach((cl, i) => {
+    const t0 = 17.35 + i*0.16;
+    const s = spring('soft', t - t0);
+    const el = $('col'+i);
+    el.style.opacity = prog(t, t0, t0+0.22);
+    el.style.transform = `translateY(${(1-s)*40}px)`;
+    cl[2].forEach((_, j) => {
+      const tr = t0 + 0.25 + j*0.075;
+      const sr = spring('snap', t - tr);
+      const r = $(`r${i}_${j}`);
+      r.style.opacity = prog(t, tr, tr+0.14);
+      r.style.transform = `translateX(${(1-sr)*22}px)`;
+    });
+  });
+
+  /* --- 7. contact : saisie, envoi, badges --- */
+  enter($('h4e'), t, 20.25, 16); enter($('h4t'), t, 20.35, 26);
+  [['lbNom',19.9],['lbMail',20.55],['lbSel',21.25],['lbMsg',21.5]].forEach(([id, t0]) => {
+    const e = $(id); e.style.opacity = prog(t, t0, t0+0.18);
+  });
+  FIELDS.forEach((f, i) => {
+    const [, , , , , txt, ts, te, tv] = f;
+    const d = fldEls[i];
+    d.style.opacity = t >= ts ? 1 : 0;
+    if (t < ts) return;
+    const n = Math.floor(txt.length*prog(t, ts, te) + 0.0001);
+    d.querySelector('.tx').textContent = txt.slice(0, n);
+    d.querySelector('.caret').style.display = (t < tv && Math.floor(t*8) % 2 === 0) ? 'inline-block' : 'none';
+    const vp = clamp(spring('snap', t - tv));
+    d.style.borderColor = t >= tv ? mixHex('#1E2836', AC, vp) : 'rgba(255,255,255,.10)';
+    d.style.boxShadow = t >= tv ? `0 0 0 ${5*vp}px rgba(56,189,248,${0.14*vp})` : 'none';
+    const ck = d.querySelector('.ck');
+    ck.style.opacity = clamp(vp*1.5);
+    ck.style.transform = `scale(${0.4 + 0.6*vp})`;
+  });
+  INFO.forEach((_, i) => {
+    const t0 = 20.5 + i*0.11;
+    const s = spring('soft', t - t0);
+    const e = $('inf'+i);
+    e.style.opacity = prog(t, t0, t0+0.2);
+    e.style.transform = `translateX(${(1-s)*28}px)`;
+  });
+  const sb = $('sbtn');
+  const press = t >= 22.25 && t < 22.5 ? 1 - 0.055*Math.sin(prog(t, 22.25, 22.5)*Math.PI) : 1;
+  pop(sb, t, 21.0, 'snap', 0.7);
+  sb.style.transform = `scale(${(0.7 + 0.3*clamp(spring('snap', t-21.0)))*press})`;
+  const rp = prog(t, 22.3, 22.95);
+  const rip = $('ripple');
+  rip.style.opacity = rp > 0 && rp < 1 ? 0.7*(1-rp) : 0;
+  const rs = 24 + 760*E.enter(rp);
+  rip.style.width = rip.style.height = `${rs}px`;
+  rip.style.left = `${317 - rs/2}px`; rip.style.top = `${840 - rs/2}px`;
+  pop($('chip1'), t, 22.5, 'reward', 0.35);
+  pop($('chip2'), t, 22.62, 'reward', 0.35);
+
+  /* --- focus : les panneaux quittés s'assombrissent, tout se rallume à l'assemblage --- */
+  const relight = 1 - E.enter(prog(t, 23.55, 24.25));
+  $('P1dim').style.opacity = E.cam(prog(t, 6.95, 7.45))*relight;
+  $('P2dim').style.opacity = E.cam(prog(t, 11.65, 12.25))*relight;
+  $('P3dim').style.opacity = E.cam(prog(t, 19.35, 19.85))*relight;
+  $('P4dim').style.opacity = 0;
+
+  /* --- 8. assemblage : liens entre panneaux --- */
+  LINKS.forEach((_, i) => {
+    const t0 = 23.6 + i*0.12;
+    $('lk'+i).style.opacity = prog(t, t0, t0+0.3)*(1 - prog(t, 24.9, 25.4));
+  });
+
+  /* --- légendes --- */
+  let capMax = 0;
+  CAPS.forEach((cp, i) => {
+    const inn = E.enter(prog(t, cp.t0, cp.t0+0.5));
+    const out = E.exit(prog(t, cp.t1-0.3, cp.t1));
+    const a = inn*(1-out);
+    capMax = Math.max(capMax, a);
+    capEls[i].style.opacity = a;
+    capEls[i].style.transform = `translateY(${(1-inn)*34 - out*14}px)`;
+  });
+  $('capscrim').style.opacity = capMax;
+
+  /* --- logo : intro puis outro --- */
+  const S0 = 1.30;
+  let lx, ly, ls, lop = 0, lb = 0, wop = 0, sop = 0, sheen = -300;
+  if (t < 3.3) {
+    const rvl = E.enter(prog(t, 0.2, 1.5));
+    lb = (1 - rvl)*30;
+    const fly = E.enter(prog(t, 2.35, 3.15));
+    const tile = worldToScreen(Math.min(t, 3.3), 77, 48);
+    const sEnd = 46*camAt(KF, Math.min(t, 3.3)).z/392;
+    ls = lerp(S0, sEnd, fly);
+    lx = lerp(540, tile[0], fly) - 215*ls;
+    ly = lerp(830, tile[1], fly) - 162*ls;
+    lop = prog(t, 0.2, 0.9)*(1 - prog(t, 3.1, 3.3));
+    wop = prog(t, 1.25, 1.95)*(1 - prog(t, 2.35, 2.6));
+    sop = prog(t, 1.65, 2.15)*(1 - prog(t, 2.35, 2.6));
+    sheen = lerp(-250, 560, E.cam(prog(t, 1.0, 1.85)));
+  } else {
+    ls = 1.16; lx = 540 - 215*ls; ly = 812 - 162*ls;
+    lb = (1 - E.enter(prog(t, 24.9, 25.8)))*28;
+    lop = prog(t, 24.9, 25.45);
+    wop = prog(t, 25.5, 26.05);
+    sop = prog(t, 25.85, 26.3);
+    sheen = lerp(-250, 560, E.cam(prog(t, 26.0, 26.7)));
+  }
+  logo.style.transform = `translate(${lx}px,${ly}px) scale(${ls})`;
+  logo.style.opacity = lop;
+  logo.style.filter = lb > 0.2 ? `blur(${lb}px)` : 'none';
+  $('lword').style.opacity = wop;
+  $('lsub').style.opacity = sop;
+  $('sheenbar').style.transform = `translateX(${sheen}px) skewX(-18deg)`;
+  const out = $('out');
+  out.style.opacity = prog(t, 26.1, 26.6);
+  out.style.top = `${812 + 162*1.16 + 150}px`;
+}
+window.renderAt = renderAt;
+window.__dur = DUR; window.__fps = FPS;
+Promise.all([
+  document.fonts.load("800 70px Archivo"), document.fonts.load("500 24px Inter"),
+  document.fonts.load("700 20px 'JetBrains Mono'"),
+  ...[...document.images].map((im) => (im.decode ? im.decode().catch(() => {}) : Promise.resolve())),
+]).then(() => { renderAt(0); window.__ready = true; });
+</script>
+</body>
+</html>
