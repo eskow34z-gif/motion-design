@@ -6,7 +6,7 @@ Tu produis UNE vidéo motion design Flux Master. Le numéro de thème t'est donn
 1. Lis `README.md`, `MOTION_SYSTEM.md`, `tokens/motion-tokens.json`, `storyboard/V1-sillage.md`, `brand/flux-master-brand.md`, puis le brief `themes/THEME-0X-*.md`.
 2. Vérifie `assets/`. Si le logo ou les écrans nécessaires au thème manquent, ARRÊTE-TOI : écris le détail dans `outputs/LOG.md` (date, thème, assets manquants) et ne produis rien d'approximatif.
 3. Applique le Motion System V1.0 sans nouveau style. Tu peux inventer chorégraphies et transitions, dans les limites de `MOTION_SYSTEM.md` (un seul moment héroïque, un seul mouvement de caméra primaire à la fois, pas de fondu, pas d'emoji).
-4. Construis la vidéo : timeline GSAP seekable, capture frame par frame (Chrome headless), son synthétisé, encodage ffmpeg. Format vertical 1080×1920.
+4. Construis la vidéo avec le moteur du dépôt (`engine/`, voir `engine/README.md`) : `cd engine && npm install`, puis pars de `engine/theme01.html` (scène de référence) et `engine/audio_theme01.py` pour créer la scène du nouveau thème, et rends avec `engine/render.py`. Format vertical 1080×1920, 30 i/s. Contrôle d'abord une planche de frames clés avant le rendu complet.
 5. Contrôle : rends des frames clés, compare-les aux écrans de référence, corrige. Vérifie que les chiffres affichés respectent `brand/flux-master-brand.md` (valeurs illustratives si non confirmées).
 6. Livre : `outputs/THEME-0X-<slug>-<date>.mp4`, plus une ligne dans `outputs/LOG.md` (succès, durée, entorses au système éventuelles, points à vérifier).
 7. Si un quota ou un outil manque en cours de route, consigne l'état dans `outputs/LOG.md` pour qu'une tâche de rattrapage reprenne.

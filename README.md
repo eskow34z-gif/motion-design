@@ -23,9 +23,12 @@ Toute vidéo doit être une évolution du template **Flux Master Motion System V
 | `brand/` | Identité, UI, chiffres produit (à revérifier avant publication) |
 | `themes/` | 5 briefs de vidéos réseaux sociaux |
 | `schedule.json` | Cadence de production et règles de reprise |
-| `assets/` | Fichiers sources (à compléter, voir ci-dessous) |
+| `assets/` | Logo détouré, écrans, photos (voir `assets/README.md`) |
+| `engine/` | Moteur de rendu : scène du thème 1, bibliothèque de mouvement, son, rendu MP4 |
 | `outputs/` | Vidéos produites + `LOG.md` |
 
-## Limite connue
+## État
 
-Le script de rendu de la V1 et les assets extraits (logo détouré, photos, écrans reconstruits) n'ont pas été sauvegardés. Il faut les remettre dans `assets/` (voir `assets/README.md`). Sans eux, la première exécution sert de **test** : elle reconstruit ce qu'elle peut et le signale dans `outputs/LOG.md`.
+- Thème 1 (score IA) : rendu de test livré, voir `outputs/LOG.md`.
+- Le moteur actuel est une réécriture : les sources de la vidéo V1 d'origine n'ont pas été conservées. Il applique le même Motion System (tokens, caméra, transitions, structure en 7 temps).
+- Thèmes 2 à 5 : briefs prêts dans `themes/`, scènes à produire à partir de `engine/theme01.html`.

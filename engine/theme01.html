@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Flux Master — Thème 01 — Le score IA</title>
+<style>
+@font-face{font-family:'Archivo';src:url('node_modules/@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2') format('woff2');font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:'Inter';src:url('node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2');font-weight:100 900}
+@font-face{font-family:'JetBrains Mono';src:url('node_modules/@fontsource-variable/jetbrains-mono/files/jetbrains-mono-latin-wght-normal.woff2') format('woff2');font-weight:100 800}
+html,body{margin:0;padding:0;background:#04070c;width:1080px;height:1920px;overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;perspective:1700px;perspective-origin:540px 960px}
+#bg{position:absolute;left:0;top:0}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 48%,rgba(0,0,0,0) 45%,rgba(0,0,0,.62) 100%);pointer-events:none;z-index:50}
+#W{position:absolute;left:540px;top:960px;width:0;height:0;transform-origin:0 0;will-change:transform}
+.plane{position:absolute}
+.clip{position:absolute;left:0;top:0;overflow:hidden;border-radius:22px}
+.frame{position:absolute;left:0;top:0;border-radius:22px;box-shadow:0 50px 140px rgba(0,0,0,.65),0 0 0 1px rgba(255,255,255,.10)}
+.layer,.reg{position:absolute;left:0;top:0;width:100%;height:100%}
+.layer img,.reg img{position:absolute;left:0;top:0;display:block}
+#dim1{position:absolute;left:0;top:0;width:1912px;height:916px;background:rgba(3,6,10,.62);backdrop-filter:blur(3px);clip-path:path(evenodd,'M0 0H1912V916H0ZM97 425H526V916H97Z')}
+#hl1{position:absolute;left:96px;top:424px;width:430px;height:500px;border:2px solid #00C96B;border-radius:14px;box-shadow:0 0 44px rgba(0,201,107,.55)}
+#btn{position:absolute;left:116px;top:874px;width:190px;height:42px;border-radius:9px;background:#111b2b;color:#fff;font:800 14.5px Inter;letter-spacing:.07em;display:flex;align-items:center;justify-content:center;transform-origin:50% 50%}
+#ripple{position:absolute;width:20px;height:20px;border-radius:50%;border:3px solid #00C96B;left:0;top:0}
+#cur{position:absolute;left:0;top:0;filter:drop-shadow(0 4px 8px rgba(0,0,0,.5))}
+#beam1{position:absolute;left:0;top:0;width:1912px;height:8px;background:linear-gradient(90deg,rgba(0,201,107,0),#00C96B 12%,#aaffd2 50%,#00C96B 88%,rgba(0,201,107,0));box-shadow:0 0 40px 12px rgba(0,201,107,.65);border-radius:4px}
+.fld{position:absolute;box-sizing:border-box;border-radius:10px;background:#fbfdff;border:1.5px solid #d3dbe4;font:500 17px Inter;color:#13202c;display:flex;align-items:center;padding:0 18px;opacity:0}
+.fld .ck{position:absolute;right:14px;top:50%;margin-top:-10px;width:20px;height:20px;opacity:0}
+.fld .caret{display:inline-block;width:2px;height:20px;background:#00A85A;margin-left:1px;vertical-align:middle}
+#beam2{position:absolute;left:96px;width:1002px;height:3px;background:linear-gradient(90deg,rgba(0,201,107,0),#00C96B 10%,#aaffd2 50%,#00C96B 90%,rgba(0,201,107,0));box-shadow:0 0 26px 8px rgba(0,201,107,.55);opacity:0}
+#pend{position:absolute;left:1127px;top:122px;width:763px;height:121px;box-sizing:border-box;border:2px solid #00C96B;border-radius:14px;box-shadow:0 0 30px rgba(0,201,107,.45);opacity:0}
+#sc{position:absolute;left:1127px;top:122px;width:763px;height:121px;border-radius:16px;overflow:hidden;background:#fff;opacity:0;box-shadow:0 0 0 1px rgba(0,201,107,.0)}
+#sc .in{position:absolute;left:0;top:0;width:763px;height:430px;opacity:0}
+.lbl{position:absolute;font:800 14px Inter;letter-spacing:.14em;color:#9fb3be}
+.veh{position:absolute;right:30px;top:26px;font:500 14px 'JetBrains Mono';color:#7f97a4;letter-spacing:.04em}
+#gaugeWrap{position:absolute;left:34px;top:64px;width:270px;height:270px}
+#num{position:absolute;left:0;top:0;width:270px;height:270px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+#num b{font:800 96px Archivo;font-stretch:125%;line-height:1}
+#num i{font:600 15px Inter;font-style:normal;color:#7f97a4;letter-spacing:.12em;margin-top:6px}
+.frow{position:absolute;left:340px;width:390px;height:40px}
+.frow span{position:absolute;left:0;top:0;font:600 17px Inter;color:#d3e2ea}
+.frow .tr{position:absolute;left:0;top:28px;width:390px;height:7px;border-radius:4px;background:rgba(255,255,255,.12)}
+.frow .fl{position:absolute;left:0;top:28px;height:7px;border-radius:4px;background:linear-gradient(90deg,#00A85A,#00C96B)}
+.chip{position:absolute;top:366px;height:40px;border-radius:20px;display:flex;align-items:center;gap:8px;padding:0 20px;font:800 15px Inter;letter-spacing:.09em;transform-origin:50% 50%}
+#c1{left:34px;background:#00C96B;color:#04140b;box-shadow:0 0 34px rgba(0,201,107,.7)}
+#c2{left:196px;background:rgba(0,201,107,.14);color:#35e393;border:1.5px solid rgba(0,201,107,.65)}
+#burst{position:absolute;left:0;top:0;width:270px;height:270px;border-radius:50%;border:4px solid #aaffd2;opacity:0}
+#cap{position:absolute;left:60px;top:250px;width:960px;z-index:40}
+.capi{position:absolute;left:0;top:0;width:960px;opacity:0}
+.eyebrow{font:700 22px 'JetBrains Mono';letter-spacing:.22em;color:#00C96B;margin-bottom:22px}
+.big{font:800 70px Archivo;font-stretch:125%;line-height:1.04;color:#f4f8fb;text-transform:uppercase}
+.big em{font-style:normal;color:#00C96B}
+#logo{position:absolute;left:0;top:0;width:424px;height:560px;transform-origin:0 0;z-index:30;opacity:0}
+#logo img{position:absolute;display:block}
+#sheenwrap{position:absolute;left:0;top:0;width:424px;height:460px;overflow:hidden;-webkit-mask-image:url('../assets/logo/mark.png');-webkit-mask-size:100% 100%}
+#sheenbar{position:absolute;left:0;top:-40px;width:150px;height:560px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.85) 50%,rgba(255,255,255,0));transform:skewX(-18deg)}
+#url{position:absolute;left:0;width:1080px;top:1280px;text-align:center;font:500 27px 'JetBrains Mono';letter-spacing:.08em;color:#8ea6b3;opacity:0;z-index:30}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="bg" width="1080" height="1920"></canvas>
+  <div id="W"></div>
+  <div id="cap"></div>
+  <div id="logo">
+    <img id="lmark" src="../assets/logo/mark.png" style="left:0;top:0;width:424px;height:460px">
+    <div id="sheenwrap"><div id="sheenbar"></div></div>
+    <img id="lword" src="../assets/logo/wordmark.png" style="left:0;top:460px;width:424px;height:56px">
+    <img id="larc" src="../assets/logo/arc.png" style="left:0;top:510px;width:424px;height:50px;filter:brightness(2.2) saturate(1.5)">
+  </div>
+  <div id="url">sk-flux-master-v-16.vercel.app</div>
+  <div id="vig"></div>
+</div>
+
+<script src="node_modules/gsap/dist/gsap.min.js"></script>
+<script src="node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="lib.js"></script>
+<script>
+initEases();
+const DUR = 18.6, FPS = 30;
+const X2 = 2500;                    // décalage de l'écran Analyse dans le monde
+const IMG = '../assets/screens/';
+
+/* ---------- Caméra ---------- */
+const KF = [
+  { t: 0,    cx: 956,  cy: 458, z: 0.50, rx: 0, ry: 0 },
+  { t: 3.3,  cx: 956,  cy: 458, z: 0.52, rx: 0, ry: 0,  e: 'cam' },
+  { t: 4.5,  cx: 956,  cy: 458, z: 0.54, rx: 2, ry: -6, e: 'cam' },
+  { t: 5.7,  cx: 311,  cy: 640, z: 1.65, rx: 0, ry: 5,  e: 'cam' },
+  { t: 6.2,  cx: 311,  cy: 640, z: 1.72, rx: 0, ry: 5,  e: 'lin' },
+  { t: 7.3,  cx: X2 + 597, cy: 330, z: 1.0, rx: 0, ry: -3, e: 'whip' },
+  { t: 10.4, cx: X2 + 597, cy: 430, z: 1.08, rx: 0, ry: 0, e: 'lin' },
+  { t: 11.4, cx: X2 + 1508, cy: 337, z: 1.16, rx: 0, ry: -4, e: 'whip' },
+  { t: 13.6, cx: X2 + 1508, cy: 337, z: 1.20, rx: 0, ry: -2, e: 'lin' },
+  { t: 14.7, cx: X2 + 1508, cy: 337, z: 1.23, rx: 0, ry: -2, e: 'lin' },
+  { t: 17.0, cx: X2 + 1508, cy: 370, z: 0.55, rx: 3, ry: 10, e: 'cam' },
+  { t: 18.6, cx: X2 + 1508, cy: 370, z: 0.50, rx: 3, ry: 12, e: 'lin' },
+];
+
+/* ---------- Construction du DOM ---------- */
+const W = document.getElementById('W');
+
+// Plan 1 : Véhicules
+const REG = [ // [x1,y1,x2,y2, tStart]
+  [0, 0, 77, 916, 2.55], [77, 0, 1912, 67, 2.62], [77, 67, 1912, 115, 2.70],
+  [77, 115, 1912, 196, 2.78], [77, 196, 1912, 425, 2.88],
+  [97, 425, 526, 916, 3.02], [551, 425, 980, 916, 3.10], [1005, 425, 1434, 916, 3.18], [1459, 425, 1888, 916, 3.26],
+];
+let holes = '';
+REG.forEach(([a, b, c, d]) => { holes += `M${a} ${b}H${c}V${d}H${a}Z`; });
+const p1 = document.createElement('div');
+p1.className = 'plane'; p1.id = 'p1';
+p1.style.cssText = 'left:0;top:0;width:1912px;height:916px';
+p1.innerHTML = `
+  <div class="frame" style="width:1912px;height:916px"></div>
+  <div class="clip" id="p1clip" style="width:1912px;height:916px">
+    <div class="layer" id="p1base"><img src="${IMG}vehicules.png" style="clip-path:path(evenodd,'M0 0H1912V916H0Z${holes}')"></div>
+    <div id="cov" style="position:absolute;left:0;top:425px;width:1912px;height:491px;background:#0a121a"></div>
+    <div id="p1regs"></div>
+    <div id="dim1"></div><div id="hl1"></div>
+    <div id="btn">ANALYSER IA</div>
+    <div id="ripple"></div>
+    <svg id="cur" width="40" height="48" viewBox="0 0 24 28"><path d="M2 2 L2 22 L7.5 17.5 L11 26 L14.5 24.5 L11 16.5 L18 16.5 Z" fill="#fff" stroke="#0b1119" stroke-width="1.6" stroke-linejoin="round"/></svg>
+  </div>
+  <div id="beam1"></div>`;
+W.appendChild(p1);
+const regEls = REG.map(([x1, y1, x2, y2, ts]) => {
+  const d = document.createElement('div');
+  d.className = 'reg';
+  d.style.transformOrigin = `${(x1 + x2) / 2}px ${(y1 + y2) / 2}px`;
+  d.innerHTML = `<img src="${IMG}vehicules.png" style="clip-path:inset(${y1}px ${1912 - x2}px ${916 - y2}px ${x1}px)">`;
+  document.getElementById('p1regs').appendChild(d);
+  return { d, ts };
+});
+
+// Plan 2 : Analyse lien
+const FIELDS = [ // id, x,y,w,h, texte, tStart, tEnd(frappe), tValid, select?
+  ['lien', 96, 158, 1002, 45, 'https://www.autoscout24.es/anuncios/audi-a8-2001', 7.45, 7.95, 8.00],
+  ['prix', 602, 321, 496, 45, '3 000', 8.00, 8.30, 8.40],
+  ['mod', 96, 398, 497, 45, 'Audi A8', 8.35, 8.65, 8.75],
+  ['an', 602, 398, 496, 45, '2001', 8.70, 8.95, 9.10],
+  ['km', 96, 476, 497, 45, '249 000', 9.05, 9.30, 9.45],
+  ['en', 96, 552, 497, 47, 'Autre', 9.65, 9.65, 9.80, true],
+  ['pm', 602, 476, 496, 45, '4 200', 9.80, 10.00, 10.15],
+];
+const FACTORS = [['Prix vs marché', 92], ['Kilométrage', 74], ['Année', 58], ['Énergie', 66], ['Source', 88], ['Fiabilité vendeur', 71], ['Fraîcheur', 95]];
+const p2 = document.createElement('div');
+p2.className = 'plane'; p2.id = 'p2';
+p2.style.cssText = `left:${X2}px;top:0;width:1910px;height:915px`;
+p2.innerHTML = `
+  <div class="frame" style="width:1910px;height:915px"></div>
+  <div class="clip" style="width:1910px;height:915px">
+    <img src="${IMG}analyse-lien.png" style="position:absolute;left:0;top:0;display:block">
+    <div id="flds"></div>
+    <div id="beam2"></div>
+    <div id="dim2" style="position:absolute;left:0;top:0;width:1112px;height:915px;opacity:0;background:linear-gradient(90deg,rgba(3,6,10,.80) 0,rgba(3,6,10,.80) calc(100% - 50px),rgba(3,6,10,0) 100%)"></div>
+    <div id="pend"></div>
+    <div id="sc"><div class="in">
+      <div class="lbl" style="left:34px;top:28px">FLUX SCORE</div>
+      <div class="veh">AUDI A8 · 2001 · 249 000 KM</div>
+      <div id="gaugeWrap">
+        <div id="burst"></div>
+        <svg width="270" height="270" viewBox="0 0 270 270" style="transform:rotate(-90deg)">
+          <circle cx="135" cy="135" r="112" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="18"/>
+          <circle id="ring" cx="135" cy="135" r="112" fill="none" stroke="#00C96B" stroke-width="18" stroke-linecap="round" stroke-dasharray="703.7" stroke-dashoffset="703.7"/>
+        </svg>
+        <div id="num"><b id="numv">0</b><i>/ 100</i></div>
+      </div>
+      <div id="frows"></div>
+      <div class="chip" id="c1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#04140b" stroke-width="2.4" stroke-linejoin="round"><path d="M6 3h12l4 6-10 12L2 9z"/><path d="M2 9h20M9 3l3 6 3-6M12 21 9 9M12 21l3-12"/></svg>PÉPITE</div>
+      <div class="chip" id="c2">BONNE AFFAIRE</div>
+    </div></div>
+  </div>`;
+W.appendChild(p2);
+const fldEls = FIELDS.map((f) => {
+  const d = document.createElement('div');
+  d.className = 'fld';
+  d.style.cssText = `left:${f[1]}px;top:${f[2]}px;width:${f[3]}px;height:${f[4]}px`;
+  d.innerHTML = `<span class="tx"></span><span class="caret"></span>${f[9] ? '<svg style="position:absolute;right:46px;top:50%;margin-top:-6px" width="14" height="12" viewBox="0 0 14 12"><path d="M2 3l5 5 5-5" fill="none" stroke="#13202c" stroke-width="2.2" stroke-linecap="round"/></svg>' : ''}<svg class="ck" viewBox="0 0 20 20"><circle cx="10" cy="10" r="10" fill="#00C96B"/><path d="M5.5 10.5l3 3 6-6.5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  document.getElementById('flds').appendChild(d);
+  return d;
+});
+FACTORS.forEach(([n, v], i) => {
+  const r = document.createElement('div');
+  r.className = 'frow'; r.style.top = `${70 + i * 40}px`;
+  r.innerHTML = `<span>${n}</span><div class="tr"></div><div class="fl" style="width:0px"></div>`;
+  document.getElementById('frows').appendChild(r);
+});
+const frowEls = [...document.querySelectorAll('.frow')];
+
+// Comète (monde)
+const comet = [];
+for (let i = 0; i < 12; i++) {
+  const c = document.createElement('div');
+  c.style.cssText = 'position:absolute;border-radius:50%;background:#aaffd2;opacity:0';
+  W.appendChild(c); comet.push(c);
+}
+
+// Légendes
+const CAPS = [
+  { t0: 3.3, t1: 4.95, html: `<div class="eyebrow">FLUX MASTER · SCORE IA</div><div class="big">UNE BONNE<br><em>AFFAIRE ?</em></div>` },
+  { t0: 7.0, t1: 10.3, html: `<div class="eyebrow">FLUX MASTER · SCORE IA</div><div class="big">COLLE LE LIEN.<br><em>LANCE L'ANALYSE.</em></div>` },
+  { t0: 11.2, t1: 15.0, html: `<div class="eyebrow">FLUX MASTER · SCORE IA</div><div class="big" style="font-size:62px">RÉPONSE EN<br><em>QUELQUES SECONDES.</em></div>` },
+];
+const capEls = CAPS.map((c) => {
+  const d = document.createElement('div');
+  d.className = 'capi'; d.innerHTML = c.html;
+  document.getElementById('cap').appendChild(d);
+  return d;
+});
+
+const drawBG = makeBG(document.getElementById('bg'));
+const logo = document.getElementById('logo');
+
+/* ---------- Utilitaires de scène ---------- */
+const glowAt = (t) => clamp(0.28 + 0.8 * Math.exp(-Math.pow((t - 2.9) / 0.7, 2)) + 0.8 * Math.exp(-Math.pow((t - 10.7) / 0.7, 2))
+  + 0.9 * Math.exp(-Math.pow((t - 13.05) / 0.35, 2)) + 0.8 * Math.exp(-Math.pow((t - 17.0) / 0.9, 2)));
+const worldToScreen = (t, wx, wy) => { const c = camAt(KF, t); return [540 + c.z * (wx - c.cx), 960 + c.z * (wy - c.cy)]; };
+const scoreAt = (t) => {
+  const K = [[11.95, 0], [12.2, 27], [12.45, 54], [12.7, 72], [13.05, 87]];
+  if (t <= K[0][0]) return 0;
+  for (let i = 0; i < K.length - 1; i++) {
+    if (t < K[i + 1][0]) return lerp(K[i][1], K[i + 1][1], E.enter(prog(t, K[i][0], K[i + 1][0])));
+  }
+  return 87;
+};
+const ringColor = (v) => v < 50 ? mixHex('#ff3b4e', '#ffb020', v / 50) : mixHex('#ffb020', '#00C96B', clamp((v - 50) / 25));
+const BEAM2 = [[7.4, 180], [8.0, 180], [8.4, 343], [8.75, 420], [9.1, 420], [9.45, 498], [9.8, 575], [10.15, 498]];
+const beamY = (t) => {
+  if (t <= BEAM2[0][0]) return BEAM2[0][1];
+  for (let i = 0; i < BEAM2.length - 1; i++) {
+    if (t < BEAM2[i + 1][0]) return lerp(BEAM2[i][1], BEAM2[i + 1][1], E.enter(prog(t, BEAM2[i][0], BEAM2[i + 1][0])));
+  }
+  return BEAM2[BEAM2.length - 1][1];
+};
+
+/* ---------- Rendu à l'instant t ---------- */
+function renderAt(t) {
+  drawBG(t, glowAt(t));
+
+  // caméra
+  const c = camAt(KF, t);
+  const c0 = camAt(KF, Math.max(0, t - 1 / 60));
+  const speed = Math.hypot((c.cx - c0.cx) * c.z, (c.cy - c0.cy) * c.z) * 60;
+  const blur = clamp((speed - 2500) / 700, 0, 14);
+  W.style.transform = `rotateX(${c.rx}deg) rotateY(${c.ry}deg) scale(${c.z}) translate(${-c.cx}px,${-c.cy}px)`;
+  const wOp = 1 - E.cam(prog(t, 15.4, 16.3));
+  W.style.opacity = wOp;
+  W.style.filter = blur > 0.3 ? `blur(${blur.toFixed(2)}px)` : 'none';
+
+  /* --- Plan 1 : réveil par masque + stagger --- */
+  const rv = E.cam(prog(t, 2.4, 3.5));
+  document.getElementById('p1clip').style.clipPath = `inset(0px 0px ${(1 - rv) * 916}px 0px round 22px)`;
+  const bm = document.getElementById('beam1');
+  bm.style.top = `${rv * 916 - 4}px`;
+  bm.style.opacity = t < 2.4 ? 0 : 1 - prog(t, 3.3, 3.7);
+  document.querySelector('#p1 .frame').style.opacity = clamp(rv * 3);
+  regEls.forEach(({ d, ts }) => {
+    const s = spring('soft', t - ts);
+    const o = prog(t, ts, ts + 0.18);
+    d.style.opacity = o;
+    d.style.transform = `translateY(${(1 - s) * 30}px) scale(${0.96 + 0.04 * s})`;
+  });
+  document.getElementById('cov').style.opacity = 1 - prog(t, 3.25, 3.55);
+  document.getElementById('dim2').style.opacity = prog(t, 11.0, 11.5);
+  // focus A8
+  document.getElementById('dim1').style.opacity = prog(t, 4.55, 5.3);
+  document.getElementById('hl1').style.opacity = prog(t, 4.7, 5.4);
+  // curseur
+  const cp = E.cam(prog(t, 5.0, 5.9));
+  const cx = lerp(600, 211, cp), cy = lerp(560, 893, cp);
+  const cur = document.getElementById('cur');
+  cur.style.transform = `translate(${cx - 3}px,${cy - 3}px)`;
+  cur.style.opacity = prog(t, 4.85, 5.1) * (1 - prog(t, 6.5, 6.7));
+  // bouton + clic
+  const btn = document.getElementById('btn');
+  const bo = prog(t, 5.85, 5.95);
+  btn.style.opacity = bo;
+  const press = t < 6.05 ? 1 : (t < 6.2 ? lerp(1, 0.92, prog(t, 6.05, 6.2)) : 0.92 + 0.08 * spring('snap', t - 6.2));
+  btn.style.transform = `scale(${press})`;
+  btn.style.boxShadow = `0 0 ${30 * prog(t, 6.05, 6.3)}px rgba(0,201,107,${0.7 * prog(t, 6.05, 6.3)})`;
+  const rp = prog(t, 6.05, 6.55);
+  const rip = document.getElementById('ripple');
+  rip.style.opacity = rp > 0 && rp < 1 ? 0.6 * (1 - rp) : 0;
+  rip.style.transform = `translate(${211 - 10 - 90 * rp}px,${893 - 10 - 90 * rp}px) scale(${1 + 9 * rp})`;
+  rip.style.transformOrigin = '10px 10px';
+  rip.style.left = '0px'; rip.style.top = '0px';
+  rip.style.transform = `translate(${211 - 10}px,${893 - 10}px) scale(${1 + 8 * E.enter(rp)})`;
+
+  /* --- Plan 2 : champs --- */
+  FIELDS.forEach((f, i) => {
+    const [, , , , , txt, ts, te, tv, isSel] = f;
+    const d = fldEls[i];
+    const on = t >= ts;
+    d.style.opacity = on ? 1 : 0;
+    if (!on) return;
+    const n = isSel ? txt.length : Math.floor(txt.length * E.lin(prog(t, ts, te)) + 0.0001);
+    d.querySelector('.tx').textContent = txt.slice(0, n);
+    const typing = !isSel && t < tv;
+    d.querySelector('.caret').style.display = typing && Math.floor(t * 8) % 2 === 0 ? 'inline-block' : 'none';
+    const vp = spring('snap', t - tv);
+    const v = t >= tv ? 1 : 0;
+    d.style.borderColor = v ? mixHex('#d3dbe4', '#00C96B', clamp(vp)) : '#d3dbe4';
+    d.style.boxShadow = v ? `0 0 0 ${4 * clamp(vp)}px rgba(0,201,107,${0.16 * clamp(vp)})` : 'none';
+    d.querySelector('.ck').style.opacity = clamp(vp * 1.5);
+    d.querySelector('.ck').style.transform = `scale(${0.4 + 0.6 * vp})`;
+  });
+  const b2 = document.getElementById('beam2');
+  b2.style.opacity = prog(t, 7.4, 7.6) * (1 - prog(t, 10.2, 10.45));
+  b2.style.top = `${beamY(t)}px`;
+
+  /* --- Comète (monde) --- */
+  const cs = 10.45, ce = 11.25;
+  comet.forEach((el, i) => {
+    const tt = t - i * 0.022;
+    const p = E.cam(prog(tt, cs, ce));
+    const a = [X2 + 850, 498], ctrl = [X2 + 1150, 700], b = [X2 + 1508, 330];
+    const x = (1 - p) * (1 - p) * a[0] + 2 * (1 - p) * p * ctrl[0] + p * p * b[0];
+    const y = (1 - p) * (1 - p) * a[1] + 2 * (1 - p) * p * ctrl[1] + p * p * b[1];
+    const vis = tt > cs && tt < ce + 0.05 ? 1 : 0;
+    const sz = 20 * (1 - i / 14);
+    el.style.width = el.style.height = `${sz}px`;
+    el.style.left = `${x - sz / 2}px`; el.style.top = `${y - sz / 2}px`;
+    el.style.opacity = vis * (1 - i / 13) * (1 - prog(t, ce - 0.05, ce + 0.1));
+    el.style.boxShadow = `0 0 ${24 - i}px ${8 - i / 2}px rgba(0,201,107,.8)`;
+  });
+
+  /* --- Carte score --- */
+  const pend = document.getElementById('pend');
+  pend.style.opacity = prog(t, 11.05, 11.3) * (1 - prog(t, 11.45, 11.7));
+  const sc = document.getElementById('sc');
+  sc.style.opacity = prog(t, 11.3, 11.4);
+  const g = E.enter(prog(t, 11.35, 12.0));
+  sc.style.height = `${lerp(121, 430, g)}px`;
+  sc.style.background = mixHex('#ffffff', '#0b141b', E.cam(prog(t, 11.35, 11.8)));
+  const pulse = 0.5 + 0.5 * Math.sin(t * 6);
+  const calm = t > 13.15 && t < 13.65 ? 1 : 0;
+  sc.style.boxShadow = `0 0 ${50 + 20 * pulse * calm}px rgba(0,201,107,${0.30 * prog(t, 11.6, 12.2) + 0.15 * calm * pulse})`;
+  sc.querySelector('.in').style.opacity = prog(t, 11.75, 12.1);
+
+  const v = scoreAt(t);
+  const col = ringColor(v);
+  const ring = document.getElementById('ring');
+  ring.style.strokeDashoffset = 703.7 * (1 - v / 100);
+  ring.style.stroke = col;
+  const nv = document.getElementById('numv');
+  nv.textContent = Math.round(v); nv.style.color = col;
+  const gw = document.getElementById('gaugeWrap');
+  const imp = t >= 13.05 ? 1 + 0.07 * (1 - spring('snap', t - 13.05)) * 1 : 1;
+  gw.style.transform = `scale(${imp})`;
+  const bp = prog(t, 13.05, 13.75);
+  const bu = document.getElementById('burst');
+  bu.style.opacity = bp > 0 && bp < 1 ? 0.6 * (1 - bp) : 0;
+  bu.style.transform = `scale(${0.85 + 1.1 * E.enter(bp)})`;
+  frowEls.forEach((r, i) => {
+    const q = E.enter(prog(t, 12.0 + i * 0.11, 12.6 + i * 0.11));
+    r.querySelector('.fl').style.width = `${FACTORS[i][1] / 100 * 390 * q}px`;
+    r.style.opacity = prog(t, 12.0 + i * 0.11, 12.25 + i * 0.11);
+  });
+  // récompense
+  const s1 = spring('reward', t - 13.7), s2 = spring('reward', t - 13.85);
+  const c1 = document.getElementById('c1'), c2 = document.getElementById('c2');
+  c1.style.opacity = prog(t, 13.7, 13.78); c1.style.transform = `scale(${0.3 + 0.7 * s1})`;
+  c2.style.opacity = prog(t, 13.85, 13.93); c2.style.transform = `scale(${0.3 + 0.7 * s2})`;
+
+  /* --- Légendes --- */
+  CAPS.forEach((cp2, i) => {
+    const inn = E.enter(prog(t, cp2.t0, cp2.t0 + 0.55));
+    const out = E.exit(prog(t, cp2.t1 - 0.3, cp2.t1));
+    capEls[i].style.opacity = inn * (1 - out);
+    capEls[i].style.transform = `translateY(${(1 - inn) * 36 - out * 14}px)`;
+  });
+
+  /* --- Logo : intro, vol vers la tuile FM, outro --- */
+  const S0 = 1.35;
+  let lx, ly, ls, lop = 0, lb = 0, wop = 0, aop = 0, sheen = -300;
+  if (t < 3.2) {
+    // intro + vol
+    const rvl = E.enter(prog(t, 0.2, 1.5));
+    lb = (1 - rvl) * 28;
+    const fly = E.enter(prog(t, 2.3, 3.1));
+    const tile = worldToScreen(Math.min(t, 3.2), 44, 47);
+    const sEnd = 40 * camAt(KF, t).z / 460;
+    ls = lerp(S0, sEnd, fly);
+    const mx = lerp(540, tile[0], fly), my = lerp(812.5, tile[1], fly);
+    lx = mx - 212 * ls; ly = my - 230 * ls;
+    lop = prog(t, 0.2, 0.9) * (1 - prog(t, 3.05, 3.2));
+    wop = prog(t, 1.2, 1.9) * (1 - prog(t, 2.3, 2.55));
+    aop = prog(t, 1.6, 2.1) * (1 - prog(t, 2.3, 2.55));
+    sheen = lerp(-250, 560, E.cam(prog(t, 0.95, 1.8)));
+  } else {
+    // outro
+    ls = 1.2;
+    lx = 540 - 212 * ls; ly = 800 - 230 * ls;
+    lb = (1 - E.enter(prog(t, 16.0, 16.9))) * 26;
+    lop = prog(t, 16.0, 16.5);
+    wop = prog(t, 16.5, 17.1);
+    aop = prog(t, 16.9, 17.4);
+    sheen = lerp(-250, 560, E.cam(prog(t, 17.3, 18.0)));
+  }
+  logo.style.transform = `translate(${lx}px,${ly}px) scale(${ls})`;
+  logo.style.opacity = lop;
+  logo.style.filter = lb > 0.2 ? `blur(${lb}px)` : 'none';
+  document.getElementById('lword').style.opacity = wop;
+  document.getElementById('larc').style.opacity = aop;
+  document.getElementById('sheenbar').style.transform = `translateX(${sheen}px) skewX(-18deg)`;
+  const url = document.getElementById('url');
+  url.style.opacity = prog(t, 17.4, 17.9);
+  url.style.top = `${800 + 230 * 1.2 + 70 * 1.2 + 60}px`;
+}
+
+window.renderAt = renderAt;
+window.__dur = DUR; window.__fps = FPS;
+Promise.all([
+  document.fonts.load("800 70px Archivo"), document.fonts.load("500 17px Inter"),
+  document.fonts.load("500 17px 'JetBrains Mono'"),
+  ...[...document.images].map((im) => (im.decode ? im.decode().catch(() => {}) : Promise.resolve())),
+]).then(() => { renderAt(0); window.__ready = true; });
+</script>
+</body>
+</html>
