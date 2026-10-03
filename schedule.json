@@ -1,0 +1,17 @@
+{
+  "timezone": "Europe/Paris",
+  "note": "Intervalle de réinitialisation du quota à confirmer dans Réglages > Usage. Espacer les tâches d'au moins cet intervalle.",
+  "min_gap_hours_between_runs": 5,
+  "format": "1080x1920",
+  "runs": [
+    { "theme": "THEME-01-score-ia", "order": 1 },
+    { "theme": "THEME-02-sniper", "order": 2 },
+    { "theme": "THEME-03-anti-arnaque", "order": 3 },
+    { "theme": "THEME-04-import-europe", "order": 4 },
+    { "theme": "THEME-05-analytics", "order": 5 }
+  ],
+  "catch_up": {
+    "enabled": true,
+    "rule": "lire outputs/LOG.md et produire le premier thème sans vidéo livrée"
+  }
+}

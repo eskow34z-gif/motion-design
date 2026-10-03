@@ -1,0 +1,32 @@
+{
+  "name": "flux-master-motion-system",
+  "version": "1.0.0",
+  "codename": "SILLAGE",
+  "durations_ms": { "micro": 140, "short": 320, "medium": 600, "camera_min": 1000, "camera_max": 1600 },
+  "easing": {
+    "enter": "cubic-bezier(0.16, 1, 0.3, 1)",
+    "exit": "cubic-bezier(0.55, 0, 1, 0.45)",
+    "camera": "cubic-bezier(0.65, 0, 0.35, 1)",
+    "camera_whip": "cubic-bezier(0.83, 0, 0.17, 1)"
+  },
+  "springs": {
+    "snap": { "k": 420, "c": 30, "overshoot_pct": 3, "use": "badges" },
+    "soft": { "k": 180, "c": 20, "use": "nav, cartes" },
+    "reward": { "k": 380, "c": 16, "overshoot_pct": 12, "use": "moment héroïque uniquement" }
+  },
+  "stagger_ms": { "nav": 40, "text": 50, "cards": 90, "rows": 100, "analysis_steps": 350 },
+  "depth": { "planes": ["environment", "ui", "overlays"], "max_blur_px": 2 },
+  "camera": {
+    "model": "look-at",
+    "zoom_min": 0.62,
+    "zoom_max": 1.78,
+    "max_rotation_deg": 8,
+    "max_simultaneous_primary_moves": 1
+  },
+  "render": {
+    "reference": { "fps": 60, "width": 1920, "height": 1080 },
+    "vertical": { "fps": 30, "width": 1080, "height": 1920 },
+    "method": "timeline GSAP seekable + capture frame par frame (Chrome headless) + ffmpeg",
+    "audio": "synthétisé en Python/numpy, mixé dans le même appel ffmpeg"
+  }
+}
