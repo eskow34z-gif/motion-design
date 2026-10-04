@@ -35,6 +35,10 @@ async def main():
     ap.add_argument('--audio', default='')
     ap.add_argument('--out', default='')
     ap.add_argument('--crf', default='18')
+    ap.add_argument('--sub', type=int, default=1, help="sous-images par image pour le flou de bougé (1 = désactivé)")
+    ap.add_argument('--x264', default='', help="paramètres x264, ex. aq-mode=3")
+    ap.add_argument('--start', type=float, default=0.0)
+    ap.add_argument('--until', type=float, default=0.0)
     a = ap.parse_args()
 
     srv, port = serve()
@@ -78,19 +82,41 @@ async def main():
 
         if a.out:
             n = int(round(dur * fps))
-            cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', str(fps), '-c:v', 'mjpeg', '-i', '-']
+            sub = max(1, a.sub)
+            if sub == 1:
+                cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', str(fps), '-c:v', 'mjpeg', '-i', '-']
+            else:  # flou de bougé réel : moyenne de sous-images (obturateur 180°)
+                cmd = ['ffmpeg', '-y', '-loglevel', 'error', '-f', 'rawvideo', '-pix_fmt', 'rgb24',
+                       '-s', f'{a.width}x{a.height}', '-framerate', str(fps), '-i', '-']
             if a.audio:
                 cmd += ['-i', a.audio]
             cmd += ['-c:v', 'libx264', '-preset', 'medium', '-crf', a.crf, '-pix_fmt', 'yuv420p', '-r', str(fps)]
+            if a.x264:
+                cmd += ['-x264-params', a.x264]
             if a.audio:
                 cmd += ['-c:a', 'aac', '-b:a', '192k', '-shortest']
             cmd += ['-movflags', '+faststart', a.out]
             ff = subprocess.Popen(cmd, stdin=subprocess.PIPE)
-            for i in range(n):
+            if sub > 1:
+                import io
+                import numpy as np
+                from PIL import Image
+            i0 = int(round(a.start * fps)); i1 = int(round(a.until * fps)) if a.until else n
+            for i in range(i0, i1):
                 t = i / fps
-                await page.evaluate('(t)=>renderAt(t)', t)
-                jpg = await page.screenshot(type='jpeg', quality=94)
-                ff.stdin.write(jpg)
+                if sub == 1:
+                    await page.evaluate('(t)=>renderAt(t)', t)
+                    jpg = await page.screenshot(type='jpeg', quality=94)
+                    ff.stdin.write(jpg)
+                else:
+                    acc = None
+                    for k in range(sub):
+                        ts = max(0.0, min(dur - 1e-3, t + (k / (sub - 1) - 0.5) * 0.5 / fps))
+                        await page.evaluate('(t)=>renderAt(t)', ts)
+                        jpg = await page.screenshot(type='jpeg', quality=95)
+                        im = np.asarray(Image.open(io.BytesIO(jpg)).convert('RGB'), dtype=np.float32)
+                        acc = im if acc is None else acc + im
+                    ff.stdin.write(np.clip(acc / sub + 0.5, 0, 255).astype(np.uint8).tobytes())
                 if i % 30 == 0:
                     print(f'frame {i}/{n}', flush=True)
             ff.stdin.close()

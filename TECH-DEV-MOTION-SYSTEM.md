@@ -57,3 +57,16 @@ Une seule couleur accentuée par plan.
 - Les tarifs affichés doivent correspondre au site le jour de la publication.
 - Toute entorse est consignée dans `outputs/LOG.md` avant le rendu.
 - Export : 1080×1920, 30 i/s, H.264 CRF 22 avec `aq-mode=3` (le grain fait exploser le débit à CRF 17 : 77 Mo contre 16 Mo).
+
+---
+
+# Variante « SIGNATURE » (TD04) — film de marque
+Référence : `engine/theme-td04.html` + `engine/audio_theme_td04.py`. À utiliser quand le but est l'**image de marque** (pub sponsorisée, vidéo épinglée), pas la conversion directe.
+
+- **Logo au début et à la fin** : révélé par un scan lumineux, légère profondeur 3D (rotation + extrusion), reflet métallique masqué par la forme du logo. `assets/td/mark.png` tel quel, jamais redessiné.
+- **Palette stricte** : fond `#030508`, bleu du logo en dégradé `#6FD6FF → #2E8CFF → #1F63F0` (signature, jamais en aplat plein cadre), blanc `#F4F6FA`, gris métal `#8E97A8`. Pas de violet, pas d'orange.
+- **Typo** : Inter Display 800 (titres, −0,034 em, ajustés pour tenir dans 760 px), Inter 500/600 (secondaire), Space Grotesk 700 (mot-symbole TECH&DEV), JetBrains Mono (index 01/06).
+- **Entrée de texte** : montée masquée avec flou → net, sortie vers le haut. Aberration chromatique uniquement sur un mot d'impact (PROTÉGER.), 0,07 s.
+- **Services** : un univers graphique de 1,5 s par service, même mise en page (visuel au centre, index + titre + barre de progression dessous), raccords par zoom ou morphing.
+- **Accélération** : fragments des 6 services en profondeur, aspirés vers un point → implosion (point, éclat, onde) → logo.
+- **Rendu** : `render.py --sub 4` pour un flou de bougé réel (4 sous-images, obturateur 180°), `--crf 20 --x264 aq-mode=3`.
