@@ -70,3 +70,10 @@ Référence : `engine/theme-td04.html` + `engine/audio_theme_td04.py`. À utilis
 - **Services** : un univers graphique de 1,5 s par service, même mise en page (visuel au centre, index + titre + barre de progression dessous), raccords par zoom ou morphing.
 - **Accélération** : fragments des 6 services en profondeur, aspirés vers un point → implosion (point, éclat, onde) → logo.
 - **Rendu** : `render.py --sub 4` pour un flou de bougé réel (4 sous-images, obturateur 180°), `--crf 20 --x264 aq-mode=3`.
+
+## SIGNATURE V2 (TD05) — remplace TD04
+Référence : `engine/theme-td05.html` + `engine/audio_theme_td05.py`. Retour client sur TD04 : « pas assez travaillé, bleu répétitif ».
+- **Couleur** : noir, blanc, chrome. Le bleu est réservé à cinq moments (D du logo, « PROS. », cœur IA / chemin réseau, verrou, « PARLONS-EN. »). Jamais de brume bleue, jamais de lignes bleues.
+- **3D temps réel** (three.js, studio noir à bandes lumineuses) : logo extrudé depuis `assets/td/mark-outline.json`, face = `assets/td/mark-face.png` (logo exact), révélé en silhouette puis par un scan.
+- **Une composition par service**, objet 3D + titre plein cadre placé différemment à chaque fois ; une scène claire (design) pour casser le rythme.
+- **Rendu** : `render.py --sub 3 --crf 19 --x264 aq-mode=3 --vf "noise=alls=5:allf=t"` (WebGL via SwiftShader, environ 30 min).

@@ -37,6 +37,7 @@ async def main():
     ap.add_argument('--crf', default='18')
     ap.add_argument('--sub', type=int, default=1, help="sous-images par image pour le flou de bougé (1 = désactivé)")
     ap.add_argument('--x264', default='', help="paramètres x264, ex. aq-mode=3")
+    ap.add_argument('--vf', default='', help='filtre vidéo ffmpeg appliqué à l\'encodage, ex. grain')
     ap.add_argument('--start', type=float, default=0.0)
     ap.add_argument('--until', type=float, default=0.0)
     a = ap.parse_args()
@@ -45,13 +46,13 @@ async def main():
     rel = Path(a.html).resolve().relative_to(ROOT).as_posix()
     async with async_playwright() as pw:
         kw = {'executable_path': CHROME} if CHROME else {}
-        browser = await pw.chromium.launch(args=['--no-sandbox', '--hide-scrollbars', '--force-color-profile=srgb'], **kw)
+        browser = await pw.chromium.launch(args=['--no-sandbox', '--hide-scrollbars', '--force-color-profile=srgb', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'], **kw)
         page = await browser.new_page(viewport={'width': a.width, 'height': a.height})
         errs = []
         page.on('pageerror', lambda e: errs.append(str(e)))
         page.on('console', lambda m: errs.append(m.text) if m.type == 'error' else None)
         await page.goto(f'http://127.0.0.1:{port}/{rel}')
-        await page.wait_for_function('window.__ready === true', timeout=60000)
+        await page.wait_for_function('window.__ready === true', timeout=180000)
         dur = await page.evaluate('window.__dur')
         fps = await page.evaluate('window.__fps')
 
@@ -90,6 +91,8 @@ async def main():
                        '-s', f'{a.width}x{a.height}', '-framerate', str(fps), '-i', '-']
             if a.audio:
                 cmd += ['-i', a.audio]
+            if a.vf:
+                cmd += ['-vf', a.vf]
             cmd += ['-c:v', 'libx264', '-preset', 'medium', '-crf', a.crf, '-pix_fmt', 'yuv420p', '-r', str(fps)]
             if a.x264:
                 cmd += ['-x264-params', a.x264]
