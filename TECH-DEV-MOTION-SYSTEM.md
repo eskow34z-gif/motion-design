@@ -77,3 +77,18 @@ Référence : `engine/theme-td05.html` + `engine/audio_theme_td05.py`. Retour cl
 - **3D temps réel** (three.js, studio noir à bandes lumineuses) : logo extrudé depuis `assets/td/mark-outline.json`, face = `assets/td/mark-face.png` (logo exact), révélé en silhouette puis par un scan.
 - **Une composition par service**, objet 3D + titre plein cadre placé différemment à chaque fois ; une scène claire (design) pour casser le rythme.
 - **Rendu** : `render.py --sub 3 --crf 19 --x264 aq-mode=3 --vf "noise=alls=5:allf=t"` (WebGL via SwiftShader, environ 30 min).
+
+---
+
+# Variante « DÉCRYPTAGE » (TD06) — actualité expliquée
+Référence : `engine/theme-td06.html` + `engine/audio_theme_td06.py` + `engine/mix_td06.sh`. Pour un sujet d'actualité expliqué en 25-30 s, avec Tech&Dev seulement à la fin.
+
+- **Voix off** ElevenLabs « Max - Narration » (`eleven_v4`). La transcription Scribe de la prise donne les temps au mot près, recopiés dans `RAW` ; la voix est accélérée au mixage (`SPD`) et décalée (`OFF`), la scène calcule `T(mot) = OFF + brut / SPD`. Changer de prise = remplacer la table `RAW`.
+- **Pas de musique** : bruitages synthétisés (impacts, souffles, clics d'interface, notifications), mixés environ 11 dB sous la voix, puis −14 LUFS en deux passes.
+- **Typo** : Archivo 800 condensé 72 % pour les titres (plus haut, plus « info »), Archivo 900 étendu 125 % pour les chiffres seuls (400, 10 %, 2024-2025), JetBrains Mono pour tout ce qui est « système ».
+- **Couleur** : celles de la marque. Bleu pour les faits et la marque, rouge réservé au problème (fermé, bloqué, 10 %, « ne saute pas »).
+- **HUD** : « ● SUJET » en haut à gauche, « DÉCRYPTAGE » à droite, ligne de sources datée dessous. Disparaît avant le mur final.
+- **Humour visuel** par objets d'interface : interrupteur, fenêtre « accès refusé », erreur 404, notification de rappel. Une blague par plan, jamais aux dépens des personnes.
+- **Fin** : mur de mots-clés de la vidéo qui se monte (« on bloque rien ») puis s'effondre (« on débloque »), cadenas qui s'ouvre, pastilles de services, logo `assets/td/mark.png` + Space Grotesk + les deux pseudos.
+- **Rendu** : `render.py --cpu --sub 3 --crf 20 --x264 aq-mode=3 --vf "noise=alls=5:allf=t"` puis `mix_td06.sh`. Les canvas « mid » et « fx » utilisent `willReadFrequently` et ne sont jamais laissés vides : sinon une image figée peut rester affichée d'une capture à l'autre.
+

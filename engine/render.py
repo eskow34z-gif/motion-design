@@ -40,13 +40,15 @@ async def main():
     ap.add_argument('--vf', default='', help='filtre vidéo ffmpeg appliqué à l\'encodage, ex. grain')
     ap.add_argument('--start', type=float, default=0.0)
     ap.add_argument('--until', type=float, default=0.0)
+    ap.add_argument('--cpu', action='store_true', help="compositeur logiciel (--disable-gpu) : ~5x plus rapide sans WebGL")
     a = ap.parse_args()
 
     srv, port = serve()
     rel = Path(a.html).resolve().relative_to(ROOT).as_posix()
     async with async_playwright() as pw:
         kw = {'executable_path': CHROME} if CHROME else {}
-        browser = await pw.chromium.launch(args=['--no-sandbox', '--hide-scrollbars', '--force-color-profile=srgb', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'], **kw)
+        gpu = ['--disable-gpu'] if a.cpu else ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist']
+        browser = await pw.chromium.launch(args=['--no-sandbox', '--hide-scrollbars', '--force-color-profile=srgb', *gpu], **kw)
         page = await browser.new_page(viewport={'width': a.width, 'height': a.height})
         errs = []
         page.on('pageerror', lambda e: errs.append(str(e)))
