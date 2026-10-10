@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>TD07 — images clés</title>
+<style>
+@font-face{font-family:'Bricolage';src:url('../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2') format('woff2');font-weight:200 800}
+html,body{margin:0;padding:0;width:1080px;height:1920px;overflow:hidden;background:#fff}
+#frame{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden}
+#frame svg{position:absolute;left:0;top:0}
+.tx{position:absolute;white-space:nowrap;font-family:'Bricolage';font-weight:800;font-variation-settings:'opsz' 96;letter-spacing:-0.025em}
+.tx .l{display:block}
+.tx span{position:relative}
+</style>
+</head>
+<body>
+<div id="frame"></div>
+<script src="art.js"></script>
+<script>
+const W = 1080, H = 1920;
+let OUTLINE = null;
+
+/* ------------------------------------------------------------------ */
+/* Définition des images clés                                          */
+/* texte : lignes = listes de segments {s, hl?, c?}                     */
+/* ------------------------------------------------------------------ */
+const FR = [];
+
+/* 0 — système : palette, typo, expressions */
+FR.push({
+  name: '00 · Système', bg: C.paper,
+  back: () => {
+    const sw = [['yellow', 'Jaune surligneur'], ['pink', 'Rose surligneur'], ['green', 'Vert surligneur'], ['blue', 'Bleu surligneur'], ['violet', 'Violet'], ['orange', 'Orange'], ['ink', 'Encre']];
+    let s = dots(0, 0, W, H, 34, 3, C.ink, 0.06);
+    sw.forEach(([k], i) => {
+      const x = 80 + (i % 4) * 240, y = 560 + Math.floor(i / 4) * 250;
+      s += stick(`<rect x="${x}" y="${y}" width="200" height="200" rx="40" fill="${C[k]}"/>`, 8, 10);
+    });
+    [['neutral', 0, [0, 0], 0], ['shout', 14, [0, 0], 0], ['smile', -6, [4, -4], 0]].forEach(([m, br, lk, bl], i) => {
+      s += kid({ x: 200 + i * 340, y: 1520, s: 0.82, mouth: m, brows: br, look: lk, blink: bl, rest: 'down',
+        hood: [C.pink, C.blue, C.green][i], hoodD: [C.pinkD, C.blueD, C.greenD][i] });
+    });
+    s += `<rect x="0" y="1774" width="${W}" height="146" fill="${C.paper}"/>`;
+    return s;
+  },
+  texts: [
+    { x: 80, y: 120, size: 92, lines: [[{ s: 'On t’' }, { s: 'entend', hl: C.yellow }]] },
+    { x: 84, y: 250, size: 34, w: 600, c: C.ink2, lines: [[{ s: 'TD07 · pop flat · Bricolage Grotesque 800' }], [{ s: 'Fonds pleins couleur surligneur, ombres franches,' }], [{ s: 'aucun noir : l’encre est un indigo #241A45.' }]], lh: 1.3, wt: 500 },
+    ...['#FFE234', '#FF5DAA', '#3BE89A', '#4DA3FF', '#9B7BFF', '#FF8A3D', '#241A45'].map((hex, i) => ({
+      x: 80 + (i % 4) * 240, y: 772 + Math.floor(i / 4) * 250, size: 26, wt: 600, c: C.ink2, lines: [[{ s: hex }]] })),
+  ],
+});
+
+/* 1 — la main levée depuis la rentrée */
+FR.push({
+  name: '01 · Tu lèves la main', bg: C.yellow,
+  back: () => {
+    let s = dots(560, 120, 520, 620, 30, 4.2, C.yellowD, 0.7);
+    s += `<circle cx="860" cy="320" r="300" fill="${C.blue}"/>`;
+    s += `<circle cx="860" cy="320" r="360" fill="none" stroke="${C.white}" stroke-width="6" stroke-dasharray="4 26" stroke-linecap="round"/>`;
+    s += star4(1000, 700, 26, C.white, 10) + star4(640, 120, 18, C.white) + star4(110, 820, 20, C.pink, 20);
+    s += squiggle(70, 1700, 260, 22, 6, C.pink, 12, -8);
+    s += clock(190, 1000, 76, 300, 70);
+    s += `<path d="M96,930 A110,110 0 0 1 150,894" stroke="${C.ink}" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+    s += `<path d="M286,1066 A110,110 0 0 1 238,1104" stroke="${C.ink}" stroke-width="8" fill="none" stroke-linecap="round"/>`;
+    s += leaf(330, 850, 1.1, 30, C.orange, C.orangeD) + leaf(110, 1210, 0.9, -40, C.pink, C.pinkD) + leaf(400, 1150, 0.8, 70, C.orange, C.orangeD) + leaf(960, 1000, 1, -20, C.green, C.greenD);
+    /* traits de vitesse le long du bras */
+    s += [[820, 520, 860, 470], [690, 640, 650, 600], [860, 760, 900, 720]].map(([a, b, c, d]) => `<path d="M${a},${b} L${c},${d}" stroke="${C.white}" stroke-width="9" stroke-linecap="round"/>`).join('');
+    s += kid({ x: 540, y: 1300, s: 1.22, arm: { hx: 186, hy: -830, bend: 60 }, mouth: 'flat', brows: 6, look: [5, -6], blink: 0.35 });
+    s += desk(540, 1508, 800, C.violet, C.violetD) + notebook(380, 1500);
+    return s;
+  },
+  texts: [
+    { x: 80, y: 300, size: 124, lines: [[{ s: 'Tu lèves' }], [{ s: 'la main', hl: C.white }], [{ s: 'depuis la' }], [{ s: 'rentrée.' }]] },
+  ],
+});
+
+/* 2 — prof absent, remplacé par personne */
+FR.push({
+  name: '02 · Remplacé par personne', bg: C.blue,
+  back: () => {
+    let s = dots(0, 1180, W, 760, 30, 4.2, C.blueD, 0.8);
+    s += `<ellipse cx="540" cy="1190" rx="430" ry="380" fill="${C.blueL}" opacity=".55"/>`;
+    s += star4(960, 860, 24, C.yellow, 12) + star4(130, 920, 18, C.white);
+    s += chair(600, 1290, C.pink, C.pinkD);
+    s += stickyNote(600, 1120, -7);
+    s += `<rect x="0" y="1640" width="${W}" height="280" fill="${C.blueD}"/>`;
+    s += desk(600, 1300, 700, C.orange, C.orangeD, C.yellow);
+    s += `<g transform="translate(170,1600)">${[0, 1, 2].map((i) => `<path d="M${-120 - i * 60},${30 - i * 6} L${-70 - i * 60},${30 - i * 6}" stroke="${C.white}" stroke-width="8" stroke-linecap="round" opacity="${0.9 - i * 0.25}"/>`).join('')}</g>`;
+    s += dust(80, 1650, 0.9, 0.85) + dust(20, 1640, 0.6, 0.6);
+    s += tumbleweed(170, 1590, 70, 20);
+    return s;
+  },
+  texts: [
+    { x: 80, y: 250, size: 68, c: C.white, lines: [[{ s: 'Ton prof est absent ?' }]] },
+    { x: 80, y: 350, size: 124, lines: [[{ s: 'Remplacé par…' }]] },
+    { x: 80, y: 480, size: 190, lines: [[{ s: 'personne.', hl: C.yellow }]] },
+    { x: 600, y: 1120, size: 54, center: true, rot: -7, lines: [[{ s: 'ABSENT' }]] },
+  ],
+});
+
+/* 3 — une heure sur dix */
+FR.push({
+  name: '03 · 1 heure sur 10', bg: C.pink,
+  back: () => {
+    let s = dots(0, 0, W, 900, 30, 4.2, C.pinkD, 0.6);
+    s += `<circle cx="160" cy="1720" r="260" fill="${C.yellow}"/>` + star4(980, 1010, 26, C.white, 10) + star4(90, 990, 18, C.yellow);
+    const cols = [160, 350, 540, 730, 920], rows = [1180, 1320];
+    const tabs = [C.yellow, C.green, C.blue, C.violet, C.orange, C.blue, C.yellow, C.orange, C.green, C.violet];
+    rows.forEach((y, r) => cols.forEach((x, c) => {
+      const i = r * 5 + c;
+      s += i === 3 ? slot(x, y, 160, 108) : card(x, y, 160, 108, tabs[i]);
+    }));
+    s += trail([[730, 1110], [760, 1040], [840, 990], [900, 1010], [890, 1070], [830, 1060], [850, 990], [920, 930]], C.white, 7);
+    s += plane(960, 880, 0.95, -22);
+    return s;
+  },
+  texts: [
+    { x: 80, y: 186, size: 68, c: C.white, lines: [[{ s: 'Presque' }]] },
+    { x: 80, y: 270, size: 108, lines: [[{ s: '1 heure de cours' }]] },
+    { x: 70, y: 380, size: 330, c: C.white, shadow: true, lines: [[{ s: 'sur 10', hl: null }]] },
+    { x: 80, y: 720, size: 108, lines: [[{ s: 'a ' }, { s: 'sauté.', hl: C.yellow }]] },
+    { x: 84, y: 1440, size: 26, wt: 600, c: C.ink2, lines: [[{ s: '2024-2025 · 9,8 % des heures non assurées · ministère de l’Éducation' }]] },
+  ],
+});
+
+/* 4 — mode silencieux */
+FR.push({
+  name: '04 · Mode silencieux', bg: C.green,
+  back: () => {
+    let s = dots(0, 1300, W, 620, 30, 4.2, C.greenD, 0.8);
+    s += star4(120, 1110, 22, C.white) + star4(1000, 1260, 18, C.yellow, 20);
+    s += bubble(560, 1060, 600, 270, 'bl', C.white, 1.06);
+    s += bang(430, 1068, 1.25, -12) + bang(560, 1056, 1.45, 0) + bang(690, 1068, 1.25, 12);
+    s += squiggle(330, 980, 110, 10, 4, C.pink, 8, -10) + squiggle(700, 1150, 110, 10, 4, C.pink, 8, 8);
+    s += muteButton(860, 914, 80, 0.7);
+    s += finger(866, 840, 4, 1.05, '#E9B48A', '#D29672', C.violet);
+    s += kid({ x: 420, y: 1560, s: 1.12, mouth: 'shout', brows: 14, hood: C.blue, hoodD: C.blueD, rest: 'down' });
+    return s;
+  },
+  texts: [
+    { x: 80, y: 250, size: 108, lines: [[{ s: 'Et quand' }], [{ s: 'tu râles,' }], [{ s: 'on te met' }], [{ s: 'en mode' }], [{ s: 'silencieux.', hl: C.pink }]] },
+  ],
+});
+
+/* 5 — des milliers de mains, 3 000 profs */
+FR.push({
+  name: '05 · 3 000 profs en renfort', bg: C.violet,
+  back: () => {
+    let s = dots(0, 0, W, 1000, 34, 4.2, C.violetD, 0.6);
+    s += `<circle cx="900" cy="230" r="120" fill="${C.yellow}"/>`;
+    s += [[160, 300, 1.2, 10], [820, 600, 1, -14]].map(([x, y, k, r]) => `<g transform="translate(${x},${y}) scale(${k})"><circle r="46" fill="#fff"/><circle cx="50" cy="12" r="36" fill="#fff"/><circle cx="-48" cy="14" r="32" fill="#fff"/><rect x="-80" y="14" width="164" height="32" rx="16" fill="#fff"/></g>`).join('');
+    s += parachute(300, 360, 0.95, -8, C.yellow, C.pink, SKINS[1]);
+    s += parachute(760, 250, 0.7, 7, C.green, C.blue, SKINS[2]);
+    s += parachute(620, 700, 0.62, -4, C.orange, C.yellow, SKINS[0]);
+    s += star4(80, 620, 20, C.yellow) + star4(1000, 880, 24, C.white, 18);
+    const sleeves = [[C.pink, C.pinkD], [C.yellow, C.yellowD], [C.green, C.greenD], [C.blue, C.blueD], [C.orange, C.orangeD]];
+    for (let i = 0; i < 10; i++) {
+      const x = 40 + i * 112, y = 1560 + (i % 3) * 70 - (i % 2) * 40;
+      s += raisedHand(x, y, 600, sleeves[i % 5][0], sleeves[i % 5][1], SKINS[i % 5], (i % 2 ? 6 : -6));
+    }
+    return s;
+  },
+  texts: [
+    { x: 70, y: 1020, size: 196, c: C.white, shadow: true, lines: [[{ s: '3 000 profs' }]] },
+    { x: 84, y: 1260, size: 92, lines: [[{ s: 'annoncés en ' }, { s: 'renfort.', hl: C.yellow }]] },
+    { x: 86, y: 1380, size: 26, wt: 600, c: C.white, lines: [[{ s: 'Annonce du ministre de l’Éducation, 8 octobre 2026' }]] },
+  ],
+});
+
+/* 6 — enfin, « Oui ? » */
+FR.push({
+  name: '06 · Oui ?', bg: C.paper,
+  back: () => {
+    let s = dots(0, 0, W, H, 34, 3, C.ink, 0.07);
+    s += `<circle cx="760" cy="1240" r="420" fill="${C.yellow}"/>`;
+    s += confetti(7, 26, [C.pink, C.green, C.blue, C.yellow, C.violet], 60, 760, 960, 560);
+    s += bubble(380, 860, 340, 190, 'bl', C.pink);
+    s += kid({ x: 760, y: 1520, s: 1.15, arm: { hx: 120, hy: -380, bend: 10 }, mouth: 'smile', brows: -6, look: [-8, -4], hood: C.green, hoodD: C.greenD, rest: 'down' });
+    s += kid({ x: 30, y: 1290, s: 1.3, headOnly: true, mouth: 'o', look: [10, 0], brows: -8, skinPair: SKINS[1], hair: C.orangeD, glasses: true, bun: true, tilt: 22 });
+    s += grip(0, 960, 0, 1.25, SKINS[1][0], SKINS[1][1]);
+    return s;
+  },
+  texts: [
+    { x: 80, y: 250, size: 72, c: C.ink2, lines: [[{ s: 'Comme quoi…' }]] },
+    { x: 80, y: 350, size: 116, lines: [[{ s: 'quand tu parles,' }]] },
+    { x: 80, y: 480, size: 180, lines: [[{ s: 'ça compte.', hl: C.green }]] },
+    { x: 380, y: 796, size: 104, center: true, c: C.white, lines: [[{ s: 'Oui ?' }]] },
+  ],
+});
+
+/* 7 — logo seul */
+FR.push({
+  name: '07 · Logo', bg: C.paper,
+  back: () => dots(0, 0, W, H, 34, 3, C.ink, 0.07) + (OUTLINE ? logo(OUTLINE, 540, 900, 360) : ''),
+  texts: [
+    { x: 540, y: 1120, size: 36, wt: 600, center: true, c: C.ink2, lines: [[{ s: '@td.agence  ·  @techdev.agency' }]] },
+  ],
+});
+
+/* ------------------------------------------------------------------ */
+function textHTML(T) {
+  const lh = T.lh || 0.96;
+  const st = [`left:${T.x}px`, `top:${T.y}px`, `font-size:${T.size}px`, `line-height:${lh}`, `color:${T.c || C.ink}`, `font-weight:${T.wt || 800}`];
+  if (T.center) st.push('transform:translateX(-50%)' + (T.rot ? ` rotate(${T.rot}deg)` : ''), 'text-align:center');
+  if (T.shadow) st.push(`text-shadow:10px 12px 0 ${C.ink}`);
+  return `<div class="tx" style="${st.join(';')}">${T.lines.map((L) => `<span class="l">${L.map((g) => `<span${g.hl ? ` data-hl="${g.hl}"` : ''}>${g.s}</span>`).join('')}</span>`).join('')}</div>`;
+}
+window.render = async function (n) {
+  const F = FR[n];
+  const el = document.getElementById('frame');
+  el.innerHTML = `<svg id="back" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="${F.bg}"/>${F.back()}<g id="hls"></g></svg>` +
+    F.texts.map(textHTML).join('');
+  await document.fonts.ready;
+  /* surligneurs : mesurés sur le texte réel, glissés sous le texte */
+  let hl = '';
+  el.querySelectorAll('[data-hl]').forEach((sp, i) => {
+    const r = sp.getBoundingClientRect(), fs = parseFloat(getComputedStyle(sp).fontSize);
+    hl += highlighter(r.left - fs * 0.06, r.top + r.height * 0.42, r.width + fs * 0.1, r.height * 0.5, sp.dataset.hl, 1, i + n);
+  });
+  document.getElementById('hls').innerHTML = hl;
+  return true;
+};
+/* export pour Figma : SVG de fond + boîtes de texte mesurées ligne par ligne */
+window.exportFrame = async function (n) {
+  await window.render(n);
+  const F = FR[n];
+  let svg = document.getElementById('back').outerHTML.replace('id="back" ', 'xmlns="http://www.w3.org/2000/svg" ');
+  const dotsP = [];
+  svg = svg.replace(/<g data-dots="([^"]+)"[^>]*>.*?<\/g>/g, (m, a) => { dotsP.push(a.split(',')); return ''; });
+  svg = svg.replace(/<rect width="1080" height="1920" fill="[^"]+"><\/rect>/, '');
+  const texts = [];
+  document.querySelectorAll('.tx').forEach((d, i) => {
+    const T = F.texts[i];
+    d.querySelectorAll('.l').forEach((l) => {
+      const r = l.getBoundingClientRect();
+      texts.push({ s: l.textContent, x: r.left, y: r.top, w: r.width, h: r.height, size: T.size, lh: (T.lh || 0.96) * T.size,
+        c: T.c || C.ink, wt: T.wt || 800, center: !!T.center, rot: T.rot || 0, shadow: !!T.shadow,
+        cx: T.center ? T.x : null, cy: T.center ? T.y : null });
+    });
+  });
+  return { name: F.name, bg: F.bg, svg, texts, dots: dotsP };
+};
+window.FRAME_COUNT = FR.length;
+fetch('../../assets/td/mark-outline.json').then((r) => r.json()).then((o) => { OUTLINE = o; window.__ready = true; });
+</script>
+</body>
+</html>
