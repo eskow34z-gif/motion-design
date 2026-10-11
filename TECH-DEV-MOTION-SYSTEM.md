@@ -92,3 +92,17 @@ Référence : `engine/theme-td06.html` + `engine/audio_theme_td06.py` + `engine/
 - **Fin** : mur de mots-clés de la vidéo qui se monte (« on bloque rien ») puis s'effondre (« on débloque »), cadenas qui s'ouvre, pastilles de services, logo `assets/td/mark.png` + Space Grotesk + les deux pseudos.
 - **Rendu** : `render.py --cpu --sub 3 --crf 20 --x264 aq-mode=3 --vf "noise=alls=5:allf=t"` puis `mix_td06.sh`. Les canvas « mid » et « fx » utilisent `willReadFrequently` et ne sont jamais laissés vides : sinon une image figée peut rester affichée d'une capture à l'autre.
 
+---
+
+# Variante « POP » (TD07) — actu racontée en dessin animé
+Référence : `engine/td07/` (`art.js`, `scene.html`, `audio_td07.py`, `mix_td07.sh`, `voice_takes.py`). Pour parler à un public jeune, avec de l'humour et de l'empathie.
+
+- **Interdit** : fond noir ou sombre. Fonds pleins aux couleurs surligneur (jaune `#FFE234`, rose `#FF5DAA`, vert `#3BE89A`, bleu `#4DA3FF`, violet `#9B7BFF`, crème `#FFF4E2`), une couleur par plan. L'encre est un indigo `#241A45`, jamais du noir.
+- **Dessin** : pop flat vectoriel, formes rondes, ombre portée franche décalée (10 px, 12 px) en encre, trames de points. Un personnage récurrent (lycéen en sweat) qui porte l'histoire ; expressions : neutre, fâché, crie, content, surpris.
+- **Typo** : Bricolage Grotesque 800 (taille optique automatique), −2,5 % d'interlettrage. Chaque mot apparaît quand la voix le dit (ressort avec dépassement), mot clé surligné d'un coup de surligneur. Chiffres en blanc avec ombre encre.
+- **Transitions** : jamais de fondu. Ouverture en cercle depuis l'objet qui vient de bouger (main, avion, bouton) ou volets inclinés, toujours deux couleurs de tête avant la scène suivante.
+- **Mouvement** : ressorts partout, écrasement et étirement sur les impacts, secousse de caméra courte, léger travelling avant par plan, animation secondaire continue (étoiles qui scintillent, trames qui dérivent, personnages qui respirent et clignent).
+- **Voix** : ElevenLabs, voix jeune qui tutoie (« Léo »). On génère 4 prises, on les transcrit toutes (Scribe), `voice_takes.py` reconnaît la prise envoyée par sa durée et écrit `voice.json`.
+- **Son** : pas de musique (le client pose un son TikTok), bruitages environ 10 LU sous la voix, −14 LUFS ; toujours fournir aussi une version voix seule.
+- **Images clés** : `styleframes.html` + `shoot.py` (planche), `figma_code.py` pour les envoyer dans Figma en vectoriel avec textes modifiables, avant d'animer.
+

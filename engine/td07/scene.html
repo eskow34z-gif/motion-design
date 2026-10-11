@@ -1,0 +1,589 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Tech&Dev — TD07 — On t'entend</title>
+<style>
+@font-face{font-family:'Bricolage';src:url('../node_modules/@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-opsz-normal.woff2') format('woff2');font-weight:200 800}
+html,body{margin:0;padding:0;width:1080px;height:1920px;overflow:hidden;background:#FFF4E2}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden}
+.scene{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;display:none}
+.cam{position:absolute;left:0;top:0;width:1080px;height:1920px}
+.cam svg{position:absolute;left:0;top:0}
+.txt{position:absolute;left:0;top:0;width:1080px;height:1920px}
+.ln{position:absolute;white-space:nowrap;font-family:'Bricolage';font-weight:800;line-height:.96}
+.w{display:inline-block;transform-origin:50% 75%;opacity:0}
+.wipe{position:absolute;left:0;top:0;width:1080px;height:1920px;display:none}
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../node_modules/gsap/dist/CustomEase.min.js"></script>
+<script src="../lib.js"></script>
+<script src="art.js"></script>
+<script>
+initEases();
+const W = 1080, H = 1920, FPS = 30, DUR = 22.6, OFF = 0.15;
+let WT = [], OUTLINE = null;
+const w = (i) => WT[i];
+const $ = (id) => document.getElementById(id);
+const io = (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);      // ease in-out cubic
+const kk = (v) => (+v).toFixed(4);
+const around = (cx, cy, k, r = 0, kx = null, ky = null) =>
+  `translate(${f1(cx)},${f1(cy)}) rotate(${f1(r)}) scale(${kk(kx == null ? k : kx)},${kk(ky == null ? k : ky)}) translate(${f1(-cx)},${f1(-cy)})`;
+const sp = (t, t0, name = 'reward') => (t < t0 ? 0 : spring(name, t - t0));
+const twinkle = (x, y, r, col, t, i, rot = 0) => star4(x, y, r * (1 + 0.28 * Math.sin(t * 5.5 + i * 1.7)), col, rot + t * 25 + i * 30);
+function rng(seed) { let s = seed; return () => ((s = (s * 16807) % 2147483647) / 2147483647); }
+
+/* trame de points en motif (léger à rendre) */
+function dotsP(id, x0, y0, w0, h0, gap, r, col, op, ox = 0, oy = 0) {
+  return `<defs><pattern id="${id}" width="${gap}" height="${gap * 2}" patternUnits="userSpaceOnUse" patternTransform="translate(${f1(ox)},${f1(oy)})">
+    <circle cx="${gap / 2}" cy="${gap / 2}" r="${r}" fill="${col}"/><circle cx="0" cy="${gap * 1.5}" r="${r}" fill="${col}"/><circle cx="${gap}" cy="${gap * 1.5}" r="${r}" fill="${col}"/></pattern></defs>
+    <rect x="${x0}" y="${y0}" width="${w0}" height="${h0}" fill="url(#${id})" opacity="${op}"/>`;
+}
+/* lignes d'impact autour d'un point */
+function burstLines(x, y, r0, len, n, t, t0, col = C.ink, rot = 0, wd = 9) {
+  const p = (t - t0) / 0.3;
+  if (p < 0 || p > 1) return '';
+  const a = E.enter(p), op = 1 - E.exit(p);
+  let s = '';
+  for (let i = 0; i < n; i++) {
+    const ang = (rot + (i / n) * 360) * Math.PI / 180;
+    const r1 = r0 + a * 40, r2 = r1 + len * (1 - 0.6 * a);
+    s += `<path d="M${f1(x + Math.cos(ang) * r1)},${f1(y + Math.sin(ang) * r1)} L${f1(x + Math.cos(ang) * r2)},${f1(y + Math.sin(ang) * r2)}" stroke="${col}" stroke-width="${wd}" stroke-linecap="round" opacity="${op.toFixed(3)}"/>`;
+  }
+  return s;
+}
+
+/* ====================================================================== */
+/* SCÈNES                                                                  */
+/* ====================================================================== */
+let SC = [];
+function buildScenes() {
+  const cut = [0, w(7) - 0.22, w(15) - 0.2, w(29) - 0.2, w(39) - 0.2, w(61) - 0.2, 20.0];
+  const SKY = [C.pink, C.yellow];
+
+  /* ---------------- S1 · Tu lèves la main ---------------- */
+  const S1 = {
+    bg: C.yellow, t0: 0,
+    lines: [
+      L(80, 300, 124, C.ink, [['Tu', 0], ['lèves', 1]]),
+      L(80, 419, 124, C.ink, [['la', 2], ['main', 3]], { hl: [0, 1, C.white, w(3) + 0.02] }),
+      L(80, 538, 124, C.ink, [['depuis', 4], ['la', 5]]),
+      L(80, 657, 124, C.ink, [['rentrée.', 6]]),
+    ],
+    shakes: [],
+    art(t) {
+      let s = dotsP('d1', 560, 120, 520, 620, 30, 4.2, C.yellowD, 0.7, t * 6, t * 4);
+      const cb = 1 + 0.03 * Math.sin(t * 2.4);
+      s += `<circle cx="860" cy="320" r="${f1(300 * cb)}" fill="${C.blue}"/>`;
+      s += `<circle cx="860" cy="320" r="360" fill="none" stroke="#fff" stroke-width="6" stroke-dasharray="4 26" stroke-linecap="round" transform="rotate(${f1(t * 24)} 860 320)"/>`;
+      s += twinkle(1000, 700, 26, C.white, t, 0) + twinkle(640, 120, 18, C.white, t, 1) + twinkle(110, 820, 20, C.pink, t, 2);
+      s += squiggle(70 + Math.sin(t * 3) * 8, 1700, 260, 22, 6, C.pink, 12, -8);
+      /* l'horloge s'emballe : les semaines défilent */
+      const cr = Math.sin(t * 38) * 4;
+      s += `<g transform="${around(190, 1000, 1, cr)}">${clock(190, 1000, 76, 300 + t * 260, 70 + t * 1500)}</g>`;
+      s += `<path d="M96,930 A110,110 0 0 1 150,894" stroke="${C.ink}" stroke-width="8" fill="none" stroke-linecap="round" transform="rotate(${f1(Math.sin(t * 38) * 6)} 190 1000)"/>`;
+      s += `<path d="M286,1066 A110,110 0 0 1 238,1104" stroke="${C.ink}" stroke-width="8" fill="none" stroke-linecap="round" transform="rotate(${f1(Math.sin(t * 38) * 6)} 190 1000)"/>`;
+      /* feuilles d'automne qui tombent */
+      [[330, 820, 1.1, C.orange, C.orangeD], [110, 1150, 0.9, C.pink, C.pinkD], [420, 1050, 0.8, C.orange, C.orangeD], [960, 940, 1, C.green, C.greenD], [520, 900, 0.7, C.green, C.greenD]]
+        .forEach(([x, y, k, c, cd], i) => {
+          const fy = y + t * (90 + i * 14), fx = x + Math.sin(t * 2.3 + i) * 36;
+          s += leaf(fx, fy, k, Math.sin(t * 3.1 + i * 2) * 50 + i * 30, c, cd);
+        });
+      /* le bras qui s'étire */
+      const ext = sp(t, 0.12, 'soft');
+      const hy = lerp(-330, -880, ext);
+      const bend = 60 + Math.sin(t * 9) * 22 * ext;
+      if (t > 0.25) {
+        const sl = 0.5 + 0.5 * Math.sin(t * 30);
+        s += [[820, 520, 860, 470], [690, 640, 650, 600], [860, 760, 900, 720], [700, 380, 660, 340]].map(([a, b, c, d], i) =>
+          `<path d="M${a},${b + (1 - ext) * 200} L${c},${d + (1 - ext) * 200}" stroke="#fff" stroke-width="9" stroke-linecap="round" opacity="${(0.4 + 0.6 * ((sl + i * 0.3) % 1)).toFixed(2)}"/>`).join('');
+      }
+      const blink = clamp(1 - Math.abs(t - 0.95) / 0.06);
+      const bob = Math.sin(t * 5) * 3;
+      s += kid({ x: 540, y: 1300 + bob, s: 1.22, arm: { hx: 186 + Math.sin(t * 7) * 6, hy, bend, wave: Math.sin(t * 13) * 12 },
+        mouth: 'flat', brows: 4 + 6 * ext, look: [5, -4 - 4 * ext], blink });
+      s += desk(540, 1508, 800, C.violet, C.violetD) + notebook(380, 1500);
+      return s;
+    },
+    cam: (t) => ({ s: 1 + 0.03 * t / 2, cx: 540, cy: 900 }),
+  };
+
+  /* ---------------- S2 · Remplacé par… personne ---------------- */
+  const tAbs = w(10), tPer = w(14);
+  const S2 = {
+    bg: C.blue, t0: cut[1], tr: { type: 'iris', cx: 767, cy: 240, cols: [C.pink, C.white] },
+    lines: [
+      L(80, 250, 68, C.white, [['Ton', 7], ['prof', 8], ['est', 9], ['absent', 10], ['?', 11]]),
+      L(80, 350, 124, C.ink, [['Remplacé', 12], ['par…', 13]]),
+      L(80, 480, 190, C.ink, [['personne.', 14, 'slam']], { hl: [0, 0, C.yellow, tPer + 0.06] }),
+    ],
+    shakes: [[tAbs, 12], [tPer, 18]],
+    art(t) {
+      const t0 = this.t0;
+      let s = `<ellipse cx="540" cy="1190" rx="${f1(430 * (1 + 0.03 * Math.sin(t * 2)))}" ry="380" fill="${C.blueL}" opacity=".55"/>`;
+      s += dotsP('d2', 0, 1180, W, 760, 30, 4.2, C.blueD, 0.8, t * 8, 0);
+      s += twinkle(960, 860, 24, C.yellow, t, 0, 12) + twinkle(130, 920, 18, C.white, t, 1);
+      s += `<rect x="0" y="1640" width="${W}" height="280" fill="${C.blueD}"/>`;
+      /* chaise qui tombe, bureau qui monte */
+      const ch = (1 - sp(t, t0 + 0.12)) * -1100;
+      s += `<g transform="translate(0,${f1(ch)})">${chair(600, 1290, C.pink, C.pinkD)}</g>`;
+      /* post-it ABSENT plaqué sur la chaise */
+      if (t >= tAbs) {
+        const dt = t - tAbs, k = sp(t, tAbs);
+        const sc = 1 + 1.3 * (1 - clamp(k, 0, 1.2));
+        const sq = Math.exp(-dt / 0.06);
+        s += burstLines(600, 1120, 120, 50, 8, t, tAbs, C.ink, 10);
+        s += `<g transform="${around(600, 1120, sc, -7 + (1 - clamp(k)) * 24, sc * (1 + 0.18 * sq), sc * (1 - 0.18 * sq))}">
+          <path d="M500,1030 L700,1030 L700,1182 L666,1216 L500,1216 Z" fill="${C.ink}" transform="translate(8,10)"/>
+          <path d="M500,1030 L700,1030 L700,1182 L666,1216 L500,1216 Z" fill="${C.yellow}"/>
+          <path d="M666,1216 L666,1182 L700,1182 Z" fill="${C.yellowD}"/>
+          <rect x="570" y="1016" width="60" height="26" rx="4" fill="${C.pinkL}" opacity=".9" transform="rotate(-4 600 1029)"/>
+          <text x="600" y="1142" text-anchor="middle" font-family="Bricolage" font-weight="800" font-size="56" letter-spacing="-1.4" fill="${C.ink}">ABSENT</text></g>`;
+      }
+      const dk = (1 - sp(t, t0 + 0.05)) * 800;
+      s += `<g transform="translate(0,${f1(dk)})">${desk(600, 1300, 700, C.orange, C.orangeD, C.yellow)}</g>`;
+      /* le virevoltant traverse la salle */
+      if (t > tPer - 0.12) {
+        const p = prog(t, tPer - 0.12, tPer + 0.62);
+        const x = lerp(-160, 1260, p);
+        const by = Math.abs(Math.sin(p * Math.PI * 3)) * -60;
+        for (let k = 1; k <= 3; k++) {
+          const px = x - k * 120, age = k * 0.08;
+          if (px > -60) s += dust(px, 1650, 0.5 + 0.2 * k, Math.max(0, 0.8 - age * 3));
+        }
+        s += [0, 1, 2].map((i) => `<path d="M${f1(x - 120 - i * 70)},${1560 + i * 26} L${f1(x - 60 - i * 70)},${1560 + i * 26}" stroke="#fff" stroke-width="8" stroke-linecap="round" opacity="${(0.85 - i * 0.25).toFixed(2)}"/>`).join('');
+        s += tumbleweed(x, 1590 + by, 72, x * 1.1, 3);
+      }
+      return s;
+    },
+    cam(t) {
+      const sus = E.cam(prog(t, w(12), tPer - 0.05)) * (1 - E.enter(prog(t, tPer - 0.05, tPer + 0.25)));
+      return { s: 1 + 0.02 * prog(t, this.t0, cut[2]) + 0.06 * sus, cx: 600, cy: 1150 };
+    },
+  };
+
+  /* ---------------- S3 · 1 heure de cours sur 10 a sauté ---------------- */
+  const tDix = w(26), tSau = w(28);
+  const CARDS = [[160, 1180, C.yellow], [350, 1180, C.green], [540, 1180, C.blue], [730, 1180, C.violet], [920, 1180, C.orange],
+    [160, 1320, C.blue], [350, 1320, C.yellow], [540, 1320, C.orange], [730, 1320, C.green], [920, 1320, C.violet]];
+  const bez = (p, a, b, c, d) => { const u = 1 - p; return u * u * u * a + 3 * u * u * p * b + 3 * u * p * p * c + p * p * p * d; };
+  const PATH = [[730, 1180], [690, 880], [900, 1040], [1060, 600]];
+  const S3 = {
+    bg: C.pink, t0: cut[2], tr: { type: 'up', cols: [C.yellow, C.white] },
+    lines: [
+      L(80, 186, 68, C.white, [['Presque', 20]]),
+      L(80, 270, 108, C.ink, [['1', 21], ['heure', 22], ['de', 23], ['cours', 24]]),
+      L(70, 380, 330, C.white, [['sur', 25], ['10', 26, 'slam']], { shadow: true }),
+      L(80, 720, 108, C.ink, [['a', 27], ['sauté.', 28]], { hl: [1, 1, C.yellow, tSau + 0.04] }),
+      L(84, 1440, 26, C.ink2, [['2024-2025 · 9,8 % des heures non assurées · ministère de l’Éducation', { t: w(21) }, 'fade']], { wt: 600 }),
+    ],
+    shakes: [[tDix, 16], [tSau + 0.12, 6]],
+    art(t) {
+      const t0 = this.t0;
+      let s = dotsP('d3', 0, 0, W, 900, 30, 4.2, C.pinkD, 0.6, 0, t * 10);
+      s += `<circle cx="160" cy="1720" r="${f1(260 * clamp(sp(t, t0 + 0.15), 0, 1.3))}" fill="${C.yellow}"/>`;
+      s += twinkle(980, 1010, 26, C.white, t, 0, 10) + twinkle(90, 990, 18, C.yellow, t, 1);
+      CARDS.forEach(([x, y, c], i) => {
+        const k = sp(t, t0 + 0.2 + i * 0.045);
+        const jump = t > tDix ? Math.max(0, Math.sin(clamp((t - tDix - i * 0.02) / 0.3) * Math.PI)) * -30 : 0;
+        if (i === 3) {
+          if (t >= tSau - 0.12) s += slot(x, y, 160, 108);
+          if (t < tSau - 0.12) s += `<g transform="${around(x, y, clamp(k, 0, 1.2))}">${card(x, y + jump, 160, 108, c, 0)}</g>`;
+          else if (t < tSau + 0.08) {      // tension : la carte s'écrase avant de sauter
+            const q = prog(t, tSau - 0.12, tSau + 0.08);
+            s += `<g transform="${around(x, y + 54, 1, 0, 1 + 0.2 * Math.sin(q * Math.PI), 1 - 0.3 * Math.sin(q * Math.PI))}">${card(x, y, 160, 108, C.pink, 0)}</g>`;
+          }
+          return;
+        }
+        s += `<g transform="${around(x, y, clamp(k, 0, 1.2))}">${card(x, y + jump, 160, 108, c, 0)}</g>`;
+      });
+      /* la carte devient un avion en papier et s'envole */
+      if (t >= tSau + 0.08) {
+        const p = E.enter(prog(t, tSau + 0.08, tSau + 0.62));
+        const pts = [];
+        for (let i = 0; i <= 24; i++) {
+          const q = (i / 24) * p;
+          pts.push([bez(q, ...PATH.map((v) => v[0])), bez(q, ...PATH.map((v) => v[1]))]);
+        }
+        s += trail(pts, C.white, 7);
+        const [x, y] = pts[pts.length - 1], [x0, y0] = pts[Math.max(0, pts.length - 3)];
+        const ang = Math.atan2(y - y0, x - x0) * 180 / Math.PI;
+        const morph = clamp((t - tSau - 0.08) / 0.12);
+        if (morph < 1) s += `<g transform="${around(x, y, 1 - morph * 0.6, ang * morph)}">${card(x, y, 160, 108, C.pink, 0)}</g>`;
+        else s += plane(x, y, 0.95, ang + 8);
+        s += burstLines(730, 1180, 70, 34, 6, t, tSau + 0.08, C.white, 0, 8);
+      }
+      return s;
+    },
+    cam(t) { return { s: 1 + 0.03 * prog(t, this.t0, cut[3]), cx: 540, cy: 900 }; },
+  };
+
+  /* ---------------- S4 · Mode silencieux ---------------- */
+  const tRal = w(32), tMet = w(35), tSil = w(38);
+  const S4 = {
+    bg: C.green, t0: cut[3], tr: { type: 'iris', cx: 1040, cy: 630, cols: [C.yellow, C.white] },
+    lines: [
+      L(80, 250, 108, C.ink, [['Et', 29], ['quand', 30]], { dim: tSil + 0.05 }),
+      L(80, 353.7, 108, C.ink, [['tu', 31], ['râles,', 32, 'slam']], { dim: tSil + 0.08 }),
+      L(80, 457.3, 108, C.ink, [['on', 33], ['te', 34], ['met', 35]], { dim: tSil + 0.11 }),
+      L(80, 561, 108, C.ink, [['en', 36], ['mode', 37]], { dim: tSil + 0.14 }),
+      L(80, 664.7, 108, C.ink, [['silencieux.', 38]], { hl: [0, 0, C.pink, tSil + 0.06] }),
+    ],
+    shakes: [[tRal, 8], [tSil, 16]],
+    art(t) {
+      const t0 = this.t0;
+      let s = dotsP('d4', 0, 1300, W, 620, 30, 4.2, C.greenD, 0.8, t * 8, 0);
+      s += twinkle(120, 1110, 22, C.white, t, 0) + twinkle(1000, 1260, 18, C.yellow, t, 1, 20);
+      const shouting = t >= tRal && t < tSil;
+      const muted = t >= tSil;
+      /* bulle « !!! » qui se dégonfle au clic */
+      if (t >= tRal) {
+        const k = clamp(sp(t, tRal), 0, 1.25) * (1 - E.exit(prog(t, tSil + 0.02, tSil + 0.32)));
+        if (k > 0.01) {
+          const wob = muted ? Math.sin((t - tSil) * 40) * 8 * (1 - prog(t, tSil, tSil + 0.3)) : Math.sin(t * 16) * 2;
+          let b = bubble(560, 1060, 600, 270, 'bl', C.white, 1);
+          [[430, 1068, 1.25, -12], [560, 1056, 1.45, 0], [690, 1068, 1.25, 12]].forEach(([x, y, sc, r], i) => {
+            const bk = clamp(sp(t, tRal + 0.06 + i * 0.07), 0, 1.3);
+            const by = Math.sin(t * 14 + i * 2) * 8;
+            b += `<g transform="${around(x, y + 34, bk)}">${bang(x, y + by, sc, r + Math.sin(t * 11 + i) * 6)}</g>`;
+          });
+          b += squiggle(330, 980, 110, 10, 4, C.pink, 8, -10 + Math.sin(t * 9) * 8) + squiggle(700, 1150, 110, 10, 4, C.pink, 8, 8 + Math.sin(t * 8) * 8);
+          s += `<g transform="${around(374, 1265, k, wob)}">${b}</g>`;
+        }
+      }
+      /* ondes « chut » après le clic */
+      if (muted) {
+        for (let i = 0; i < 3; i++) {
+          const p = prog(t, tSil + i * 0.08, tSil + 0.5 + i * 0.08);
+          if (p > 0 && p < 1) s += `<circle cx="867" cy="924" r="${f1(90 + p * 160)}" fill="none" stroke="${C.pink}" stroke-width="${f1(10 * (1 - p))}" opacity="${(1 - p).toFixed(2)}"/>`;
+        }
+      }
+      /* bouton muet + doigt géant */
+      if (t >= tMet - 0.08) {
+        const bk = clamp(sp(t, tMet - 0.08), 0, 1.25);
+        const pr = muted ? (t < tSil + 0.12 ? 1 : 0.7) : 0;
+        s += `<g transform="${around(860, 914, bk)}">${muteButton(860, 914, 80, pr)}</g>`;
+      }
+      if (t >= w(33) - 0.1) {
+        let fy = lerp(-900, 760, E.enter(prog(t, w(33) - 0.1, w(33) + 0.5))) + Math.sin(t * 6) * 8;
+        if (t >= tSil - 0.07) fy = lerp(760, 846, E.cam(prog(t, tSil - 0.07, tSil))) - (t > tSil + 0.12 ? 14 * E.enter(prog(t, tSil + 0.12, tSil + 0.3)) : 0);
+        s += finger(866, fy, 4, 1.05, '#E9B48A', '#D29672', C.violet);
+      }
+      /* le lycéen */
+      const enter = (1 - sp(t, t0 + 0.12)) * 700;
+      const jit = shouting ? Math.sin(t * 70) * 4 : 0;
+      const squash = muted ? 1 - 0.06 * Math.exp(-(t - tSil) / 0.15) : 1;
+      s += `<g transform="${around(420, 1870, 1, 0, 1 / squash, squash)}">` + kid({ x: 420 + jit, y: 1560 + enter + Math.sin(t * 4) * 3, s: 1.12, rest: 'down', hood: C.blue, hoodD: C.blueD,
+        mouth: shouting ? 'shout' : muted ? 'flat' : 'neutral', brows: shouting ? 14 : muted ? -6 : 4,
+        look: muted ? [8, -9] : [0, 0], blink: muted ? clamp(1 - Math.abs(t - tSil - 0.5) / 0.06) : 0 }) + '</g>';
+      return s;
+    },
+    cam(t) { return { s: 1 + 0.03 * prog(t, this.t0, cut[4]), cx: 540, cy: 1000 }; },
+  };
+
+  /* ---------------- S5 · Des milliers de mains · 3 000 profs ---------------- */
+  const tHands = w(45), tCoup = w(53), tTrois = w(55), tB = w(50) - 0.05;
+  const SL = [[C.pink, C.pinkD], [C.yellow, C.yellowD], [C.green, C.greenD], [C.blue, C.blueD], [C.orange, C.orangeD]];
+  const ORDER = [4, 1, 7, 2, 9, 0, 5, 8, 3, 6];
+  const S5 = {
+    bg: C.violet, t0: cut[4], tr: { type: 'iris', cx: 867, cy: 924, cols: [C.yellow, C.pink] },
+    lines: [
+      L(80, 250, 72, C.white, [['Alors', 39], ['cette', 40], ['fois,', 41]], { out: tB }),
+      L(80, 345, 116, C.ink, [['vous', 42], ['êtes', 43]], { out: tB + 0.03 }),
+      L(70, 470, 176, C.white, [['des', 44], ['milliers', 45, 'slam']], { shadow: true, out: tB + 0.06 }),
+      L(80, 660, 100, C.ink, [['à', 46], ['lever', 47], ['la', 48], ['main.', 49]], { hl: [2, 3, C.yellow, w(49) + 0.02], out: tB + 0.09 }),
+      L(84, 920, 64, C.white, [['Et', 50], ['là,', 51], ['d’un', 52], ['coup :', 53]]),
+      L(70, 1016, 180, C.white, [['3\u2009000', 55, 'count'], ['profs', 57]], { shadow: true }),
+      L(84, 1250, 92, C.ink, [['annoncés', 58], ['en', 59], ['renfort.', 60]], { hl: [2, 2, C.yellow, w(60) + 0.04] }),
+      L(86, 1370, 26, C.white, [['Annonce du ministre de l’Éducation, 8 octobre 2026', { t: w(58) }, 'fade']], { wt: 600 }),
+    ],
+    shakes: [[w(45), 10], [tTrois, 16]],
+    art(t) {
+      const t0 = this.t0;
+      let s = dotsP('d5', 0, 0, W, 1000, 34, 4.2, C.violetD, 0.6, t * 6, t * 3);
+      s += `<circle cx="900" cy="230" r="${f1(120 * clamp(sp(t, tCoup - 0.1), 0, 1.25))}" fill="${C.yellow}"/>`;
+      /* nuages qui glissent */
+      const cl = (x, y, k) => `<g transform="translate(${f1(x)},${y}) scale(${k})"><circle r="46" fill="#fff"/><circle cx="50" cy="12" r="36" fill="#fff"/><circle cx="-48" cy="14" r="32" fill="#fff"/><rect x="-80" y="14" width="164" height="32" rx="16" fill="#fff"/></g>`;
+      const ck = E.enter(prog(t, tCoup - 0.15, tCoup + 0.6));
+      if (ck > 0) s += cl(lerp(-200, 160, ck) + t * 6, 300, 1.2) + cl(lerp(1300, 820, ck) - t * 5, 600, 1);
+      /* les profs arrivent en parachute */
+      [[300, 360, 0.95, -8, C.yellow, C.pink, SKINS[1]], [760, 250, 0.7, 7, C.green, C.blue, SKINS[2]], [620, 700, 0.62, -4, C.orange, C.yellow, SKINS[0]]]
+        .forEach(([x, y, k, r, a, b, sk], i) => {
+          const ts = tCoup + i * 0.18;
+          if (t < ts) return;
+          const p = E.enter(prog(t, ts, ts + 1.2));
+          const yy = lerp(-520, y, p) + (t - ts) * 10;
+          s += parachute(x + Math.sin(t * 1.6 + i) * 18, yy, k, r + Math.sin(t * 2.2 + i * 2) * 7, a, b, sk, 'pc' + i);
+        });
+      s += twinkle(80, 620, 20, C.yellow, t, 0) + twinkle(1000, 880, 24, C.white, t, 1, 18);
+      /* forêt de mains levées */
+      const party = prog(t, tCoup, tCoup + 0.5);
+      const row = (back) => {
+        let r = '';
+        for (let i = 0; i < 10; i++) {
+          const j = ORDER[i];
+          const ti = tHands - 0.35 + j * 0.06 + (back ? 0.25 : 0);
+          const rise = (1 - clamp(sp(t, ti), 0, 1.15)) * 760;
+          if (rise > 740) continue;
+          const x = (back ? 96 : 40) + i * 112, y = (back ? 1525 : 1560) + (i % 3) * 70 - (i % 2) * 40;
+          const wave = Math.sin(t * (6 + 5 * party) + i * 1.3) * (5 + 9 * party);
+          const [sl, sld] = back ? [SL[(i + 2) % 5][1], SL[(i + 2) % 5][1]] : SL[i % 5];
+          r += raisedHand(x, y + rise, 600, sl, sld, SKINS[(i + (back ? 3 : 0)) % 5], (i % 2 ? 6 : -6), wave);
+        }
+        return r;
+      };
+      s += row(true) + row(false);
+      return s;
+    },
+    cam(t) { return { s: 1 + 0.03 * prog(t, this.t0, cut[5]), cx: 540, cy: 1100 }; },
+  };
+
+  /* ---------------- S6 · Oui ? ---------------- */
+  const tOui = w(62) + 0.3, tCpt = w(67);
+  const S6 = {
+    bg: C.paper, t0: cut[5], tr: { type: 'down', cols: [C.yellow, C.green] },
+    lines: [
+      L(80, 250, 72, C.ink2, [['Comme', 61], ['quoi…', 62]]),
+      L(80, 350, 116, C.ink, [['quand', 63], ['tu', 64], ['parles,', 65]]),
+      L(80, 480, 180, C.ink, [['ça', 66], ['compte.', 67, 'slam']], { hl: [0, 1, C.green, tCpt + 0.06] }),
+    ],
+    shakes: [[tCpt, 12]],
+    art(t) {
+      const t0 = this.t0;
+      let s = dotsP('d6', 0, 0, W, H, 34, 3, C.ink, 0.07, 0, t * 5);
+      s += `<circle cx="760" cy="1240" r="${f1(420 * clamp(sp(t, t0 + 0.2), 0, 1.2))}" fill="${C.yellow}"/>`;
+      /* confettis qui explosent sur « ça compte » */
+      if (t >= tCpt) {
+        const r = rng(19), dt = t - tCpt;
+        const cols = [C.pink, C.green, C.blue, C.violet, C.orange, C.white];
+        for (let i = 0; i < 70; i++) {
+          const a = -Math.PI / 2 + (r() - 0.5) * 2.8, v = 700 + r() * 900, c = cols[Math.floor(r() * cols.length)], kind = r(), rot0 = r() * 360;
+          const x = 760 + Math.cos(a) * v * dt, y = 1150 + Math.sin(a) * v * dt + 0.5 * 1500 * dt * dt;
+          const rot = rot0 + dt * (r() - 0.5) * 900;
+          if (y > 2000) continue;
+          s += kind < 0.4 ? `<rect x="${f1(x - 11)}" y="${f1(y - 6)}" width="22" height="12" rx="3" fill="${c}" transform="rotate(${f1(rot)} ${f1(x)} ${f1(y)})"/>`
+            : kind < 0.7 ? `<circle cx="${f1(x)}" cy="${f1(y)}" r="9" fill="${c}"/>` : star4(x, y, 16, c, rot);
+        }
+      }
+      /* bulle « Oui ? » */
+      if (t >= tOui) {
+        const k = clamp(sp(t, tOui), 0, 1.3), sq = Math.exp(-(t - tOui) / 0.08);
+        s += `<g transform="${around(237, 1025, k, (1 - clamp(k)) * -12, k * (1 + 0.15 * sq), k * (1 - 0.15 * sq))}">${bubble(380, 860, 340, 190, 'bl', C.pink)}
+          <text x="380" y="895" text-anchor="middle" font-family="Bricolage" font-weight="800" font-size="104" letter-spacing="-2.6" fill="#fff">Oui ?</text></g>`;
+      }
+      /* le lycéen, main levée */
+      const enter = (1 - sp(t, t0 + 0.1)) * 800;
+      const happy = t >= tOui + 0.25;
+      const hop = t >= tCpt ? Math.abs(Math.sin((t - tCpt) * 9)) * -24 * Math.exp(-(t - tCpt) / 0.6) : 0;
+      s += kid({ x: 760, y: 1520 + enter + hop + Math.sin(t * 4) * 3, s: 1.1, rest: 'down', hood: C.green, hoodD: C.greenD,
+        arm: { hx: 120, hy: -380 + Math.sin(t * 6) * 10, bend: 10, wave: Math.sin(t * (happy ? 11 : 4)) * (happy ? 14 : 5) },
+        mouth: happy ? 'smile' : t >= tOui ? 'o' : 'flat', brows: happy ? -6 : t >= tOui ? -10 : 4,
+        look: t >= tOui ? [-9, -4] : [4, -6], blink: clamp(1 - Math.abs(t - (tCpt + 0.4)) / 0.06) });
+      /* la prof passe la tête */
+      const pk = sp(t, tOui - 0.3, 'soft');
+      if (pk > 0) {
+        const px = lerp(-260, 70, pk);
+        s += kid({ x: px, y: 1290, s: 1.3, headOnly: true, mouth: t >= tOui && t < tOui + 0.35 ? 'open' : 'neutral', look: [10, 0], brows: -8,
+          skinPair: SKINS[1], hair: C.orangeD, glasses: true, bun: true, tilt: 22 + Math.sin(t * 3) * 3 });
+        s += grip(lerp(-120, 10, sp(t, tOui - 0.38, 'soft')), 960, 0, 1.25, SKINS[1][0], SKINS[1][1]);
+      }
+      return s;
+    },
+    cam(t) { return { s: 1 + 0.03 * prog(t, this.t0, cut[6]), cx: 540, cy: 900 }; },
+  };
+
+  /* ---------------- S7 · Logo ---------------- */
+  const tLogo = 20.3;
+  const S7 = {
+    bg: C.paper, t0: cut[6], tr: { type: 'iris', cx: 540, cy: 1000, cols: [C.pink, C.yellow] },
+    lines: [
+      L(540, 1150, 38, C.ink2, [['@td.agence  ·  @techdev.agency', { t: tLogo + 0.35 }, 'rise']], { wt: 600, center: true }),
+    ],
+    shakes: [[tLogo, 10]],
+    art(t) {
+      let s = dotsP('d7', 0, 0, W, H, 34, 3, C.ink, 0.07, 0, t * 5);
+      const k = clamp(sp(t, tLogo), 0, 1.3);
+      if (OUTLINE && k > 0) {
+        const sq = Math.exp(-(t - tLogo) / 0.09);
+        s += `<g transform="${around(540, 900, k, (1 - clamp(k)) * -14, k * (1 - 0.12 * sq), k * (1 + 0.12 * sq))}">${logo(OUTLINE, 540, 900, 420)}</g>`;
+        [[330, 760, 26, C.pink], [770, 720, 22, C.green], [800, 1030, 18, C.blue], [300, 1010, 20, C.yellowD]].forEach(([x, y, r, c], i) => {
+          const sk = clamp(sp(t, tLogo + 0.15 + i * 0.07), 0, 1.3);
+          if (sk > 0) s += star4(x, y, r * sk * (1 + 0.25 * Math.sin(t * 6 + i)), c, t * 40 + i * 20);
+        });
+        s += burstLines(540, 900, 270, 46, 10, t, tLogo + 0.02, C.ink, 9, 8);
+      }
+      return s;
+    },
+    cam(t) { return { s: 1 + 0.025 * prog(t, this.t0, DUR), cx: 540, cy: 900 }; },
+  };
+
+  SC = [S1, S2, S3, S4, S5, S6, S7];
+  SC.forEach((S, k) => { S.t1 = k < SC.length - 1 ? SC[k + 1].t0 + 0.6 : DUR + 1; });
+}
+
+/* ligne de texte : mots calés sur la voix */
+function L(x, y, size, color, words, o = {}) { return { x, y, size, color, words, ...o }; }
+
+/* ====================================================================== */
+/* CONSTRUCTION DU DOM                                                     */
+/* ====================================================================== */
+function buildDOM() {
+  const stage = $('stage');
+  SC.forEach((S, k) => {
+    const el = document.createElement('div');
+    el.className = 'scene'; el.style.background = S.bg; el.style.zIndex = 10 + k * 10;
+    el.innerHTML = `<div class="cam"><svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"></svg><div class="txt"></div></div>`;
+    stage.appendChild(el);
+    S.el = el; S.cam_ = el.querySelector('.cam'); S.svg = el.querySelector('svg'); S.txt = el.querySelector('.txt');
+    S.lines.forEach((Ln) => {
+      const d = document.createElement('div');
+      d.className = 'ln';
+      d.style.cssText = `left:${Ln.x}px;top:${Ln.y}px;font-size:${Ln.size}px;color:${Ln.color};font-weight:${Ln.wt || 800};letter-spacing:${Ln.size >= 50 ? '-0.025em' : '0'}`;
+      if (Ln.shadow) d.style.textShadow = `10px 12px 0 ${C.ink}`;
+      Ln.words.forEach(([tx, when, kind], i) => {
+        const sp_ = document.createElement('span');
+        sp_.className = 'w'; sp_.textContent = tx;
+        if (kind === 'count') sp_.innerHTML = '3<i style="display:inline-block;width:.2em"></i>000';
+        if (i < Ln.words.length - 1) sp_.style.marginRight = '0.24em';
+        d.appendChild(sp_);
+      });
+      S.txt.appendChild(d);
+      Ln.el = d; Ln.spans = [...d.children];
+      Ln.times = Ln.words.map(([, when]) => (typeof when === 'number' ? w(when) : when.t));
+    });
+    if (S.tr) {
+      S.wipes = S.tr.cols.map((c, j) => {
+        const wd = document.createElement('div');
+        wd.className = 'wipe'; wd.style.background = c; wd.style.zIndex = 10 + k * 10 - 2 + j;
+        stage.appendChild(wd);
+        return wd;
+      });
+    }
+  });
+}
+function measure() {
+  SC.forEach((S) => {
+    S.el.style.display = 'block';
+    S.lines.forEach((Ln) => {
+      Ln.spans.forEach((s) => (s.style.opacity = 1));
+      if (Ln.center) Ln.el.style.left = (Ln.x - Ln.el.offsetWidth / 2) + 'px';
+      Ln.box = Ln.spans.map((s) => ({ x: Ln.el.offsetLeft + s.offsetLeft, w: s.offsetWidth, y: Ln.el.offsetTop, h: Ln.el.offsetHeight }));
+      Ln.spans.forEach((s) => (s.style.opacity = 0));
+    });
+    S.el.style.display = 'none';
+  });
+}
+
+/* ====================================================================== */
+/* RENDU                                                                   */
+/* ====================================================================== */
+function animWord(span, kind, t, tw, i, Ln) {
+  const dt = t - tw;
+  if (dt < 0) { span.style.opacity = 0; return; }
+  let op = 1, tr = '';
+  if (kind === 'slam') {
+    const s = spring('reward', dt);
+    const sc = 1 + 0.9 * (1 - clamp(s, 0, 1.2));
+    op = clamp(dt / 0.04);
+    tr = `scale(${kk(sc)}) rotate(${f1((1 - clamp(s)) * -8)}deg)`;
+  } else if (kind === 'fade') {
+    op = clamp(dt / 0.3); tr = `translateY(${f1((1 - E.enter(clamp(dt / 0.4))) * 16)}px)`;
+  } else if (kind === 'rise') {
+    const s = spring('soft', dt); op = clamp(dt / 0.15); tr = `translateY(${f1((1 - s) * 40)}px)`;
+  } else {
+    const s = spring('reward', dt);
+    op = clamp(dt / 0.05);
+    tr = `translateY(${f1((1 - s) * 46)}px) scale(${kk(0.55 + 0.45 * s)}) rotate(${f1((1 - clamp(s)) * (i % 2 ? 7 : -7))}deg)`;
+  }
+  if (kind === 'count') {
+    const v = Math.round(3000 * E.enter(prog(t, tw, w(56) + 0.12)) / 10) * 10;
+    span.innerHTML = v >= 1000 ? `${Math.floor(v / 1000)}<i style="display:inline-block;width:.2em"></i>${String(v % 1000).padStart(3, '0')}` : String(v);
+  }
+  if (Ln.out != null && t > Ln.out) {
+    const p = E.exit(prog(t, Ln.out + i * 0.02, Ln.out + 0.24 + i * 0.02));
+    op *= 1 - p; tr = `translateY(${f1(-140 * p)}px) ` + tr;
+  }
+  if (Ln.dim != null && t > Ln.dim) op *= 1 - 0.68 * E.enter(prog(t, Ln.dim, Ln.dim + 0.25));
+  span.style.opacity = op.toFixed(3);
+  span.style.transform = tr;
+}
+function highlights(S, t) {
+  let s = '';
+  S.lines.forEach((Ln, li) => {
+    if (!Ln.hl) return;
+    const [a, b, col, th] = Ln.hl;
+    if (t < th) return;
+    let p = E.enter(prog(t, th, th + 0.24));
+    if (Ln.out != null && t > Ln.out) p *= 1 - E.exit(prog(t, Ln.out, Ln.out + 0.24));
+    const x0 = Ln.box[a].x, x1 = Ln.box[b].x + Ln.box[b].w, bx = Ln.box[a];
+    const fs = Ln.size;
+    const yOff = Ln.out != null && t > Ln.out ? -140 * E.exit(prog(t, Ln.out, Ln.out + 0.24)) : 0;
+    s += highlighter(x0 - fs * 0.06, bx.y + bx.h * 0.44 + yOff, (x1 - x0) + fs * 0.12, bx.h * 0.48, col, p, li + 3);
+  });
+  return s;
+}
+function shakeAt(S, t) {
+  let sx = 0, sy = 0;
+  (S.shakes || []).forEach(([ts, a]) => {
+    const dt = t - ts;
+    if (dt >= 0 && dt < 0.45) { const e = a * Math.exp(-dt / 0.09); sx += Math.sin(dt * 60) * e; sy += Math.cos(dt * 47) * e * 0.7; }
+  });
+  return [sx, sy];
+}
+function clipFor(tr, p) {
+  if (tr.type === 'iris') {
+    const R = Math.max(...[[0, 0], [W, 0], [0, H], [W, H]].map(([x, y]) => Math.hypot(x - tr.cx, y - tr.cy))) + 20;
+    return `circle(${f1(R * p)}px at ${tr.cx}px ${tr.cy}px)`;
+  }
+  if (tr.type === 'up') {
+    const y = H + 120 - p * (H + 360);
+    return `polygon(0px ${f1(y + 110)}px, ${W}px ${f1(y - 110)}px, ${W}px ${H}px, 0px ${H}px)`;
+  }
+  const y = -120 + p * (H + 360);
+  return `polygon(0px 0px, ${W}px 0px, ${W}px ${f1(y + 110)}px, 0px ${f1(y - 110)}px)`;
+}
+const TD = 0.4, STAG = 0.07;
+function renderAt(t) {
+  SC.forEach((S, k) => {
+    const visible = t >= S.t0 - 0.001 && t < S.t1;
+    /* volets de couleur de la transition d'entrée */
+    if (S.wipes) S.wipes.forEach((wd, j) => {
+      const p = io(prog(t, S.t0 - (2 - j) * STAG, S.t0 - (2 - j) * STAG + TD));
+      const on = t >= S.t0 - (2 - j) * STAG && t < S.t0 + TD;
+      wd.style.display = on && p > 0 ? 'block' : 'none';
+      if (on) wd.style.clipPath = clipFor(S.tr, p);
+    });
+    if (!visible) { S.el.style.display = 'none'; return; }
+    S.el.style.display = 'block';
+    if (S.tr) {
+      const p = io(prog(t, S.t0, S.t0 + TD));
+      S.el.style.clipPath = p < 1 ? clipFor(S.tr, p) : 'none';
+    }
+    const cm = S.cam(t), [sx, sy] = shakeAt(S, t);
+    S.cam_.style.transformOrigin = `${cm.cx}px ${cm.cy}px`;
+    S.cam_.style.transform = `translate(${f1(sx)}px,${f1(sy)}px) scale(${kk(cm.s)})`;
+    S.svg.innerHTML = S.art(t) + highlights(S, t);
+    S.lines.forEach((Ln) => Ln.spans.forEach((span, i) => animWord(span, Ln.words[i][2], t, Ln.times[i], i, Ln)));
+  });
+}
+window.renderAt = renderAt;
+window.__dur = DUR; window.__fps = FPS;
+Promise.all([
+  fetch('voice.json').then((r) => r.json()),
+  fetch('../../assets/td/mark-outline.json').then((r) => r.json()),
+  document.fonts.load("800 120px 'Bricolage'"), document.fonts.load("600 30px 'Bricolage'"),
+]).then(([v, o]) => {
+  WT = v.words.map(([, s]) => OFF + s);
+  OUTLINE = o;
+  buildScenes();
+  buildDOM();
+  measure();
+  renderAt(0);
+  window.__ready = true;
+});
+</script>
+</body>
+</html>

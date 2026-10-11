@@ -101,7 +101,7 @@ function kid(o = {}) {
     const ang = Math.atan2(hy - c2y, hx - c2x) * 180 / Math.PI + 90;
     arm = `<path d="M${sx},${sy} C${f1(c1x)},${f1(c1y)} ${f1(c2x)},${f1(c2y)} ${f1(hx)},${f1(hy + 34)}" stroke="${hood}" stroke-width="50" fill="none" stroke-linecap="round"/>
       <path d="M${f1(hx - 22)},${f1(hy + 40)} L${f1(hx + 22)},${f1(hy + 40)}" stroke="${hoodD}" stroke-width="16" stroke-linecap="round"/>
-      ${hand(hx, hy, ang * 0.25, 1, skin, skinD, o.arm.open == null ? 1 : o.arm.open)}`;
+      ${hand(hx, hy, ang * 0.25 + (o.arm.wave || 0), 1, skin, skinD, o.arm.open == null ? 1 : o.arm.open)}`;
   }
   if (o.headOnly) return `<g transform="translate(${f1(x)},${f1(y)}) scale(${s})">${HEADPART()}</g>`;
   return `<g transform="translate(${f1(x)},${f1(y)}) scale(${s})">
@@ -280,7 +280,7 @@ function raisedHand(x, y, h, sleeve, sleeveD, skinPair, rot = 0, wave = 0) {
     ${hand(0, -40, 0, 1.05, sk, skD, 1)}
   </g>`;
 }
-function parachute(x, y, s, sway, colA, colB, skinPair) {
+function parachute(x, y, s, sway, colA, colB, skinPair, id) {
   const [sk] = skinPair;
   const stripes = [colA, colB, colA, colB, colA];
   let canopy = '';
@@ -290,8 +290,8 @@ function parachute(x, y, s, sway, colA, colB, skinPair) {
   }
   return `<g transform="translate(${f1(x)},${f1(y)}) rotate(${f1(sway)}) scale(${s})">
     <g transform="translate(8,10)"><path d="M-170,0 A170,120 0 0 1 170,0 Q85,26 0,0 Q-85,26 -170,0Z" fill="${C.ink}"/></g>
-    <clipPath id="cp${Math.round(x)}${Math.round(y)}"><path d="M-170,0 A170,120 0 0 1 170,0 Q85,26 0,0 Q-85,26 -170,0Z"/></clipPath>
-    <g clip-path="url(#cp${Math.round(x)}${Math.round(y)})">${canopy}<rect x="-180" y="-4" width="360" height="40" fill="${colA}"/></g>
+    <clipPath id="${id || 'cp' + Math.round(x) + Math.round(y)}"><path d="M-170,0 A170,120 0 0 1 170,0 Q85,26 0,0 Q-85,26 -170,0Z"/></clipPath>
+    <g clip-path="url(#${id || 'cp' + Math.round(x) + Math.round(y)})">${canopy}<rect x="-180" y="-4" width="360" height="40" fill="${colA}"/></g>
     <path d="M-165,4 L-26,196 M-60,16 L-12,196 M60,16 L12,196 M165,4 L26,196" stroke="${C.ink}" stroke-width="4"/>
     <rect x="-34" y="196" width="68" height="96" rx="24" fill="${C.ink2}"/>
     <path d="M-2,200 L0,262" stroke="${C.white}" stroke-width="6"/>
