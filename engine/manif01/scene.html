@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>MANIF01 — La rue a de la mémoire</title>
+<style>
+@font-face { font-family: BSS; font-weight: 900; src: url(../node_modules/@fontsource/big-shoulders-stencil-display/files/big-shoulders-stencil-display-latin-900-normal.woff2) format('woff2'); }
+@font-face { font-family: BSS; font-weight: 900; unicode-range: U+0100-024F; src: url(../node_modules/@fontsource/big-shoulders-stencil-display/files/big-shoulders-stencil-display-latin-ext-900-normal.woff2) format('woff2'); }
+@font-face { font-family: ANY; font-weight: 100 900; font-stretch: 50% 150%; src: url(../node_modules/@fontsource-variable/anybody/files/anybody-latin-standard-normal.woff2) format('woff2-variations'); }
+@font-face { font-family: ELITE; src: url(../node_modules/@fontsource/special-elite/files/special-elite-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: MARK; src: url(../node_modules/@fontsource/permanent-marker/files/permanent-marker-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: SPRAY; src: url(../node_modules/@fontsource/rubik-spray-paint/files/rubik-spray-paint-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: MONO; font-weight: 700; src: url(../node_modules/@fontsource/space-mono/files/space-mono-latin-700-normal.woff2) format('woff2'); }
+html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #2A2622; }
+#cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 540px 960px; }
+#bgwall { position: absolute; inset: -200px; background: #2A2622; }
+#bgwall .tex { opacity: .9; }
+.poster { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; transform-origin: 540px 960px; }
+.content { position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+.content > div, .content > svg, .content > canvas, .grp > div, .grp > svg { position: absolute; }
+.grp { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; }
+.fxc { position: absolute; left: 0; top: 0; pointer-events: none; }
+.tex { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.tex-paper { background: url(tex/paper.png); mix-blend-mode: multiply; }
+.tex-old { background: url(tex/old.png); mix-blend-mode: multiply; }
+.tex-ink { background: url(tex/ink.png); mix-blend-mode: screen; }
+.wr { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: url(tex/wrinkle.png); mix-blend-mode: overlay; opacity: .3; pointer-events: none; }
+.wet { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(30, 24, 18, .28); mix-blend-mode: multiply; pointer-events: none; }
+.worn { -webkit-mask-image: url(tex/wear.png); -webkit-mask-size: 100% 100%; mask-image: url(tex/wear.png); mask-size: 100% 100%; }
+.lt { white-space: nowrap; }
+.typer { white-space: pre; }
+.tape { position: absolute; background: rgba(244, 235, 208, .8); box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+#flash { position: absolute; inset: 0; pointer-events: none; opacity: 0; mix-blend-mode: normal; }
+#vign { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 58%, rgba(0,0,0,.34) 100%); }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="cam"><div id="bgwall"><div class="tex tex-ink"></div></div></div>
+  <div id="flash"></div>
+  <div id="vign"></div>
+</div>
+<script src="cues.js"></script>
+<script src="core.js"></script>
+<script src="scenes.js"></script>
+</body>
+</html>

@@ -2,3 +2,5 @@ node_modules/
 __pycache__/
 *.wav
 .DS_Store
+engine/manif01/tex/
+engine/manif01/tiles/
