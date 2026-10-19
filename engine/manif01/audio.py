@@ -11,7 +11,15 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CUES = json.loads(re.search(r'window\.CUES\s*=\s*(\[.*\])', open(os.path.join(HERE, 'cues.js'), encoding='utf-8').read(), re.S).group(1))
 rng = np.random.default_rng(1986)
 NO_MUSIC = '--no-music' in sys.argv
-OUTF = next((a for a in sys.argv[1:] if not a.startswith('--')), '/tmp/manif01.wav')
+def _opt(k):
+    return sys.argv[sys.argv.index(k) + 1] if k in sys.argv else None
+WARPF, VOICEF = _opt('--warp'), _opt('--voice')
+WARP = None
+if WARPF:
+    m = re.search(r'window\.WARP\s*=\s*(\[.*?\]);\s*window\.VDUR\s*=\s*([\d.]+)', open(WARPF, encoding='utf-8').read(), re.S)
+    WARP = np.array(json.loads(m.group(1))); DUR = float(m.group(2))
+U = (lambda t: float(np.interp(t, WARP[:, 1], WARP[:, 0]))) if WARP is not None else (lambda t: t)
+OUTF = sys.argv[1]
 N = int(SR * (DUR + 1.5))
 BUS = {k: np.zeros((N, 2)) for k in ('drum', 'bass', 'keys', 'sfx', 'amb')}
 
@@ -275,12 +283,13 @@ def sfx(k, t, d, g):
 
 
 for c in CUES:
-    sfx(c['k'], c['t'], c.get('d', 0.3), c.get('g', 1.0))
+    t0 = U(c['t']); d0 = U(c['t'] + c.get('d', 0.3)) - t0
+    sfx(c['k'], t0, d0, c.get('g', 1.0))
 # nappe de bande pendant la déchirure et le rembobinage (pas de blanc)
 x = tt(2.2)
 drone = (np.sin(2 * np.pi * 55 * x * (1 + 0.004 * np.sin(2 * np.pi * 0.7 * x))) * 0.5 + np.sin(2 * np.pi * 110.3 * x) * 0.2
          + filt(noise(2.2), 'bp', (2500, 9000)) * 0.08) * np.minimum(1, x / 0.3) * np.minimum(1, (2.2 - x) / 0.25)
-place('amb', drone * 0.35, 10.9)
+place('amb', drone * 0.35, U(10.9))
 # impact final + accord tenu
 place('keys', stab((146.8, 174.6, 220.0, 293.7), 1.5, 0.3), 27.25)
 place('keys', stab((146.8, 174.6, 220.0, 293.7), 2.0, 0.22), 29.5)
@@ -320,6 +329,15 @@ music = music * (1 - w2) + lp2 * w2
 if NO_MUSIC:
     music = music * 0.0; BUS['keys'][:] = 0
 mix = music * 0.9 + BUS['sfx'] * 1.0 + BUS['amb'] * 0.8
+if VOICEF:
+    # voix devant : bruitages environ 9 dB sous la voix (niveaux mesurés sur les passages actifs)
+    _, vx = wavfile.read(VOICEF); vx = vx.astype(float) / 32768
+    if vx.ndim > 1: vx = vx.mean(1)
+    vb = np.zeros((N, 2)); n = min(len(vx), N); vb[:n, 0] = vx[:n]; vb[:n, 1] = vx[:n]
+    act = lambda z: np.sqrt(np.mean(z[np.abs(z) > 0.01] ** 2)) if np.any(np.abs(z) > 0.01) else 1e-3
+    gs = act(vb[:, 0]) / act(mix[:, 0]) * 10 ** (-9 / 20)
+    print(f'gain bruitages {20 * np.log10(gs):+.1f} dB')
+    mix = vb + mix * gs
 # réverbération courte
 ir = noise(1.2) * np.exp(-np.arange(int(1.2 * SR)) / SR * 5.5)
 irr = noise(1.2) * np.exp(-np.arange(int(1.2 * SR)) / SR * 5.5)

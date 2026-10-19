@@ -1,0 +1,141 @@
+{
+ "tempo": 1.1,
+ "dur": 34.726,
+ "segments": [
+  {
+   "texte": "Mi-septembre,",
+   "debut": 0.155,
+   "fin": 0.887
+  },
+  {
+   "texte": "Créteil.",
+   "debut": 1.157,
+   "fin": 1.6
+  },
+  {
+   "texte": "Un lycée dit stop.",
+   "debut": 1.87,
+   "fin": 2.921
+  },
+  {
+   "texte": "Profs pas remplacés,",
+   "debut": 3.441,
+   "fin": 4.413
+  },
+  {
+   "texte": "classes blindées,",
+   "debut": 4.604,
+   "fin": 5.316
+  },
+  {
+   "texte": "Parcoursup.",
+   "debut": 5.586,
+   "fin": 6.157
+  },
+  {
+   "texte": "Deux semaines après :",
+   "debut": 6.527,
+   "fin": 7.172
+  },
+  {
+   "texte": "près d’un lycée sur trois.",
+   "debut": 7.442,
+   "fin": 8.47
+  },
+  {
+   "texte": "Le dix-sept octobre :",
+   "debut": 9.04,
+   "fin": 9.817
+  },
+  {
+   "texte": "plus d’un demi-million dans la rue.",
+   "debut": 10.087,
+   "fin": 11.362
+  },
+  {
+   "texte": "Mais la jeunesse dans la rue…",
+   "debut": 12.182,
+   "fin": 13.474
+  },
+  {
+   "texte": "c’est pas nouveau.",
+   "debut": 13.744,
+   "fin": 14.259
+  },
+  {
+   "texte": "Soixante-huit :",
+   "debut": 14.949,
+   "fin": 15.574
+  },
+  {
+   "texte": "les étudiants allument la mèche.",
+   "debut": 15.844,
+   "fin": 17.206
+  },
+  {
+   "texte": "Quatre-vingt-six :",
+   "debut": 17.696,
+   "fin": 18.353
+  },
+  {
+   "texte": "la sélection à la fac ?",
+   "debut": 18.623,
+   "fin": 19.523
+  },
+  {
+   "texte": "Retirée.",
+   "debut": 19.873,
+   "fin": 20.295
+  },
+  {
+   "texte": "Deux mille six :",
+   "debut": 20.705,
+   "fin": 21.368
+  },
+  {
+   "texte": "le CPE, voté…",
+   "debut": 21.638,
+   "fin": 22.917
+  },
+  {
+   "texte": "puis enterré.",
+   "debut": 23.287,
+   "fin": 23.974
+  },
+  {
+   "texte": "Deux mille dix-neuf :",
+   "debut": 24.344,
+   "fin": 25.049
+  },
+  {
+   "texte": "grève pour le climat.",
+   "debut": 25.319,
+   "fin": 26.208
+  },
+  {
+   "texte": "Et deux mille vingt-six ?",
+   "debut": 26.638,
+   "fin": 27.378
+  },
+  {
+   "texte": "Quarante ans après,",
+   "debut": 27.648,
+   "fin": 28.372
+  },
+  {
+   "texte": "la sélection est encore dans le viseur.",
+   "debut": 28.642,
+   "fin": 30.189
+  },
+  {
+   "texte": "Et toi…",
+   "debut": 31.909,
+   "fin": 32.185
+  },
+  {
+   "texte": "t’en penses quoi ?",
+   "debut": 32.595,
+   "fin": 33.091
+  }
+ ]
+}

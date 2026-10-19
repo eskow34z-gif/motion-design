@@ -623,6 +623,13 @@ async function main() {
     for (const s of SCENES) s.upd(t, o);
   };
   window.__dur = DUR; window.__fps = FPS;
+  // version voix : le temps vidéo est déformé pour caler l'animation sur la prise (warp.js, généré par voice.py)
+  if (window.WARP && !TILE_MODE) {
+    const Wp = window.WARP, base = window.renderAt;
+    const warp = u => { if (u <= Wp[0][0]) return Wp[0][1]; for (let i = 1; i < Wp.length; i++) if (u <= Wp[i][0]) { const [a0, b0] = Wp[i - 1], [a1, b1] = Wp[i]; return b0 + (b1 - b0) * (u - a0) / (a1 - a0); } return Wp[Wp.length - 1][1]; };
+    window.renderAt = (u, o = {}) => base(o.tile ? u : warp(u), o);
+    window.__dur = window.VDUR;
+  }
   window.renderAt(0);
   window.__ready = true;
 }
