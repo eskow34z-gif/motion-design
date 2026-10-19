@@ -25,7 +25,7 @@ LEAD = 0.32
 
 def gap_after(k, natural=None):
     """respiration après le morceau k (indices 0..M-2)."""
-    if k == 21: return 1.3                       # avant « Et toi » : le recul sur le mur
+    if k == 21: return 1.15                      # avant « Et toi » : le recul sur le mur
     if k == 18: return 0.55                      # avant l'affiche du délit
     if PH[k + 1][2] != PH[k][2]:                 # changement de ligne
         return 0.45 if natural is None else float(np.clip(natural, 0.36, 0.6))
@@ -48,15 +48,15 @@ def from_voice(src, dst, tempo):
     subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', src, '-ac', '1', '-ar', str(SR), '-af', af, wav], check=True)
     _, x = wavfile.read(wav); x = x.astype(np.float32) / 32768
     dur = len(x) / SR
-    log = subprocess.run(['ffmpeg', '-hide_banner', '-i', wav, '-af', 'silencedetect=noise=-40dB:d=0.06', '-f', 'null', '-'],
+    log = subprocess.run(['ffmpeg', '-hide_banner', '-i', wav, '-af', 'silencedetect=noise=-32dB:d=0.035', '-f', 'null', '-'],
                          capture_output=True, text=True).stderr
     st = [float(v) for v in re.findall(r'silence_start: ([\d.]+)', log)]
     en = [float(v) for v in re.findall(r'silence_end: ([\d.]+)', log)]
     segs, cur = [], 0.0
     for s, e in zip(st, en + [dur] * (len(st) - len(en))):
-        if s - cur > 0.05: segs.append([cur, s])
+        if s - cur > 0.04: segs.append([cur, s])
         cur = e
-    if dur - cur > 0.05: segs.append([cur, dur])
+    if dur - cur > 0.04: segs.append([cur, dur])
     # trop peu de segments : couper les plus longs à leur point le plus calme
     env = np.sqrt(np.convolve(x ** 2, np.ones(480) / 480, 'same'))
     while len(segs) < M:
@@ -67,7 +67,8 @@ def from_voice(src, dst, tempo):
     N = len(segs)
     speech = sum(b - a for a, b in segs)
     syl = np.array([p[1] for p in PH], float)
-    exp = syl / syl.sum() * speech
+    A0 = 0.15                                   # durée fixe par morceau (les mots courts sont appuyés)
+    exp = A0 + (speech - M * A0) / syl.sum() * syl
     gaps = [segs[i + 1][0] - segs[i][1] for i in range(N - 1)]
     # DP : regrouper N segments en M morceaux (monotone), coût = écart de durée − bonus de silence aux frontières
     INF = 1e18
@@ -76,8 +77,8 @@ def from_voice(src, dst, tempo):
         for j in range(k, N - (M - k) + 1):
             for i in range(k - 1, j):
                 if cost[k - 1, i] >= INF: continue
-                d = segs[j - 1][1] - segs[i][0] - sum(gaps[i:j - 1])
-                c = (d - exp[k - 1]) ** 2 / max(exp[k - 1], 0.2) - (2.5 * gaps[j - 1] if j < N else 0)
+                d = sum(segs[q][1] - segs[q][0] for q in range(i, j))
+                c = (d - exp[k - 1]) ** 2 / max(exp[k - 1], 0.3) - (1.2 * min(gaps[j - 1], 0.6) if j < N else 0)
                 if cost[k - 1, i] + c < cost[k, j]: cost[k, j] = cost[k - 1, i] + c; back[k, j] = i
     groups, j = [], N
     for k in range(M, 0, -1):
@@ -85,12 +86,14 @@ def from_voice(src, dst, tempo):
     groups.reverse()
     ph_src = [[segs[i][0], segs[j - 1][1]] for i, j in groups]
     # remontage avec respirations bornées
-    PAD, out, y, t = 0.03, [], [np.zeros(int(LEAD * SR), np.float32)], LEAD
+    PA, PB, out, y, t = 0.04, 0.08, [], [np.zeros(int(LEAD * SR), np.float32)], LEAD
     for k, (a, b) in enumerate(ph_src):
-        a0, b0 = max(0, a - PAD), min(dur, b + PAD)
+        nxt = ph_src[k + 1][0] if k < M - 1 else dur
+        prv = ph_src[k - 1][1] if k else 0.0
+        a0, b0 = max(prv, a - PA), min(nxt - 0.01, b + PB)
         piece = x[int(a0 * SR):int(b0 * SR)].copy()
-        f = int(0.01 * SR); piece[:f] *= np.linspace(0, 1, f); piece[-f:] *= np.linspace(1, 0, f)
-        out.append([round(t + PAD, 3), round(t + len(piece) / SR - PAD, 3)])
+        f = int(0.012 * SR); piece[:f] *= np.linspace(0, 1, f); piece[-f:] *= np.linspace(1, 0, f)
+        out.append([round(t + (a - a0), 3), round(t + (b - a0), 3)])
         y.append(piece); t += len(piece) / SR
         if k < M - 1:
             g = gap_after(k, ph_src[k + 1][0] - b)
@@ -128,7 +131,7 @@ def keys(ph):
     K['delit'] = s(21) + 0.02; K['an'] = s(22) + 0.05; K['prison'] = s(22) + 0.5 * L(22); K['src'] = e(22) - 0.1
     K['wall0'] = e(22) + 0.3; K['wall1'] = s(23) - 0.05
     K['toi0'] = s(23) - 0.05; K['toi1'] = s(23) + 0.5; K['sticker'] = s(24) + 0.1
-    dur = round(e(24) + 1.35, 3)
+    dur = round(e(24) + 1.25, 3)
     clip = [[0, K['rw0'], 0, K['rw0']],
             [K['rw0'], K['rw1'], K['rw0'], 1.0],
             [K['rw1'], K['uf1'], 1.0, 1.0],
