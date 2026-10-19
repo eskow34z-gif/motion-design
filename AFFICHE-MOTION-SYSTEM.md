@@ -1,6 +1,6 @@
 # Motion System « AFFICHE » V1.0 — standard par défaut
 
-**Décidé le 19/10/2026 par Exaucé : toutes les prochaines vidéos suivent ce système, sauf s'il demande autre chose.**
+**Décidé le 19/10/2026 par Exaucé : toutes les prochaines vidéos suivent ce système, sauf s'il demande autre chose — y compris les vidéos Flux Master et Tech&Dev** (qui remplacent SILLAGE et KINÉTIQUE ; logo et couleurs de la marque restent ceux de la marque).
 Référence : MANIF01 « La rue a de la mémoire » (`engine/manif01/`, `outputs/MANIF01-*`). Le niveau d'effets par défaut est **« dosé »**, un cran en dessous de MANIF01 (voir § Intensité).
 
 ## 1. Format
@@ -67,12 +67,14 @@ Interdit : Inter, Roboto, Arial et toute police système.
 - Bruitages synthétisés (`audio.py`) calés sur `cues.js` ; environ 9 dB sous la voix.
 - Master −14 LUFS, crête vraie ≤ −1 dBFS **après** l'encodage AAC (limiteur après la normalisation).
 
-## 9. Vidéo réelle incrustée (format réaction)
+## 9. Vidéo réelle incrustée (format réaction) — référence : MANIF02 (`engine/manif02/`)
 - La séquence est traitée comme **une photo imprimée collée sur le mur** : cadre papier déchiré, scotch, légère rotation, trame et grain par-dessus pour qu'elle appartienne au même monde.
 - On réagit par **arrêts sur image** : la vidéo se fige, cercle ou flèche au feutre, légende tapée à la machine, tampon si besoin, puis elle repart.
 - Images extraites à l'avance avec ffmpeg (une image par pas de temps) pour garder un rendu image par image exact. Le son d'origine passe sous la voix (−12 dB environ) si la vidéo en a.
 - Réaction factuelle : ce qu'on voit, le contexte, les chiffres sourcés, la question au public. Pas de prise de position.
-- Uniquement des vidéos qu'Exaucé a filmées lui-même ou qu'il a le droit d'utiliser. Visages de mineurs reconnaissables floutés si nécessaire.
+- Vidéo d'un autre compte : crédit sur le bord du tirage (« VIDÉO : @compte » ou « VIDÉO : TIKTOK »), jamais dans un coin de l'écran. La vidéo source n'est pas versionnée dans le dépôt (public).
+- Floutage des visages proposé à chaque fois ; c'est Exaucé qui décide.
+- Mise en page : vidéo en grand pendant la lecture ; à l'arrêt, le tirage se réduit en haut (×0,655) et la carte verdict se colle en dessous. La carte du clip et les arrêts absorbent les écarts de durée de la voix (`timing.py`), la vidéo n'est jamais accélérée ni ralentie.
 
 ## 10. Chaîne de production
 1. Vérifier les faits (recherche du jour) et écrire le script.
