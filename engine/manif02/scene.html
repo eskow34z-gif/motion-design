@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>MANIF02 — Réaction Bastille</title>
+<style>
+@font-face { font-family: BSS; font-weight: 900; src: url(../node_modules/@fontsource/big-shoulders-stencil-display/files/big-shoulders-stencil-display-latin-900-normal.woff2) format('woff2'); }
+@font-face { font-family: BSS; font-weight: 900; unicode-range: U+0100-024F, U+20AC; src: url(../node_modules/@fontsource/big-shoulders-stencil-display/files/big-shoulders-stencil-display-latin-ext-900-normal.woff2) format('woff2'); }
+@font-face { font-family: ANY; font-weight: 100 900; font-stretch: 50% 150%; src: url(../node_modules/@fontsource-variable/anybody/files/anybody-latin-standard-normal.woff2) format('woff2-variations'); }
+@font-face { font-family: ELITE; src: url(../node_modules/@fontsource/special-elite/files/special-elite-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: MARK; src: url(../node_modules/@fontsource/permanent-marker/files/permanent-marker-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: SPRAY; src: url(../node_modules/@fontsource/rubik-spray-paint/files/rubik-spray-paint-latin-400-normal.woff2) format('woff2'); }
+@font-face { font-family: MONO; font-weight: 700; src: url(../node_modules/@fontsource/space-mono/files/space-mono-latin-700-normal.woff2) format('woff2'); }
+html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+html.tile, body.tile, body.tile #stage { background: transparent !important; }
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #2A2622; }
+#cam { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; transform-origin: 540px 960px; }
+#wallbg { position: absolute; inset: -300px; background: #2A2622; }
+.abs { position: absolute; left: 0; top: 0; }
+.tex { position: absolute; left: 0; top: 0; width: 100%; height: 100%; pointer-events: none; }
+.tex-paper { background: url(../manif01/tex/paper.png); background-size: 1080px 1920px; mix-blend-mode: multiply; }
+.tex-old { background: url(../manif01/tex/old.png); mix-blend-mode: multiply; }
+.tex-ink { background: url(../manif01/tex/ink.png); mix-blend-mode: screen; }
+.wr { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: url(../manif01/tex/wrinkle.png); mix-blend-mode: overlay; opacity: .28; pointer-events: none; }
+.wet { position: absolute; left: 0; top: 0; width: 100%; height: 100%; background: rgba(30, 24, 18, .26); mix-blend-mode: multiply; pointer-events: none; }
+.worn { -webkit-mask-image: url(../manif01/tex/wear.png); -webkit-mask-size: 100% 100%; }
+.tape { position: absolute; background: rgba(244, 235, 208, .82); box-shadow: 0 1px 3px rgba(0,0,0,.18); }
+.typer { white-space: pre; }
+.lt { white-space: nowrap; }
+.card { position: absolute; background: #F7F2E6; box-shadow: 4px 16px 30px rgba(0,0,0,.45); overflow: visible; }
+.card > .inner { position: absolute; inset: 0; overflow: hidden; }
+.stamp { position: absolute; box-sizing: border-box; display: flex; align-items: center; justify-content: center; font: 900 100px/1 BSS; letter-spacing: .05em; color: #E8291C; border: 9px solid #E8291C; border-radius: 12px; padding-top: 6px; transform-origin: 50% 50%; }
+.dots { position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(20,18,16,.55) 28%, rgba(0,0,0,0) 31%); background-size: 10px 10px; mix-blend-mode: multiply; pointer-events: none; }
+#vign { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 46%, rgba(0,0,0,0) 60%, rgba(0,0,0,.32) 100%); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <filter id="duo" color-interpolation-filters="sRGB">
+    <feColorMatrix type="matrix" values="0.3 0.59 0.11 0 0  0.3 0.59 0.11 0 0  0.3 0.59 0.11 0 0  0 0 0 1 0"/>
+    <feComponentTransfer>
+      <feFuncR type="table" tableValues="0.078 0.1 0.45 0.86 0.933"/>
+      <feFuncG type="table" tableValues="0.071 0.09 0.43 0.83 0.906"/>
+      <feFuncB type="table" tableValues="0.063 0.08 0.39 0.77 0.843"/>
+    </feComponentTransfer>
+  </filter>
+</svg>
+<div id="stage">
+  <div id="cam"><div id="wallbg"><div class="tex tex-ink"></div></div></div>
+  <div id="vign"></div>
+</div>
+<script src="timing.js"></script>
+<script src="../manif01/core.js"></script>
+<script src="scenes.js"></script>
+</body>
+</html>

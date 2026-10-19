@@ -4,3 +4,6 @@ __pycache__/
 .DS_Store
 engine/manif01/tex/
 engine/manif01/tiles/
+engine/manif02/src/
+engine/manif02/clip/
+engine/manif02/tiles/
