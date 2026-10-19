@@ -1,5 +1,7 @@
 # Flux Master — Motion System
 
+> **Standard par défaut depuis le 19/10/2026 : [`AFFICHE-MOTION-SYSTEM.md`](AFFICHE-MOTION-SYSTEM.md)** (style de MANIF01, effets « dosés », voix + bruitages sans musique), sauf demande contraire d'Exaucé.
+
 Dépôt de référence pour produire les vidéos motion design de **Flux Master** (SK Flux Master).
 Toute vidéo doit être une évolution du template **Flux Master Motion System V1.0** (nom de code « SILLAGE »). On ne recrée jamais un nouveau style.
 
