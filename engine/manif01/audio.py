@@ -212,6 +212,10 @@ def sfx(k, t, d, g):
             rate = 40 - 32 * (u / d) ** 0.7
             place('sfx', filt(noise(0.006), 'bp', (2500, 6500)) * env(0.006, 0.0002, 0.002) * 0.6 * g, t + u, pan=0.15)
             u += 1.0 / rate
+    elif k == 'slam':
+        place('sfx', add(np.sin(2 * np.pi * np.cumsum(46 + 80 * np.exp(-tt(0.32) * 18)) / SR) * env(0.32, 0.001, 0.14, 3) * 1.1,
+                      filt(noise(0.09), 'bp', (250, 3200)) * env(0.09, 0.0005, 0.03) * 0.8,
+                      filt(noise(0.02), 'hp', 4000) * env(0.02, 0.0002, 0.006) * 0.5) * g, t - 0.004)
     elif k == 'clack':
         place('sfx', add(np.sin(2 * np.pi * 150 * tt(0.15)) * env(0.15, 0.001, 0.05) * 0.7,
                       filt(noise(0.03), 'bp', (1500, 5000)) * env(0.03, 0.0005, 0.008) * 0.9) * g, t)
@@ -270,6 +274,11 @@ def sfx(k, t, d, g):
 
 for c in CUES:
     sfx(c['k'], c['t'], c.get('d', 0.3), c.get('g', 1.0))
+# nappe de bande pendant la déchirure et le rembobinage (pas de blanc)
+x = tt(2.2)
+drone = (np.sin(2 * np.pi * 55 * x * (1 + 0.004 * np.sin(2 * np.pi * 0.7 * x))) * 0.5 + np.sin(2 * np.pi * 110.3 * x) * 0.2
+         + filt(noise(2.2), 'bp', (2500, 9000)) * 0.08) * np.minimum(1, x / 0.3) * np.minimum(1, (2.2 - x) / 0.25)
+place('amb', drone * 0.35, 10.9)
 # impact final + accord tenu
 place('keys', stab((146.8, 174.6, 220.0, 293.7), 1.5, 0.3), 27.25)
 place('keys', stab((146.8, 174.6, 220.0, 293.7), 2.0, 0.22), 29.5)
