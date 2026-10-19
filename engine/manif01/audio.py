@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """MANIF01 — bande son synthétisée (rythmique 120 BPM + bruitages), calée sur cues.js.
-Usage : python3 engine/manif01/audio.py sortie.wav"""
+Usage : python3 engine/manif01/audio.py sortie.wav [--no-music]   (--no-music : bruitages seuls)"""
 import json, os, re, sys
 import numpy as np
 from scipy.signal import butter, sosfilt, fftconvolve
@@ -10,6 +10,8 @@ SR, DUR = 48000, 30.0
 HERE = os.path.dirname(os.path.abspath(__file__))
 CUES = json.loads(re.search(r'window\.CUES\s*=\s*(\[.*\])', open(os.path.join(HERE, 'cues.js'), encoding='utf-8').read(), re.S).group(1))
 rng = np.random.default_rng(1986)
+NO_MUSIC = '--no-music' in sys.argv
+OUTF = next((a for a in sys.argv[1:] if not a.startswith('--')), '/tmp/manif01.wav')
 N = int(SR * (DUR + 1.5))
 BUS = {k: np.zeros((N, 2)) for k in ('drum', 'bass', 'keys', 'sfx', 'amb')}
 
@@ -266,7 +268,7 @@ def sfx(k, t, d, g):
         x = tt(d); n = noise(d)
         s = filt(n, 'bp', (150, 1500)) * np.sin(np.pi * x / d) ** 1.5 * 0.6
         pad = sum(np.sin(2 * np.pi * f * x) for f in (146.8, 174.6, 220.0, 293.7)) / 4
-        place('sfx', (s + pad * 0.18 * np.sin(np.pi * x / d)) * g, t)
+        place('sfx', (s + (0 if NO_MUSIC else pad * 0.18 * np.sin(np.pi * x / d))) * g, t)
     elif k == 'end':
         place('keys', stab((146.8, 174.6, 220.0, 293.7), 1.4, 0.35), t - 0.45)
         place('drum', kick(0.9), t - 0.45)
@@ -315,6 +317,8 @@ lp2 = filt(music, 'lp', 900, 2)
 w2 = (np.clip((T - 25.5) / 0.2, 0, 1) * np.clip((27.25 - T) / 0.05, 0, 1))[:, None]
 music = music * (1 - w2) + lp2 * w2
 
+if NO_MUSIC:
+    music = music * 0.0; BUS['keys'][:] = 0
 mix = music * 0.9 + BUS['sfx'] * 1.0 + BUS['amb'] * 0.8
 # réverbération courte
 ir = noise(1.2) * np.exp(-np.arange(int(1.2 * SR)) / SR * 5.5)
@@ -327,5 +331,5 @@ fade = np.minimum(1, (DUR - T[:len(mix)]) / 0.35)[:, None]
 mix *= fade
 pk = np.abs(mix).max()
 mix = np.tanh(mix / pk * 1.3) / np.tanh(1.3) * 0.89
-wavfile.write(sys.argv[1] if len(sys.argv) > 1 else '/tmp/manif01.wav', SR, (mix * 32767).astype(np.int16))
-print('écrit', sys.argv[1] if len(sys.argv) > 1 else '/tmp/manif01.wav', f'{len(mix) / SR:.2f} s')
+wavfile.write(OUTF, SR, (mix * 32767).astype(np.int16))
+print('écrit', OUTF, 'sans musique' if NO_MUSIC else '', f'{len(mix) / SR:.2f} s')
