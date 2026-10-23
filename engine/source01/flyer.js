@@ -26,7 +26,7 @@ function build() {
     { x: 64, y: 860, r: -3, t: 'VÉHICULES', s: 'à bon prix', ic: 'car' },
     { x: 556, y: 880, r: 2.5, t: 'EN GROS', s: 'commandes', ic: 'box' },
     { x: 70, y: 1238, r: 2, t: 'REVENTE', s: 'plans', ic: 'up' },
-    { x: 560, y: 1226, r: -2.5, t: 'IMMO', s: 'fiches', ic: 'house' },
+    { x: 560, y: 1226, r: -2.5, t: 'PAPIERS', s: 'docs véhicule', ic: 'folder' },
   ];
   OFF.forEach((o, k) => {
     const d = el('div', '', c, { left: o.x + 'px', top: o.y + 'px', width: '450px', height: '330px', transform: `rotate(${o.r}deg)` });
@@ -42,7 +42,7 @@ function build() {
     } else if (o.ic === 'up') {
       icon = `<path d="M120,140 L180,96 L228,118 L300,46" fill="none" stroke="${COL.red}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M262,40 L310,38 L306,86" fill="none" stroke="${COL.red}" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/><path d="M110,160 L330,160" stroke="${COL.ink}" stroke-width="8" stroke-linecap="round"/>`;
     } else {
-      icon = `<g transform="translate(150 20) scale(.7)"><path d="M20,98 L110,22 L200,98 M42,82 L42,184 L178,184 L178,82 M90,184 L90,124 L130,124 L130,184" fill="none" stroke="${COL.ink}" stroke-width="15" stroke-linejoin="round" stroke-linecap="round"/><rect x="146" y="38" width="20" height="40" fill="${COL.ink}"/></g>`;
+      icon = `<g transform="translate(148 18) scale(.7)"><path d="M14,40 L86,40 L104,62 L206,62 L206,180 L14,180 Z" fill="${COL.kraft}" stroke="${COL.ink}" stroke-width="14" stroke-linejoin="round"/><rect x="40" y="22" width="140" height="104" fill="${COL.light}" stroke="${COL.ink}" stroke-width="11" stroke-linejoin="round" transform="rotate(-4 110 74)"/><path d="M62,46 L150,40 M64,66 L156,60 M66,86 L120,82" stroke="${COL.ink}" stroke-width="10" stroke-linecap="round" stroke-opacity=".7"/><path d="M6,88 L214,88 L202,184 L18,184 Z" fill="${COL.kraft}" stroke="${COL.ink}" stroke-width="14" stroke-linejoin="round"/><rect x="78" y="122" width="64" height="22" fill="${COL.red}"/></g>`;
     }
     svgEl(d, 450, 180, icon, { left: '0px', top: '20px' });
     el('div', '', d, { left: '0px', top: '200px', width: '450px', textAlign: 'center', font: '42px/1 MARK', color: COL.ink }, o.s);

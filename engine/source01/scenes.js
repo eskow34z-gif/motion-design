@@ -263,7 +263,7 @@ function buildS4() {
   };
 }
 
-/* ═══════════ S5 · 10,6–13,2 s · PLANS REVENTE + FICHES IMMO (annonce à languettes) ═══════════ */
+/* ═══════════ S5 · 10,6–13,2 s · PLANS REVENTE + PAPIERS AUTO (annonce à languettes) ═══════════ */
 function buildS5() {
   const A = poster('s5', { bg: COL.light, tex: 'paper', z: 5 });
   const pa = makePaste(-26, 53), R = rng(505);
@@ -277,10 +277,10 @@ function buildS5() {
   svgEl(fl, 820, 1060, `<path d="${tornRect(820, 800, 8, 20, 61)}" fill="${COL.paper}"/>`, { left: '0px', top: '0px', filter: 'drop-shadow(0 14px 16px rgba(0,0,0,.25))' });
   el('div', 'tex tex-paper', fl, { height: '800px' });
   tape(fl, 330, -24, 170, 50, -4);
-  // pictogramme maison au feutre
-  svgEl(fl, 220, 200, `<path d="M20,98 L110,22 L200,98 M42,82 L42,184 L178,184 L178,82 M90,184 L90,124 L130,124 L130,184" fill="none" stroke="${COL.ink}" stroke-width="12" stroke-linejoin="round" stroke-linecap="round"/><rect x="146" y="38" width="20" height="40" fill="${COL.ink}"/>`, { left: '300px', top: '70px' });
-  el('div', '', fl, { left: '0px', top: '300px', width: '820px', textAlign: 'center', font: '900 150px/1 BSS', color: COL.ink, letterSpacing: '0.02em' }, 'FICHES <span style="color:#E8291C">IMMO</span>');
-  const ty = typer(fl, 'à voir sur La Source', { left: '0px', top: '486px', width: '820px', textAlign: 'center', font: '54px/1 ELITE', color: COL.ink });
+  // pictogramme dossier (papiers du véhicule)
+  svgEl(fl, 220, 200, `<path d="M14,40 L86,40 L104,62 L206,62 L206,180 L14,180 Z" fill="${COL.kraft}" stroke="${COL.ink}" stroke-width="11" stroke-linejoin="round"/><rect x="40" y="22" width="140" height="104" fill="${COL.light}" stroke="${COL.ink}" stroke-width="8" stroke-linejoin="round" transform="rotate(-4 110 74)"/><path d="M62,46 L150,40 M64,66 L156,60 M66,86 L120,82" stroke="${COL.ink}" stroke-width="7" stroke-linecap="round" stroke-opacity=".7"/><path d="M6,88 L214,88 L202,184 L18,184 Z" fill="${COL.kraft}" stroke="${COL.ink}" stroke-width="11" stroke-linejoin="round"/><rect x="78" y="122" width="64" height="22" fill="${COL.red}"/>`, { left: '300px', top: '70px' });
+  el('div', '', fl, { left: '0px', top: '300px', width: '820px', textAlign: 'center', font: '900 150px/1 BSS', color: COL.ink, letterSpacing: '0.02em' }, 'PAPIERS <span style="color:#E8291C">AUTO</span>');
+  const ty = typer(fl, 'documents administratifs', { left: '0px', top: '486px', width: '820px', textAlign: 'center', font: '54px/1 ELITE', color: COL.ink });
   // pointillés de découpe + languettes
   const TAB = { n: 8, w: 820 / 8, h: 250, y: 560 };
   svgEl(fl, 820, 20, `<path d="M10,10 L810,10" stroke="${COL.ink}" stroke-width="3" stroke-dasharray="12 12" stroke-opacity=".5"/>`, { left: '0px', top: (TAB.y - 10) + 'px' });

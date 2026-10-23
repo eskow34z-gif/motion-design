@@ -1,6 +1,6 @@
 # SOURCE01 — « La Source · Tout est dispo »
 
-Motion design 9:16 pour TikTok et Reels, 21,4 s (v2), 30 i/s. Promotion du canal Telegram « La Source - Tout Est Dispo » : véhicules à bon prix, commandes en gros, plans revente, fiches immo, demandes en privé.
+Motion design 9:16 pour TikTok et Reels, 21,4 s (v2), 30 i/s. Promotion du canal Telegram « La Source - Tout Est Dispo » : véhicules à bon prix, commandes en gros, plans revente, papiers du véhicule, demandes en privé.
 
 Standard **AFFICHE** (`AFFICHE-MOTION-SYSTEM.md`), intensité **dosée** : 2 secousses fortes (4,50 s et 16,85 s), 1 seul flash (0,08), coups de zoom ≤ 2 %, slams depuis 1,35, un effet signature par affiche. **Bruitages seuls** : ni musique ni voix (un son TikTok peut être posé par-dessus). Aucun texte dans les coins.
 
@@ -13,7 +13,7 @@ Images clés et planche couleurs/typos dans Figma : *SOURCE01 — Tout est dispo
 | 2,9–5,4 s | LA SOURCE — TOUT EST DISPO — CANAL TELEGRAM | grand tampon DISPO (moment fort, flash) |
 | 5,4–8 s | VÉHICULES — À BON PRIX | voiture tramée qui entre avec traînées |
 | 8–10,6 s | COMMANDES EN GROS | trois cartons qui tombent et s'empilent |
-| 10,6–13,2 s | PLANS REVENTE + FICHES IMMO | annonce à languettes, une languette arrachée |
+| 10,6–13,2 s | PLANS REVENTE + PAPIERS AUTO | annonce à languettes, une languette arrachée |
 | 13,2–15,3 s | UNE DEMANDE ? ÉCRIS-MOI EN PRIVÉ | avion en papier et sa traînée |
 | 15,3–17,35 s | le mur — REJOINS LA SOURCE | recul sur le mur, tag bombé fluo |
 | 17,35–21,4 s | le flyer (`flyer.html`) collé sur le mur, puis plein cadre | collage au balai + avancée de caméra, tenue 2,5 s |
