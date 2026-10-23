@@ -1,11 +1,15 @@
 /* SOURCE01 — « La Source · Tout est dispo » : 6 affiches collées les unes sur les autres, puis le mur.
    Standard AFFICHE (MANIF01), intensité « dosée », bruitages seuls. Réutilise engine/manif01/core.js. */
 'use strict';
-const SDUR = 18.8;
+const SDUR = 21.4;
 const Q = new URLSearchParams(location.search);
 const TILE_MODE = Q.has('tile');
 const stage = document.getElementById('stage'), cam = document.getElementById('cam'), flashEl = document.getElementById('flash'), vign = document.getElementById('vign');
 const SCENES = [];
+const POSTERS = {};
+/* fluidité : vie de chaque affiche [début du collage, début du collage suivant] et sens du balai de chaque collage */
+const LIFE = { s1: [-0.16, 2.9], s2: [2.9, 5.4], s3: [5.4, 8.0], s4: [8.0, 10.6], s5: [10.6, 13.2], s6: [13.2, 15.3] };
+const BRUSH = { '0.00': -24, '2.90': 24, '5.40': -20, '8.00': 20, '10.60': -26, '13.20': 22, '17.35': -22 };
 const SLAM0 = 1.35; // échelle de départ des slams (dosé)
 
 /* ———— outils communs (repris de MANIF01) ———— */
@@ -20,7 +24,10 @@ function poster(id, o) {
   if (o.tex) el('div', 'tex tex-' + o.tex, p);
   const wr = el('div', 'wr', p);
   const wet = el('div', 'wet', p);
-  return { wrap, p, c, cv, parts, wr, wet };
+  const dim = el('div', '', p, { position: 'absolute', left: '0px', top: '0px', width: '100%', height: '100%', background: '#0B0A09', opacity: 0, pointerEvents: 'none' });
+  const A = { wrap, p, c, cv, parts, wr, wet, dim };
+  POSTERS[id] = A;
+  return A;
 }
 function pasteUpd(A, pa, t, t0, d) {
   const p = E.io2(P(t, t0, t0 + d));
@@ -366,8 +373,12 @@ function buildWall() {
   const drips = dripsSvg(Wl, [[150, 70, 12, 0], [330, 110, 14, 0.08], [560, 55, 10, 0.16], [740, 95, 13, 0.05], [905, 60, 11, 0.2]], COL.fluo, 735);
   sprayMist(parts, PR, { t0: 16.5, t1: 16.85, x0: 60, x1: 1020, y0: 540, y1: 730, n: 900, col: COL.fluo, spread: 70, yspread: 80 });
   const ls = el('div', '', Wl, { position: 'absolute', left: '0px', top: '880px', width: '1080px', textAlign: 'center', font: '900 236px/1 BSS', color: COL.light, whiteSpace: 'nowrap', transformOrigin: '50% 50%', textShadow: `9px 7px 0 ${COL.red}` }, 'LA SOURCE');
-  const sk = el('div', '', Wl, { position: 'absolute', left: '80px', top: '1240px', width: '920px', height: '250px', borderRadius: '34px', background: COL.light, border: `7px solid ${COL.ink}`, boxSizing: 'border-box', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '22px', boxShadow: '0 18px 34px rgba(0,0,0,.5)', transformOrigin: '50% 50%' },
-    `<div style="font:900 74px/1 ANY;font-stretch:96%;color:${COL.ink};letter-spacing:-0.01em">TOUT EST DISPO</div><div style="font:700 37px/1 MONO;color:${COL.ink};letter-spacing:.01em">t.me/lasoucetoutestdisponibleoff</div>`);
+  // le flyer final, collé au balai sur le mur puis en plein cadre
+  const FLc = el('div', '', Wl, { position: 'absolute', left: '0px', top: '0px', width: '1080px', height: '1920px' });
+  const FLi = el('div', '', FLc, { position: 'absolute', left: '0px', top: '0px', width: '1080px', height: '1920px', transformOrigin: '540px 960px', boxShadow: '0 50px 110px rgba(0,0,0,.7)', overflow: 'hidden' });
+  const fim = el('img', '', FLi, { width: '1080px', height: '1920px', display: 'block' }); fim.src = 'tiles/flyer.png'; imgs.push(fim);
+  const fwr = el('div', 'wr', FLi); const fwet = el('div', 'wet', FLc);
+  const fpa = makePaste(-22, 91);
   return {
     imgs,
     upd(t, o) {
@@ -380,11 +391,34 @@ function buildWall() {
       tf(rj, 0, 0, -4, 1 + (t > 16.85 ? 0.04 * Math.exp(-(t - 16.85) * 9) : 0));
       drips(t, 16.8);
       setSlam(ls, t, 16.85, -2, SLAM0, 0.08);
-      const a = t - 17.15, s = spring(a, 2.2, 0.47);
-      op(sk, a > 0 ? 1 : 0); tf(sk, 0, 0, lerp(-10, -2.5, s) + Math.sin(t * 2) * 0.5 * clamp(a), 1 + 0.32 * (1 - s));
+      // collage du flyer (17,35 → 17,8 s), puis la caméra avance jusqu'à lui (18,2 → 18,85 s)
+      const fp = E.io2(P(t, 17.35, 17.8));
+      show(FLc, fp > 0);
+      if (fp > 0) {
+        FLc.style.clipPath = fpa.clip(fp);
+        show(fwet, fp < 1); if (fp < 1) fwet.style.clipPath = fpa.band(fp);
+        const z = E.io3(P(t, 18.2, 18.85)), za = t - 18.85;
+        const settle = za > 0 ? 0.012 * Math.exp(-za * 8) * Math.cos(za * 22) : 0;
+        tf(FLi, lerp(0, 0, z), lerp(40, 0, z), lerp(-2.5, 0, z), lerp(0.6, 1, z) + settle);
+        FLi.style.boxShadow = `0 ${lerp(50, 0, z).toFixed(0)}px ${lerp(110, 0, z).toFixed(0)}px rgba(0,0,0,${lerp(0.7, 0, z).toFixed(2)})`;
+        fwr.style.opacity = (0.15 + 0.4 * (1 - P(t, 17.8, 19.2))).toFixed(3);
+      }
       parts.draw(t);
     },
   };
+}
+
+/* ═══════════ fluidité : respiration, profondeur, recouvrement ═══════════ */
+function depthPass(t) {
+  Object.entries(LIFE).forEach(([id, [t0, t1]], i) => {
+    const A = POSTERS[id]; if (!A || A.wrap.style.display === 'none') return;
+    const life = E.out3(P(t, t0, t0 + 2.8));             // l'affiche se pose et respire : 1,04 → 1
+    const cov = E.io2(P(t, t1, t1 + 0.46));              // recouverte : elle s'enfonce et passe dans l'ombre
+    const s = lerp(1.04, 1.0, life) * (1 - 0.012 * cov);
+    const r = (i % 2 ? 0.35 : -0.35) * cov;
+    tf(A.wrap, 0, 0, r, s);
+    op(A.dim, 0.38 * cov);
+  });
 }
 
 /* ═══════════ caméra, flash, rendu ═══════════ */
@@ -398,6 +432,13 @@ function camAt(t) {
     y += sh * e * 0.8 * Math.cos(a * 2 * Math.PI * 13 + c.t * 3);
     r += sh * 0.022 * e * Math.sin(a * 2 * Math.PI * 9 + c.t);
     s += (c.pu || 0) * Math.exp(-a * 9) * clamp(a / 0.03);
+  }
+  for (const c of CUES) {
+    if (c.k !== 'paste') continue;
+    const a = t - c.t, ang = BRUSH[c.t.toFixed(2)]; if (ang === undefined || a < 0 || a > 1.6) continue;
+    const g = a < 0.32 ? E.io2(a / 0.32) : Math.exp(-(a - 0.32) * 4.5) * Math.cos((a - 0.32) * 6.5);
+    const rad = ang * Math.PI / 180;
+    x += Math.cos(rad) * 16 * g; y += Math.sin(rad) * 16 * g; r += (ang > 0 ? 0.22 : -0.22) * g; s += 0.006 * g;
   }
   const f = 1 - P(t, 14.9, 15.4);
   x += 5 * Math.sin(t * 0.9) * f; y += 4 * Math.sin(t * 0.63 + 1) * f; r += 0.2 * Math.sin(t * 0.5) * f;
@@ -419,6 +460,7 @@ async function main() {
     flashEl.style.background = f ? f[0] : 'transparent'; flashEl.style.opacity = f ? f[1].toFixed(3) : 0;
     show(vign, !o.tile);
     for (const s of SCENES) s.upd(t, o);
+    if (!o.tile) depthPass(t);
   };
   window.__dur = SDUR; window.__fps = FPS;
   window.renderAt(0);

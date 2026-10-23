@@ -6,7 +6,7 @@ import numpy as np
 from scipy.signal import butter, sosfilt, fftconvolve
 from scipy.io import wavfile
 
-SR, DUR = 48000, 18.8
+SR, DUR = 48000, 21.4
 HERE = os.path.dirname(os.path.abspath(__file__))
 CUES = json.loads(re.search(r'window\.CUES\s*=\s*(\[.*\])', open(os.path.join(HERE, 'cues.js'), encoding='utf-8').read(), re.S).group(1))
 rng = np.random.default_rng(2610)

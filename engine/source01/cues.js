@@ -1,5 +1,5 @@
 /* SOURCE01 — repères partagés par la scène (caméra, flash) et la bande son (audio.py lit ce tableau JSON).
-   Intensité « dosée » : secousses ≤ 8 px sauf deux moments forts (4,50 s et 16,85 s), un seul flash, zoom ≤ 2 %.
+   Intensité « dosée » : secousses ≤ 8 px sauf deux moments forts (4,50 s et 16,85 s) ; fin sur le flyer, un seul flash, zoom ≤ 2 %.
    k = type de son ; d = durée ; sh = secousse (px) ; pu = coup de zoom ; fl = flash [couleur, opacité] ; g = gain. */
 window.CUES = [
   {"t": 0.00, "k": "paste", "d": 0.30},
@@ -44,5 +44,8 @@ window.CUES = [
   {"t": 15.30, "k": "pull", "d": 1.20},
   {"t": 16.50, "k": "spray", "d": 0.35},
   {"t": 16.85, "k": "hit", "sh": 10, "pu": 0.015, "g": 0.6},
-  {"t": 17.15, "k": "slap", "sh": 5, "pu": 0.010}
+  {"t": 17.35, "k": "paste", "d": 0.45},
+  {"t": 17.82, "k": "slap", "sh": 5, "pu": 0.010},
+  {"t": 18.20, "k": "whoosh", "d": 0.65, "g": 0.7},
+  {"t": 18.85, "k": "thump", "sh": 4, "g": 0.6}
 ];
