@@ -1,0 +1,10 @@
+{
+ "note": "Prise « Jeunot » (ElevenLabs v4). Segments de parole repérés sur les silences (secondes, prise d'origine) et vérifiés par transcription locale (Whisper small via sherpa-onnx). Après 37,5 s, la prise contient une suite hors texte inventée par le modèle (en anglais) : coupée.",
+ "cut": 37.6,
+ "segments": [
+  [0.10, 2.52, [0, 1]], [2.91, 4.08, [2]], [4.57, 8.19, [3, 4, 5]], [8.44, 10.01, [6]], [10.14, 11.77, [7]],
+  [12.08, 12.55, [8]], [12.99, 16.31, [9, 10]], [16.60, 17.17, [11]], [17.32, 19.03, [12]], [19.38, 22.12, [13, 14]],
+  [22.46, 23.22, [15]], [23.47, 25.62, [16]], [25.89, 26.65, [17]], [26.94, 28.62, [18]], [28.92, 30.02, [19]],
+  [30.33, 31.94, [20]], [32.25, 33.86, [21]], [34.19, 35.09, [22]], [35.31, 36.22, [23]], [36.59, 37.46, [24]]
+ ]
+}

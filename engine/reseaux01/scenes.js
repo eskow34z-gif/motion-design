@@ -204,11 +204,11 @@ function buildS3() {
     upd(t) {
       show(A.wrap, t >= 7.0 && t < 11.36); if (!(t >= 7.0 && t < 11.36)) return;
       pasteUpd(A, pa, t, 7.0, 0.3);
-      setSlam(t1, t, 7.25, -1.5);
-      const sy = lerp(gy - 10, gy + rows * chh + 10, E.io2(P(t, 7.9, 9.4)));
-      show(scan, t > 7.85 && t < 9.5); scan.style.transform = `translateY(${sy.toFixed(1)}px)`;
+      setSlam(t1, t, 7.85, -1.5);
+      const sy = lerp(gy - 10, gy + rows * chh + 10, E.io2(P(t, 7.95, 9.4)));
+      show(scan, t > 7.93 && t < 9.5); scan.style.transform = `translateY(${sy.toFixed(1)}px)`;
       hg.forEach((g, i) => {
-        const h = heads[i], a = t - (7.4 + (i % cols) * 0.035 + Math.floor(i / cols) * 0.05);
+        const h = heads[i], a = t - (7.2 + (i % cols) * 0.035 + Math.floor(i / cols) * 0.05);
         const s = E.outBack(P(a, 0, 0.25));
         const dim = h.center ? 1 : 1 - 0.7 * E.out3(P(t, 9.95, 10.2));
         g.setAttribute('transform', `translate(${h.cx} ${h.cy + 40}) scale(${s.toFixed(3)}) translate(${-h.cx} ${-h.cy - 40})`);
@@ -245,7 +245,7 @@ function buildS4() {
   const stamp = stampBox(A.c, { x: 140, y: 560, w: 800, h: 240, col: COL.red, b: 12, font: '900 190px/1 BSS', txt: 'CENSURÉ' });
   const who = typer(A.c, '14 AOÛT 2026\nCONSEIL CONSTITUTIONNEL', { left: '0px', top: '850px', width: '1080px', textAlign: 'center', font: '700 40px/1.35 MONO', color: COL.ink, letterSpacing: '0.06em' });
   const s1 = strip(A.c, { x: 150, y: 990, w: 780, h: 130, bg: COL.light, font: '78px/1 MARK', col: COL.ink, html: 'TROP LARGE', rot: -3, seed: 7 });
-  const s2 = strip(A.c, { x: 70, y: 1140, w: 940, h: 140, bg: COL.red, font: '60px/1 MARK', col: COL.light, html: 'VIE PRIVÉE PAS PROTÉGÉE', rot: 2, seed: 8 });
+  const s2 = strip(A.c, { x: 70, y: 1140, w: 940, h: 140, bg: COL.red, font: '60px/1 MARK', col: COL.light, html: 'VIE PRIVÉE SANS GARANTIES', rot: 2, seed: 8 });
   const src = el('div', '', A.c, { left: '0px', top: '1300px', width: '1080px', textAlign: 'center', font: '700 26px/1 MONO', color: COL.ink, letterSpacing: '0.08em', opacity: 0 }, 'DÉCISION N° 2026-911 DC');
   burst(A.parts, R, { t: 12.6, x: 540, y: 680, rx: 700, ry: 160, n: 110, v0: 300, v1: 1800, k: 7, r0: 1.4, r1: 9, col: COL.red, a: 0.9 });
   return {

@@ -1,0 +1,156 @@
+{
+ "tempo": 1.15,
+ "dur": 36.452,
+ "morceaux": [
+  {
+   "texte": "Ton compte devait être fermé",
+   "debut": 0.15,
+   "fin": 1.503,
+   "silence_reel_avant": null
+  },
+  {
+   "texte": "le premier janvier.",
+   "debut": 1.563,
+   "fin": 2.314,
+   "silence_reel_avant": false
+  },
+  {
+   "texte": "Spoiler : non.",
+   "debut": 2.614,
+   "fin": 3.632,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Cet été, la France vote",
+   "debut": 4.092,
+   "fin": 5.351,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "l’interdiction des réseaux",
+   "debut": 5.411,
+   "fin": 6.513,
+   "silence_reel_avant": false
+  },
+  {
+   "texte": "avant quinze ans.",
+   "debut": 6.573,
+   "fin": 7.36,
+   "silence_reel_avant": false
+  },
+  {
+   "texte": "Et pour trouver les moins de quinze,",
+   "debut": 7.84,
+   "fin": 9.205,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "tout le monde aurait dû prouver son âge.",
+   "debut": 9.345,
+   "fin": 10.762,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Même toi.",
+   "debut": 11.062,
+   "fin": 11.471,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Mais le quatorze août,",
+   "debut": 12.011,
+   "fin": 12.923,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "le Conseil constitutionnel censure la loi.",
+   "debut": 12.983,
+   "fin": 14.958,
+   "silence_reel_avant": false
+  },
+  {
+   "texte": "Trop large,",
+   "debut": 15.298,
+   "fin": 15.793,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "et sans garanties pour ta vie privée.",
+   "debut": 15.953,
+   "fin": 17.44,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Sauf que le gouvernement",
+   "debut": 18.0,
+   "fin": 19.112,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "a déjà un nouveau texte.",
+   "debut": 19.172,
+   "fin": 20.443,
+   "silence_reel_avant": false
+  },
+  {
+   "texte": "Avant quinze ans :",
+   "debut": 20.883,
+   "fin": 21.544,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "interdit sur les réseaux les plus addictifs.",
+   "debut": 21.764,
+   "fin": 23.633,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Dès treize ans :",
+   "debut": 24.033,
+   "fin": 24.694,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "possible, avec l’accord des parents.",
+   "debut": 24.894,
+   "fin": 26.355,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Et la question qui fâche :",
+   "debut": 26.875,
+   "fin": 27.832,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "comment ils vont vérifier ton âge ?",
+   "debut": 28.032,
+   "fin": 29.432,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Le texte ne le dit toujours pas.",
+   "debut": 29.772,
+   "fin": 31.172,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Protection…",
+   "debut": 32.232,
+   "fin": 33.014,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "ou flicage ?",
+   "debut": 33.294,
+   "fin": 34.086,
+   "silence_reel_avant": true
+  },
+  {
+   "texte": "Dis-le en commentaire.",
+   "debut": 34.566,
+   "fin": 35.322,
+   "silence_reel_avant": true
+  }
+ ]
+}

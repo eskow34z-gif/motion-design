@@ -5,7 +5,7 @@
    frontière attendue au prorata des syllabes, aimantée au silence le plus proche (ordre conservé) ;
 3. remonte la prise avec des respirations choisies (pauses longues là où l'image a besoin de temps) ;
 4. écrit warp.js (temps vidéo → temps de l'animation), caps.js (sous-titres) et voice.json (contrôle).
-Usage : python3 engine/reseaux01/voice.py prise.mp3 voix_calee.wav [--tempo 1.08]"""
+Usage : python3 engine/reseaux01/voice.py prise.mp3 voix_calee.wav [--tempo 1.08] [--map vo/prise.json]"""
 import json, os, re, subprocess, sys, tempfile
 import numpy as np
 from scipy.io import wavfile
@@ -24,7 +24,7 @@ PH = [
     ('l’interdiction des réseaux', 4.5, [(0.5, 5.05)]),
     ('avant quinze ans.', 5.45, [(0.45, 5.9)]),
     ('Et pour trouver les moins de quinze,', 7.0, []),
-    ('tout le monde aurait dû prouver son âge.', 7.2, [(0.36, 8.7)]),
+    ('tout le monde aurait dû prouver son âge.', 7.8, [(0.36, 8.7)]),
     ('Même toi.', 9.95, [(0.25, 10.2)]),
     ('Mais le quatorze août,', 11.1, []),
     ('le Conseil constitutionnel censure la loi.', 11.9, [(0.74, 12.6)]),
@@ -45,9 +45,9 @@ PH = [
 ]
 END_ANIM = 30.0
 # respiration avant chaque morceau (s), sinon défaut selon la ponctuation
-BEFORE = {1: 0.06, 2: 0.32, 3: 0.55, 4: 0.08, 5: 0.12, 6: 0.55, 7: 0.1, 8: 0.32, 9: 0.62, 10: 0.12, 11: 0.38, 12: 0.12,
-          13: 0.62, 14: 0.08, 15: 0.5, 16: 0.22, 17: 0.45, 18: 0.18, 19: 0.6, 20: 0.18, 21: 0.38, 22: 1.25, 23: 0.28, 24: 0.55}
-TAIL = 1.3
+BEFORE = {1: 0.05, 2: 0.24, 3: 0.4, 4: 0.06, 5: 0.1, 6: 0.42, 7: 0.08, 8: 0.24, 9: 0.48, 10: 0.1, 11: 0.28, 12: 0.1,
+          13: 0.5, 14: 0.06, 15: 0.38, 16: 0.16, 17: 0.34, 18: 0.14, 19: 0.46, 20: 0.14, 21: 0.28, 22: 1.0, 23: 0.22, 24: 0.42}
+TAIL = 1.1
 LEAD = 0.12
 
 def syl(s):
@@ -87,27 +87,41 @@ def sp2real(v):
         acc += L
     return segs[-1][1]
 w = [syl(p[0]) for p in PH]; cw = np.cumsum(w) / sum(w)
-# frontières : attendue au prorata, aimantée au silence le plus proche s'il est assez près
-bounds, used = [], set()
-for k in range(len(PH) - 1):
-    tgt = sp2real(cw[k] * SP)
-    lo = bounds[-1][1] if bounds else segs[0][0]
-    best, bd = None, 0.6
-    for gi, (ga, gb) in enumerate(gaps):
-        if gi in used or ga <= lo: continue
-        d = abs((ga + gb) / 2 - tgt)
-        if d < bd: best, bd = gi, d
-    if best is not None:
-        used.add(best); bounds.append((gaps[best][0], gaps[best][1], True))
-    else:
-        bounds.append((tgt, tgt, False))
-# morceaux bruts [début, fin]
-pieces = []
-st = segs[0][0]
-for (a, b, real) in bounds:
-    pieces.append([st, a]); st = b
-pieces.append([st, segs[-1][1]])
-print('silences repérés :', len(gaps), '; frontières aimantées :', sum(1 for b in bounds if b[2]), '/', len(bounds))
+MAPF = sys.argv[sys.argv.index('--map') + 1] if '--map' in sys.argv else None
+if MAPF:
+    # segments vérifiés à la main : [début, fin, [morceaux]] en temps de la prise d'origine (ramenés au tempo)
+    MP = json.load(open(MAPF, encoding='utf-8'))
+    pieces, bounds = [], []
+    for si, (a0, b0, ids) in enumerate(MP['segments']):
+        a0, b0 = a0 / TEMPO, b0 / TEMPO
+        ws = [w[i] for i in ids]; c = a0
+        for j, i in enumerate(ids):
+            e = b0 if j == len(ids) - 1 else c + (b0 - a0) * ws[j] / sum(ws)
+            if pieces: bounds.append((pieces[-1][1], c, j == 0))
+            pieces.append([c, e]); c = e
+    gaps = [b for b in bounds if b[2]]
+else:
+    # frontières : attendue au prorata, aimantée au silence le plus proche s'il est assez près
+    bounds, used = [], set()
+    for k in range(len(PH) - 1):
+        tgt = sp2real(cw[k] * SP)
+        lo = bounds[-1][1] if bounds else segs[0][0]
+        best, bd = None, 0.6
+        for gi, (ga, gb) in enumerate(gaps):
+            if gi in used or ga <= lo: continue
+            d = abs((ga + gb) / 2 - tgt)
+            if d < bd: best, bd = gi, d
+        if best is not None:
+            used.add(best); bounds.append((gaps[best][0], gaps[best][1], True))
+        else:
+            bounds.append((tgt, tgt, False))
+    # morceaux bruts [début, fin]
+    pieces = []
+    st = segs[0][0]
+    for (a, b, real) in bounds:
+        pieces.append([st, a]); st = b
+    pieces.append([st, segs[-1][1]])
+print('silences :', len(gaps), '; frontières sur un silence :', sum(1 for b in bounds if b[2]), '/', len(bounds))
 # remontage avec respirations choisies
 PAD = 0.03
 y = [np.zeros(int(LEAD * SR), np.float32)]; pos = LEAD; T = []
