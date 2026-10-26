@@ -329,7 +329,7 @@ function buildS6() {
   el('div', '', card, { position: 'absolute', left: '250px', top: '78px', font: '900 92px/0.95 ANY', fontStretch: '82%', color: COL.ink, letterSpacing: '-0.02em' }, 'ACCORD DES<br>PARENTS');
   tape(card, 60, -22, 170, 50, -7); tape(card, 700, 300, 170, 50, 6);
   const pos = el('div', '', A.c, { left: '0px', top: '990px', width: '1080px', textAlign: 'center', font: '900 190px/1 ANY', fontStretch: '86%', color: COL.red, letterSpacing: '-0.03em', transformOrigin: '50% 50%' }, 'POSSIBLE');
-  burst(A.parts, R, { t: 18.4, x: 540, y: 1070, rx: 700, ry: 150, n: 70, v0: 200, v1: 1200, k: 7, r0: 1, r1: 6, col: COL.red, a: 0.85 });
+  burst(A.parts, R, { t: 17.65, x: 540, y: 1070, rx: 700, ry: 150, n: 70, v0: 200, v1: 1200, k: 7, r0: 1, r1: 6, col: COL.red, a: 0.85 });
   return {
     upd(t) {
       show(A.wrap, t >= 17.0 && t < 21.36); if (!(t >= 17.0 && t < 21.36)) return;
@@ -340,8 +340,8 @@ function buildS6() {
       od.set(t < 19.2 ? lerp(0, 15, E.out5(P(t, 17.1, 17.6))) : lerp(15, 13, E.io3(P(t, 19.2, 19.75))));
       tf(box, 0, -500 * (1 - spring(t - 17.05, 2.0, 0.5)));
       const out = E.in3(P(t, 19.0, 19.3));
-      feats.forEach((f, i) => { stripUpd(f, t, 17.55 + i * 0.15, 0); if (t > 19.0) tf(f.g, -1300 * out, 0, (f.o.rot) - 6 * out); lines[i].setAttribute('stroke-dashoffset', (700 * (1 - E.out3(P(t, 17.62 + i * 0.15, 17.8 + i * 0.15)))).toFixed(0)); });
-      setSlam(inter, t, 18.4, -8);
+      feats.forEach((f, i) => { stripUpd(f, t, 17.95 + i * 0.15, 0); if (t > 19.0) tf(f.g, -1300 * out, 0, (f.o.rot) - 6 * out); lines[i].setAttribute('stroke-dashoffset', (700 * (1 - E.out3(P(t, 18.05 + i * 0.15, 18.22 + i * 0.15)))).toFixed(0)); });
+      setSlam(inter, t, 17.65, -8);
       if (t >= 19.0) { op(inter, 1 - P(t, 19.2, 19.3)); tf(inter, -1300 * out, 0, -8 - 6 * out); }
       const a = t - 19.8, s = spring(a, 2.4, 0.5);
       op(card, a > 0 ? 1 : 0); tf(card, 0, 0, lerp(-6, -1.5, s), 1 + 0.3 * (1 - s));
