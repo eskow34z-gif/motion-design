@@ -6,7 +6,7 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 vid, sheet = sys.argv[1], sys.argv[2]
-TS = [0.1, 1.2, 2.05, 3.5, 4.8, 6.4, 7.1, 8.7, 9.9, 11.25, 12.5, 13.6, 14.6, 16.55, 18.4, 19.0, 19.4, 20.8, 22.6, 23.7, 24.1, 25.8, 27.6, 29.9]
+TS = [0.5, 1.4, 3.4, 6.2, 9.9, 11.3, 14.6, 16.5, 20.2, 23.0, 26.2, 30.0, 31.6, 33.6, 35.6, 36.3]
 tmp = tempfile.mkdtemp()
 tiles = []
 for t in TS:
